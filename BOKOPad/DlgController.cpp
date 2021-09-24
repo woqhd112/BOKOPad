@@ -41,14 +41,18 @@ bool DlgController::SelectAllPadOption()
 	return m_mainDlgService->SelectAllPadOption();
 }
 
-bool DlgController::UpdatePadOption(int in_option1, int in_option2)
+bool DlgController::UpdatePadOption()
 {
-	return m_mainDlgService->UpdatePadOption(in_option1, in_option2);
+	PadOptionVO option;
+	RequestScope->GetRequestAttributes(&option);
+	return m_mainDlgService->UpdatePadOption(option.GetTest1(), option.GetTest2());
 }
 
-bool DlgController::InsertScenarioList(ComplexString in_title)
+bool DlgController::InsertScenarioList()
 {
-	return m_scenarioListDlgService->InsertScenarioList(in_title);
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->InsertScenarioList(scenario.GetSceTITLE());
 }
 
 bool DlgController::SelectAllScenarioList()
@@ -56,57 +60,79 @@ bool DlgController::SelectAllScenarioList()
 	return m_scenarioListDlgService->SelectAllScenarioList();
 }
 
-bool DlgController::UpdateScenarioList(ComplexString in_title, int in_cnt, int update_seq)
+bool DlgController::UpdateScenarioList()
 {
-	return m_scenarioListDlgService->UpdateScenarioList(in_title, in_cnt, update_seq);
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->UpdateScenarioList(scenario.GetSceTITLE(), scenario.GetNotCNT(), scenario.GetSceSEQ());
 }
 
-bool DlgController::DeleteScenarioList(int delete_seq)
+bool DlgController::DeleteScenarioList()
 {
-	return m_scenarioListDlgService->DeleteScenarioList(delete_seq);
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->DeleteScenarioList(scenario.GetSceSEQ());
 }
 
-bool DlgController::UpdateScenarioListInSceTITLE(ComplexString in_sceTITLE, int in_sceSEQ)
+bool DlgController::UpdateScenarioListInSceTITLE()
 {
-	return m_scenarioListDlgService->UpdateScenarioListInSceTITLE(in_sceTITLE, in_sceSEQ);
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->UpdateScenarioListInSceTITLE(scenario.GetSceTITLE(), scenario.GetSceSEQ());
 }
 
-bool DlgController::UpdateScenarioListInNotCNT(int in_notCNT, int in_sceSEQ)
+bool DlgController::UpdateScenarioListInNotCNT()
 {
-	return m_scenarioListDlgService->UpdateScenarioListInNotCNT(in_notCNT, in_sceSEQ);
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->UpdateScenarioListInNotCNT(scenario.GetNotCNT(), scenario.GetSceSEQ());
 }
 
-bool DlgController::SelectInSceSEQNoteInformation(int in_sceSEQ)
+bool DlgController::SelectInSceSEQNoteInformation()
 {
-	return m_noteInformationDlgService->SelectInSceSEQNoteInformation(in_sceSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->SelectInSceSEQNoteInformation(note.GetSceSEQ());
 }
 
-bool DlgController::SelectOneNoteInformation(int in_notSEQ)
+bool DlgController::SelectOneNoteInformation()
 {
-	return m_noteInformationDlgService->SelectOneNoteInformation(in_notSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->SelectOneNoteInformation(note.GetNotSEQ());
 }
 
-bool DlgController::InsertNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_sceSEQ)
+bool DlgController::InsertNoteInformation()
 {
-	return m_noteInformationDlgService->InsertNoteInformation(in_notCONTENT, in_notLOCK, in_sceSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->InsertNoteInformation(note.GetNotCONTENT(), note.IsNotLOCK(), note.GetSceSEQ());
 }
 
-bool DlgController::UpdateNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_notSEQ)
+bool DlgController::UpdateNoteInformation()
 {
-	return m_noteInformationDlgService->UpdateNoteInformation(in_notCONTENT, in_notLOCK, in_notSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->UpdateNoteInformation(note.GetNotCONTENT(), note.IsNotLOCK(), note.GetNotSEQ());
 }
 
-bool DlgController::DeleteNoteInformation(int in_notSEQ)
+bool DlgController::DeleteNoteInformation()
 {
-	return m_noteInformationDlgService->DeleteNoteInformation(in_notSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->DeleteNoteInformation(note.GetNotSEQ());
 }
 
-bool DlgController::UpdateNoteInformationInNotContent(ComplexString in_notCONTENT, int in_notSEQ)
+bool DlgController::UpdateNoteInformationInNotContent()
 {
-	return m_noteInformationDlgService->UpdateNoteInformationInNotContent(in_notCONTENT, in_notSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->UpdateNoteInformationInNotContent(note.GetNotCONTENT(), note.GetNotSEQ());
 }
 
-bool DlgController::UpdateNoteInformationInNotLOCK(bool in_notLOCK, int in_notSEQ)
+bool DlgController::UpdateNoteInformationInNotLOCK()
 {
-	return m_noteInformationDlgService->UpdateNoteInformationInNotLOCK(in_notLOCK, in_notSEQ);
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->UpdateNoteInformationInNotLOCK(note.IsNotLOCK(), note.GetNotSEQ());
 }

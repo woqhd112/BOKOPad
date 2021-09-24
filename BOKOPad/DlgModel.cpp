@@ -42,9 +42,12 @@ DlgModel::~DlgModel()
 	ComplexSingleton<DBDataKernel>::DestroyInstance();
 }
 
+
 void DlgModel::LoadDatabase()
 {
 	bool bExist = false;
+
+	// 弃歹积己 贸府...
 	ComplexFile file;
 	if(file.Exist("Config/md.db") == true)
 	{
@@ -67,10 +70,49 @@ void DlgModel::LoadDatabase()
 
 void DlgModel::Commit()
 {
-
+	g_dbConnection.Commit();
 }
 
 void DlgModel::Rollback()
 {
+	g_dbConnection.Rollback();
+}
 
+
+void CreateConfigFile(CString& strFullPath)
+{
+
+	GetModulePath(strFullPath);
+	CreateDefaultDirectory(strFullPath, _T("\\Config"));
+}
+
+void GetModulePath(CString& strPath)
+{
+	CFileFind rootFind;
+	TCHAR chFilePath[256] = { 0, };
+	GetModuleFileName(NULL, chFilePath, 256);
+	strPath = (LPCTSTR)chFilePath;
+	int nLen = strPath.ReverseFind('\\');
+
+	if (nLen > 0)
+	{
+		strPath = strPath.Left(nLen);
+	}
+
+	if (rootFind.FindFile(strPath + _T("\\BOKOPad")))
+	{
+		strPath += _T("\\BOKOPad");
+	}
+	rootFind.Close();
+}
+
+void CreateDefaultDirectory(CString& strFullPath, CString strAppendPath)
+{
+	CFileFind findPath;
+	strFullPath += strAppendPath;
+	if (!findPath.FindFile(strFullPath))
+	{
+		CreateDirectory(strFullPath, NULL);
+	}
+	findPath.Close();
 }

@@ -3,6 +3,9 @@
 #include "DataScope.h"
 
 void PrePareStatementInsertPadOption();
+void CreateConfigFile(CString& strFullPath);
+void GetModulePath(CString& strPath);
+void CreateDefaultDirectory(CString& strFullPath, CString strAppendPath);
 
 class DlgModel
 {

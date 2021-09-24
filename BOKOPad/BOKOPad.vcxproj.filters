@@ -40,6 +40,9 @@
     <Filter Include="DataScope">
       <UniqueIdentifier>{f385d2b8-d993-4bac-b220-81c492f083b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{019e9355-1abf-495f-b6c1-aa73affcbd16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOPad.h">

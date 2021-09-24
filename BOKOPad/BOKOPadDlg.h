@@ -10,15 +10,15 @@ class CBOKOPadDlg : public CDialogEx
 {
 // 생성입니다.
 public:
+
 	CBOKOPadDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 	~CBOKOPadDlg();
 
 // 대화 상자 데이터입니다.
-#ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_BOKOPAD_DIALOG };
-#endif
 
-	protected:
+protected:
+
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
 
@@ -31,7 +31,18 @@ private:
 	PadOptionVO m_mainOptionData;
 	ComplexVector<ScenarioListVO> m_loadScenarioList;
 
+	CListCtrl m_list_scenario_list;
+	CButton m_btn_option;
+	CEdit m_edit_input_scenario;
+	CButton m_btn_input_scenario;
+
 // 구현입니다.
+
+private:
+
+	void Initialize();
+	void InsertScenario(ComplexString title, ComplexString index);
+
 protected:
 	HICON m_hIcon;
 
@@ -41,4 +52,10 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	afx_msg void OnBnClickedButtonOption();
+	afx_msg void OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonInputScenario();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

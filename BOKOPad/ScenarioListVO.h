@@ -13,6 +13,14 @@ public:
 	
 	}
 
+	ScenarioListVO(int sceSEQ, int notCNT, ComplexString sceTITLE)
+		: sceSEQ(sceSEQ)
+		, notCNT(notCNT)
+		, sceTITLE(sceTITLE)
+	{
+
+	}
+
 	~ScenarioListVO()
 	{
 	

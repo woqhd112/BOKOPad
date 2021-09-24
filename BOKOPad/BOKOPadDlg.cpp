@@ -72,12 +72,19 @@ CBOKOPadDlg::~CBOKOPadDlg()
 void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST_SCENARIO_LIST, m_list_scenario_list);
+	DDX_Control(pDX, IDC_BUTTON_OPTION, m_btn_option);
+	DDX_Control(pDX, IDC_EDIT_INPUT_SCENARIO, m_edit_input_scenario);
+	DDX_Control(pDX, IDC_BUTTON_INPUT_SCENARIO, m_btn_input_scenario);
 }
 
 BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON_OPTION, &CBOKOPadDlg::OnBnClickedButtonOption)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnLvnItemchangedListScenarioList)
+	ON_BN_CLICKED(IDC_BUTTON_INPUT_SCENARIO, &CBOKOPadDlg::OnBnClickedButtonInputScenario)
 END_MESSAGE_MAP()
 
 
@@ -113,9 +120,10 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	SetWindowTextW(_T("BOKOPad"));
 
+	Initialize();
 
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
 	// 옵션 로드
 	if (m_controller->SelectAllPadOption())
 	{
@@ -126,9 +134,54 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	if (m_controller->SelectAllScenarioList())
 	{
 		RequestScope->GetRequestAttributes(&m_loadScenarioList);
-	}
 
-	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+		ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
+
+		while (iter != m_loadScenarioList.end())
+		{
+			ComplexString index = ComplexConvert::IntToString(iter->value.GetSceSEQ());
+			ComplexString title = iter->value.GetSceTITLE();
+			InsertScenario(title, index);
+			iter++;
+		}
+	}
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+
+	GotoDlgCtrl(&m_edit_input_scenario);
+	m_edit_input_scenario.LimitText(20);
+
+	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+}
+
+void CBOKOPadDlg::InsertScenario(ComplexString title, ComplexString index)
+{
+	int listSize = m_list_scenario_list.GetItemCount();
+	m_list_scenario_list.InsertItem(listSize, _T(""));
+	
+	LVITEM item1;
+	item1.mask = LVIF_TEXT;
+	item1.iItem = listSize;
+	item1.iSubItem = 1;
+	item1.pszText = (LPSTR)index.GetBuffer();
+	m_list_scenario_list.SetItem(&item1);
+
+	LVITEM item2;
+	item2.mask = LVIF_TEXT;
+	item2.iItem = listSize;
+	item2.iSubItem = 2;
+	item2.pszText = (LPSTR)title.GetBuffer();
+	m_list_scenario_list.SetItem(&item2);
+
+}
+
+void CBOKOPadDlg::Initialize()
+{
+	SetWindowTextA("BOKOPad");
+
+	m_list_scenario_list.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+	m_list_scenario_list.InsertColumn(0, "", LVCFMT_LEFT, 0);
+	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 40);
+	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_CENTER, 350);
 }
 
 void CBOKOPadDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -180,3 +233,56 @@ HCURSOR CBOKOPadDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CBOKOPadDlg::OnBnClickedButtonOption()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CBOKOPadDlg::OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+
+void CBOKOPadDlg::OnBnClickedButtonInputScenario()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CString getText;
+	m_edit_input_scenario.GetWindowTextA(getText);
+
+	if (getText.IsEmpty())
+		return;
+
+	ComplexString inputScenarioTitle = getText.GetBuffer();
+
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	RequestScope->SetRequestAttributes(ScenarioListVO(0, 0, inputScenarioTitle));
+	if (m_controller->InsertScenarioList())
+	{
+		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
+		InsertScenario(inputScenarioTitle, index);
+		m_edit_input_scenario.SetWindowTextA("");
+	}
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+}
+
+
+BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (WM_KEYDOWN == pMsg->message)
+	{
+		if (pMsg->wParam == VK_RETURN)
+		{
+			OnBnClickedButtonInputScenario();
+			return TRUE;
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
