@@ -31,14 +31,10 @@ CBOKOPadApp::CBOKOPadApp()
 
 CBOKOPadApp::~CBOKOPadApp()
 {
-	if (RequestScope)
+	if (MVC_Controller)
 	{
-		ComplexSingleton<RequestAttribute>::DestroyInstance();
-	}
-
-	if (SessionScope)
-	{
-		ComplexSingleton<SessionAttribute>::DestroyInstance();
+		delete MVC_Controller;
+		MVC_Controller = nullptr;
 	}
 }
 // 유일한 CBOKOPadApp 개체입니다.
@@ -82,6 +78,7 @@ BOOL CBOKOPadApp::InitInstance()
 	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
 
 	// scope data define
+	//MVC_Controller = new DlgController;
 
 	CBOKOPadDlg dlg;
 	m_pMainWnd = &dlg;

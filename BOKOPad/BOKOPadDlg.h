@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "DlgController.h"
 
 // CBOKOPadDlg 대화 상자
 class CBOKOPadDlg : public CDialogEx
@@ -27,7 +26,7 @@ public:
 
 private:
 
-	DlgController* m_controller;
+
 	PadOptionVO m_mainOptionData;
 	ComplexVector<ScenarioListVO> m_loadScenarioList;
 
@@ -35,6 +34,8 @@ private:
 	CButton m_btn_option;
 	CEdit m_edit_input_scenario;
 	CButton m_btn_input_scenario;
+	CButton m_btn_scenario_title_modify;
+	CButton m_btn_scenario_delete;
 
 // 구현입니다.
 
@@ -58,4 +59,6 @@ public:
 	afx_msg void OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonInputScenario();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnBnClickedButtonScenarioTitleModify();
+	afx_msg void OnBnClickedButtonScenarioDelete();
 };

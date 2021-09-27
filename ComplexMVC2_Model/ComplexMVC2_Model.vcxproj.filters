@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{2b57f44d-bb4e-4e21-a9b8-84fd1c9cabd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataScope">
+      <UniqueIdentifier>{66f2be22-7d29-4c30-999d-edc051029138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{e84f7d78-ddb1-45d5-b4b7-9ea3c301567f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{78250764-d737-4e43-b983-084da1535281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{ebd4c92a-ac75-4202-ab32-6babed1342eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\DAO">
+      <UniqueIdentifier>{dccb96d2-478f-4f10-a3ca-6010b199b7bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\VO">
+      <UniqueIdentifier>{9b0579cc-8ff1-4b1b-ab32-d1431c3a2aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\QueryDefine">
+      <UniqueIdentifier>{502a693d-42f6-429b-840e-0bf4dda3632f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="DataScope.h">
+      <Filter>DataScope</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestAttribute.h">
+      <Filter>DataScope</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionAttribute.h">
+      <Filter>DataScope</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryDefine.h">
+      <Filter>Model\QueryDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="DBDataKernel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioListDlgModelImp.h">
+      <Filter>Model\DAO</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDlgModelImp.h">
+      <Filter>Model\DAO</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteInformationDlgModelImp.h">
+      <Filter>Model\DAO</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteInformationVO.h">
+      <Filter>Model\VO</Filter>
+    </ClInclude>
+    <ClInclude Include="PadOptionVO.h">
+      <Filter>Model\VO</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioListVO.h">
+      <Filter>Model\VO</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDlgService.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteInformationDlgService.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioListDlgService.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="commonInclude.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="DBDataKernel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioListDlgModelImp.cpp">
+      <Filter>Model\DAO</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDlgModelImp.cpp">
+      <Filter>Model\DAO</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteInformationDlgModelImp.cpp">
+      <Filter>Model\DAO</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDlgService.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteInformationDlgService.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioListDlgService.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="DataScope.cpp">
+      <Filter>DataScope</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

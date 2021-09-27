@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="ComplexLibrary">
+      <UniqueIdentifier>{9ebd1a28-d52b-4304-abb1-7f9a2b9011df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexCollection.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexCondition.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexConnectionPool.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexConvert.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexDatabase.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexDeque.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexException.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexFile.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexFormat.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexIn.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexIterator.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexUniqueQueue.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexUtility.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexVariant.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexVector.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexXMLHandler.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexXMLNode.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexXMLParsor.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexLibrary.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexLinkedList.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexLock.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexLog.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexMap.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexNode.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexOut.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexPool.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexPrint.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexQueue.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexRandom.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexScanner.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexSet.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexSingleton.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexStack.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexString.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexStringTokenizer.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexSystem.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexThread.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexTime.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ComplexLibrary.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite3.c">
+      <Filter>ComplexLibrary</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sqlite3.def">
+      <Filter>ComplexLibrary</Filter>
+    </None>
+  </ItemGroup>
+</Project>

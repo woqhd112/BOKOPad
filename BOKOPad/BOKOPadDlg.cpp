@@ -57,16 +57,16 @@ CBOKOPadDlg::CBOKOPadDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
 	// 컨트롤러 생성
-	m_controller = new DlgController;
+	//m_controller = new DlgController;
 }
 
 CBOKOPadDlg::~CBOKOPadDlg()
 {
-	if (m_controller)
+	/*if (m_controller)
 	{
 		delete m_controller;
 		m_controller = nullptr;
-	}
+	}*/
 }
 
 void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
@@ -76,6 +76,8 @@ void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_OPTION, m_btn_option);
 	DDX_Control(pDX, IDC_EDIT_INPUT_SCENARIO, m_edit_input_scenario);
 	DDX_Control(pDX, IDC_BUTTON_INPUT_SCENARIO, m_btn_input_scenario);
+	DDX_Control(pDX, IDC_BUTTON_SCENARIO_TITLE_MODIFY, m_btn_scenario_title_modify);
+	DDX_Control(pDX, IDC_BUTTON_SCENARIO_DELETE, m_btn_scenario_delete);
 }
 
 BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
@@ -85,6 +87,8 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPTION, &CBOKOPadDlg::OnBnClickedButtonOption)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnLvnItemchangedListScenarioList)
 	ON_BN_CLICKED(IDC_BUTTON_INPUT_SCENARIO, &CBOKOPadDlg::OnBnClickedButtonInputScenario)
+	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_TITLE_MODIFY, &CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify)
+	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_DELETE, &CBOKOPadDlg::OnBnClickedButtonScenarioDelete)
 END_MESSAGE_MAP()
 
 
@@ -125,13 +129,13 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
 	// 옵션 로드
-	if (m_controller->SelectAllPadOption())
+	if (MVC_Controller->SelectAllPadOption())
 	{
 		RequestScope->GetRequestAttributes(&m_mainOptionData);
 	}
 
 	// 시나리오 리스트 로드
-	if (m_controller->SelectAllScenarioList())
+	if (MVC_Controller->SelectAllScenarioList())
 	{
 		RequestScope->GetRequestAttributes(&m_loadScenarioList);
 
@@ -180,8 +184,8 @@ void CBOKOPadDlg::Initialize()
 
 	m_list_scenario_list.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	m_list_scenario_list.InsertColumn(0, "", LVCFMT_LEFT, 0);
-	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 40);
-	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_CENTER, 350);
+	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 0);
+	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_LEFT, 350);
 }
 
 void CBOKOPadDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -235,12 +239,6 @@ HCURSOR CBOKOPadDlg::OnQueryDragIcon()
 
 
 
-void CBOKOPadDlg::OnBnClickedButtonOption()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
 void CBOKOPadDlg::OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
@@ -262,11 +260,17 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 
 	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
 	RequestScope->SetRequestAttributes(ScenarioListVO(0, 0, inputScenarioTitle));
-	if (m_controller->InsertScenarioList())
+	if (MVC_Controller->InsertScenarioList())
 	{
 		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
 		InsertScenario(inputScenarioTitle, index);
 		m_edit_input_scenario.SetWindowTextA("");
+
+		if (MVC_Controller->SelectAllScenarioList())
+		{
+			m_loadScenarioList.clear();
+			RequestScope->GetRequestAttributes(&m_loadScenarioList);
+		}
 	}
 	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
 }
@@ -283,6 +287,79 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 	}
+	else if (WM_LBUTTONDOWN == pMsg->message)
+	{
+		if (pMsg->hwnd == m_list_scenario_list) {}
+		else if (pMsg->hwnd == m_btn_scenario_delete) {}
+		else if (pMsg->hwnd == m_btn_scenario_title_modify) {}
+		else
+		{
+			m_list_scenario_list.SetSelectionMark(-1);
+			m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+		}
+	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CBOKOPadDlg::OnBnClickedButtonOption()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	if (m_loadScenarioList.empty())
+		return;
+
+	int mark = m_list_scenario_list.GetSelectionMark();
+
+	mark;
+}
+
+
+void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	if (m_loadScenarioList.empty())
+		return;
+
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	int selectedCount = m_list_scenario_list.GetSelectedCount();
+	POSITION selectPos = m_list_scenario_list.GetFirstSelectedItemPosition();
+
+	m_list_scenario_list.SetRedraw(FALSE);
+	ComplexVector<int> selectVector;
+	while (selectPos)
+	{
+		int selectedIndex = m_list_scenario_list.GetNextSelectedItem(selectPos);
+		selectVector.push_back(selectedIndex);
+	}
+
+	for (int i = selectVector.size() - 1; i >= 0; i--)
+	{
+		ScenarioListVO selectedScenario = m_loadScenarioList.at(i);
+		RequestScope->SetRequestAttributes(selectedScenario);
+
+		if (MVC_Controller->DeleteScenarioList() == true)
+		{
+			m_list_scenario_list.DeleteItem(i);
+			m_loadScenarioList.erase(i);
+		}
+	}
+
+	m_list_scenario_list.SetRedraw(TRUE);
+	m_list_scenario_list.Invalidate();
+
+	if (m_loadScenarioList.empty())
+	{
+		MVC_Controller->UpdateScenarioListAutoIncrementSeq();
+	}
+
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
 }

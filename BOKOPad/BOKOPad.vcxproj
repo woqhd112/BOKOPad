@@ -38,7 +38,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -76,12 +76,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Workspace\</OutDir>
+    <TargetName>$(ProjectName)_dbg</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Workspace\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -94,11 +97,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)BOKOPad\include\complex;$(SolutionDir)BOKOPad\include\sqlite3</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ComplexMVC2_Model;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)BOKOPad\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Workspace\</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -144,13 +147,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)BOKOPad\include\complex;$(SolutionDir)BOKOPad\include\sqlite3</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ComplexMVC2_Model\;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)BOKOPad\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Workspace\</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -194,97 +197,25 @@
     <ClInclude Include="BOKOPad.h" />
     <ClInclude Include="BOKOPadDlg.h" />
     <ClInclude Include="commonInclude.h" />
-    <ClInclude Include="DataScope.h" />
-    <ClInclude Include="DBDataKernel.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="DlgController.h" />
-    <ClInclude Include="include\complex\ComplexCollection.h" />
-    <ClInclude Include="include\complex\ComplexCondition.h" />
-    <ClInclude Include="include\complex\ComplexConnectionPool.h" />
-    <ClInclude Include="include\complex\ComplexConvert.h" />
-    <ClInclude Include="include\complex\ComplexDatabase.h" />
-    <ClInclude Include="include\complex\ComplexDeque.h" />
-    <ClInclude Include="include\complex\ComplexException.h" />
-    <ClInclude Include="include\complex\ComplexFile.h" />
-    <ClInclude Include="include\complex\ComplexFormat.h" />
-    <ClInclude Include="include\complex\ComplexIn.h" />
-    <ClInclude Include="include\complex\ComplexIterator.h" />
-    <ClInclude Include="include\complex\ComplexLibrary.h" />
-    <ClInclude Include="include\complex\ComplexLinkedList.h" />
-    <ClInclude Include="include\complex\ComplexLock.h" />
-    <ClInclude Include="include\complex\ComplexLog.h" />
-    <ClInclude Include="include\complex\ComplexMap.h" />
-    <ClInclude Include="include\complex\ComplexNode.h" />
-    <ClInclude Include="include\complex\ComplexOut.h" />
-    <ClInclude Include="include\complex\ComplexPool.h" />
-    <ClInclude Include="include\complex\ComplexPrint.h" />
-    <ClInclude Include="include\complex\ComplexQueue.h" />
-    <ClInclude Include="include\complex\ComplexRandom.h" />
-    <ClInclude Include="include\complex\ComplexScanner.h" />
-    <ClInclude Include="include\complex\ComplexSet.h" />
-    <ClInclude Include="include\complex\ComplexSingleton.h" />
-    <ClInclude Include="include\complex\ComplexStack.h" />
-    <ClInclude Include="include\complex\ComplexString.h" />
-    <ClInclude Include="include\complex\ComplexStringTokenizer.h" />
-    <ClInclude Include="include\complex\ComplexSystem.h" />
-    <ClInclude Include="include\complex\ComplexThread.h" />
-    <ClInclude Include="include\complex\ComplexTime.h" />
-    <ClInclude Include="include\complex\ComplexUniqueQueue.h" />
-    <ClInclude Include="include\complex\ComplexUtility.h" />
-    <ClInclude Include="include\complex\ComplexVariant.h" />
-    <ClInclude Include="include\complex\ComplexVector.h" />
-    <ClInclude Include="include\complex\ComplexXMLHandler.h" />
-    <ClInclude Include="include\complex\ComplexXMLNode.h" />
-    <ClInclude Include="include\complex\ComplexXMLParsor.h" />
-    <ClInclude Include="include\complex\framework.h" />
-    <ClInclude Include="include\complex\pch.h" />
-    <ClInclude Include="include\sqlite3\sqlite3.h" />
-    <ClInclude Include="include\sqlite3\sqlite3ext.h" />
-    <ClInclude Include="DlgModel.h" />
-    <ClInclude Include="MainDlgModelImp.h" />
-    <ClInclude Include="MainDlgService.h" />
-    <ClInclude Include="NoteInformationDlgService.h" />
-    <ClInclude Include="NoteInformationDlgModelImp.h" />
-    <ClInclude Include="NoteInformationVO.h" />
-    <ClInclude Include="PadOptionVO.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="QueryDefine.h" />
-    <ClInclude Include="RequestAttribute.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ScenarioListDlgService.h" />
-    <ClInclude Include="ScenarioListDlgModelImp.h" />
-    <ClInclude Include="ScenarioListVO.h" />
-    <ClInclude Include="SessionAttribute.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOPad.cpp" />
     <ClCompile Include="BOKOPadDlg.cpp" />
-    <ClCompile Include="DBDataKernel.cpp" />
-    <ClCompile Include="DlgController.cpp" />
-    <ClCompile Include="include\sqlite3\sqlite3.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DlgModel.cpp" />
-    <ClCompile Include="MainDlgModelImp.cpp" />
-    <ClCompile Include="MainDlgService.cpp" />
-    <ClCompile Include="NoteInformationDlgService.cpp" />
-    <ClCompile Include="NoteInformationDlgModelImp.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ScenarioListDlgService.cpp" />
-    <ClCompile Include="ScenarioListDlgModelImp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOKOPad.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\sqlite3\sqlite3.def" />
     <None Include="res\BOKOPad.rc2" />
   </ItemGroup>
   <ItemGroup>

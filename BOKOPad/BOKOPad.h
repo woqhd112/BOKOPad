@@ -9,11 +9,23 @@
 #endif
 
 #include "resource.h"		// 주 기호입니다.
-#include "DataScope.h"
+#ifdef _DEBUG
+#pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
+#pragma comment(lib, "ComplexLibrary_dbg.lib")
+#else
+#pragma comment(lib, "ComplexMVC2_Model.lib")
+#pragma comment(lib, "ComplexLibrary.lib")
+#endif
+#include "DlgController.h"
+
+//extern COMPLEXMVC2_MODEL_DLL RequestAttribute* RequestScope;
+//extern COMPLEXMVC2_MODEL_DLL SessionAttribute* SessionScope;
 
 // CBOKOPadApp:
 // 이 클래스의 구현에 대해서는 BOKOPad.cpp을(를) 참조하세요.
 //
+
+static DlgController* MVC_Controller = ComplexSingleton<DlgController>::GetInstancePtr();
 
 class CBOKOPadApp : public CWinApp
 {
