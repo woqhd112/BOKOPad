@@ -29,6 +29,7 @@ private:
 
 	PadOptionVO m_mainOptionData;
 	ComplexVector<ScenarioListVO> m_loadScenarioList;
+	//ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioIDManager;
 
 	CListCtrl m_list_scenario_list;
 	CButton m_btn_option;
@@ -61,4 +62,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnBnClickedButtonScenarioTitleModify();
 	afx_msg void OnBnClickedButtonScenarioDelete();
+	afx_msg void OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 };

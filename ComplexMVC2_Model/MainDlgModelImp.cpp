@@ -64,3 +64,11 @@ bool MainDlgModelImp::UpdateScenarioListAutoIncrementSeq()
 
 	return bSuccess;
 }
+
+bool MainDlgModelImp::UpdateNoteInformationAutoIncrementSeq()
+{
+	bool bSuccess = false;
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_AUTOINCREMENT_RESET_NOTE_INFORMATION], NULL);
+
+	return bSuccess;
+}

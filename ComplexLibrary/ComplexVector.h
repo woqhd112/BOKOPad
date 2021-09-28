@@ -207,7 +207,7 @@ namespace ComplexLibrary
 			if (m_ptr == nullptr)
 				throw ComplexNullptrException("vector reference is null point.", "ComplexVector", "erase");
 
-			delete_node(m_ptr[idx]);
+			delete_node(idx);
 
 			T* tmp = new T[m_capacity];
 			int tmpidx = 0;
@@ -370,24 +370,35 @@ namespace ComplexLibrary
 		int m_size;
 		int m_capacity;
 
-		void delete_node(T& value)
+		void delete_node(int idx)
 		{
 			ComplexNode<T>* prev = nullptr;
 			ComplexNode<T>* cursor = m_head;
 
+			//while (cursor->has_next())
+			//{
+			//	// 이부분... == T의 오퍼레이터 구현이 불가능한거라 이부분 수정해야할거같은데..
+			//	if (&value == &cursor->value)
+			//		break;
+			//	prev = cursor;
+			//	cursor = cursor->next();
+			//}
+
+			int i = 0;
 			while (cursor->has_next())
 			{
-				// 이부분... == T의 오퍼레이터 구현이 불가능한거라 이부분 수정해야할거같은데..
-				if (value == cursor->value)
+				if (i == idx)
 					break;
 				prev = cursor;
 				cursor = cursor->next();
+				i++;
 			}
 
 			// 커서가 맨 마지막까지 도달하였을 때
 			if (!cursor->has_next())
 			{
-				if (value == cursor->value)
+				//if (&value == &cursor->value)
+				if (i == idx)
 				{
 					// 노드 개수가 1개 초과일 때
 					if (prev != nullptr)

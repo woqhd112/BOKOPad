@@ -48,6 +48,11 @@ bool DlgController::UpdateScenarioListAutoIncrementSeq()
 	return m_mainDlgService->UpdateScenarioListAutoIncrementSeq();
 }
 
+bool DlgController::UpdateNoteInformationAutoIncrementSeq()
+{
+	return m_mainDlgService->UpdateNoteInformationAutoIncrementSeq();
+}
+
 bool DlgController::InsertScenarioList()
 {
 	ScenarioListVO scenario;
@@ -86,6 +91,13 @@ bool DlgController::UpdateScenarioListInNotCNT()
 	ScenarioListVO scenario;
 	RequestScope->GetRequestAttributes(&scenario);
 	return m_scenarioListDlgService->UpdateScenarioListInNotCNT(scenario.GetNotCNT(), scenario.GetSceSEQ());
+}
+
+bool DlgController::SelectInSceSEQScenarioListInSceTITLE()
+{
+	ScenarioListVO scenario;
+	RequestScope->GetRequestAttributes(&scenario);
+	return m_scenarioListDlgService->SelectInSceSEQScenarioListInSceTITLE(scenario.GetSceTITLE());
 }
 
 bool DlgController::SelectInSceSEQNoteInformation()

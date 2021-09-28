@@ -14,6 +14,7 @@ public:
 	bool SelectAllPadOption(PadOptionVO* out_optionVO);
 	bool UpdatePadOption(int in_option1, int in_option2);
 	bool UpdateScenarioListAutoIncrementSeq();
+	bool UpdateNoteInformationAutoIncrementSeq();
 
 private:
 

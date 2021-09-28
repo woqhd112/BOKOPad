@@ -12,11 +12,14 @@
 #ifdef _DEBUG
 #pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
 #pragma comment(lib, "ComplexLibrary_dbg.lib")
+#pragma comment(lib, "ComplexUtilProcess_dbg.lib")
 #else
 #pragma comment(lib, "ComplexMVC2_Model.lib")
 #pragma comment(lib, "ComplexLibrary.lib")
+#pragma comment(lib, "ComplexUtilProcess.lib")
 #endif
 #include "DlgController.h"
+#include "ScenarioManager.h"
 
 //extern COMPLEXMVC2_MODEL_DLL RequestAttribute* RequestScope;
 //extern COMPLEXMVC2_MODEL_DLL SessionAttribute* SessionScope;
@@ -26,6 +29,7 @@
 //
 
 static DlgController* MVC_Controller = ComplexSingleton<DlgController>::GetInstancePtr();
+static ScenarioManager* Scenario_Manager = ComplexSingleton<ScenarioManager>::GetInstancePtr();
 
 class CBOKOPadApp : public CWinApp
 {

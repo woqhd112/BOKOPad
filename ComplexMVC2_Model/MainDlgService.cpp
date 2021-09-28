@@ -54,3 +54,16 @@ bool MainDlgService::UpdateScenarioListAutoIncrementSeq()
 
 	return bSuccess;
 }
+
+bool MainDlgService::UpdateNoteInformationAutoIncrementSeq()
+{
+	bool bSuccess = false;
+	bSuccess = m_mainDlgModel->UpdateNoteInformationAutoIncrementSeq();
+
+	if (bSuccess)
+		m_mainDlgModel->Commit();
+	else
+		m_mainDlgModel->Rollback();
+
+	return bSuccess;
+}

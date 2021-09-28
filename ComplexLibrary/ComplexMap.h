@@ -198,6 +198,7 @@ namespace ComplexLibrary
 
 			m_pairs.erase(i);
 			m_keys.erase(i);
+			m_size--;
 
 			return true;
 		}

@@ -97,3 +97,19 @@ bool ScenarioListDlgService::UpdateScenarioListInNotCNT(int in_notCNT, int in_sc
 
 	return bSuccess;
 }
+
+bool ScenarioListDlgService::SelectInSceSEQScenarioListInSceTITLE(ComplexString in_sceTITLE)
+{
+	bool bSuccess = false;
+
+	int out_sceSEQ;
+	bSuccess = m_scenarioDlgModel->SelectInSceSEQScenarioListInSceTITLE(in_sceTITLE, &out_sceSEQ);
+
+	if (bSuccess)
+	{
+		ScenarioListVO scenario(out_sceSEQ, 0, "");
+		RequestScope->SetRequestAttributes(scenario);
+	}
+
+	return bSuccess;
+}

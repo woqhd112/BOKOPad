@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="헤더 파일">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
@@ -19,11 +15,23 @@
     <Filter Include="UI">
       <UniqueIdentifier>{515e5719-c128-49ec-814c-77cdd58a51a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{5905db7b-1866-4805-860a-d2d0113cae99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Option">
+      <UniqueIdentifier>{74236b98-087b-4ed1-b4c7-39cc173c66d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Main">
+      <UniqueIdentifier>{855af042-340d-4e4f-9b6e-fb821ec6843c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scenario">
+      <UniqueIdentifier>{7d0d78c7-ac9e-4e52-9eea-f8cb9e7fa1f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{a9e9d319-a013-4a1f-a53c-7eda17891a67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BOKOPad.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -36,22 +44,46 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BOKOPadDlg.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="BOKOPad.h">
+      <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="commonInclude.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="BOKOOptionDlg.h">
+      <Filter>UI\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOPadDlg.h">
+      <Filter>UI\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOOptionScenarioExportDlg.h">
+      <Filter>UI\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOScenarioDetailDlg.h">
+      <Filter>UI\Scenario</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOPad.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOOptionDlg.cpp">
+      <Filter>UI\Option</Filter>
     </ClCompile>
     <ClCompile Include="BOKOPadDlg.cpp">
-      <Filter>UI</Filter>
+      <Filter>UI\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOOptionScenarioExportDlg.cpp">
+      <Filter>UI\Option</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOScenarioDetailDlg.cpp">
+      <Filter>UI\Scenario</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

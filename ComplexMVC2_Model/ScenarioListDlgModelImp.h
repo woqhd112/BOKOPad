@@ -7,6 +7,8 @@ void PrepareStatementUpdateScenarioList();
 void PrepareStatementDeleteScenarioList();
 void PrepareStatementUpdateScenarioListInSceTITLE();
 void PrepareStatementUpdateScenarioListInNotCNT();
+void PrepareStatementSelectInSceSEQScenarioListInSceTITLE();
+void ResultSetSelectInSceSEQScenarioListInSceTITLE();
 
 class ScenarioListDlgModelImp : public DlgModel
 {
@@ -21,6 +23,7 @@ public:
 	bool DeleteScenarioList(int delete_seq);
 	bool UpdateScenarioListInSceTITLE(ComplexString in_sceTITLE, int in_sceSEQ);
 	bool UpdateScenarioListInNotCNT(int in_notCNT, int in_sceSEQ);
+	bool SelectInSceSEQScenarioListInSceTITLE(ComplexString in_sceTITLE, int* out_sceSEQ);
 
 private:
 

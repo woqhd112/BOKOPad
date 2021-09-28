@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOKOPad", "BOKOPad\BOKOPad.vcxproj", "{08D651A3-EE9D-49B0-BBA7-1CCF221E7F08}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F1AA83B1-5365-4002-AED1-BAD5F474A75F} = {F1AA83B1-5365-4002-AED1-BAD5F474A75F}
+		{B8A4A4C2-DB93-4803-A384-F539686EA234} = {B8A4A4C2-DB93-4803-A384-F539686EA234}
 		{BB2D66C9-536B-443B-B9A0-7D504C576B7F} = {BB2D66C9-536B-443B-B9A0-7D504C576B7F}
 	EndProjectSection
 EndProject
@@ -15,6 +16,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComplexMVC2_Model", "Comple
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComplexLibrary", "ComplexLibrary\ComplexLibrary.vcxproj", "{BB2D66C9-536B-443B-B9A0-7D504C576B7F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComplexUtilProcess", "ComplexUtilProcess\ComplexUtilProcess.vcxproj", "{B8A4A4C2-DB93-4803-A384-F539686EA234}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB2D66C9-536B-443B-B9A0-7D504C576B7F} = {BB2D66C9-536B-443B-B9A0-7D504C576B7F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +54,14 @@ Global
 		{BB2D66C9-536B-443B-B9A0-7D504C576B7F}.Release|x64.Build.0 = Release|x64
 		{BB2D66C9-536B-443B-B9A0-7D504C576B7F}.Release|x86.ActiveCfg = Release|Win32
 		{BB2D66C9-536B-443B-B9A0-7D504C576B7F}.Release|x86.Build.0 = Release|Win32
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Debug|x64.ActiveCfg = Debug|x64
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Debug|x64.Build.0 = Debug|x64
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Debug|x86.ActiveCfg = Debug|Win32
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Debug|x86.Build.0 = Debug|Win32
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Release|x64.ActiveCfg = Release|x64
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Release|x64.Build.0 = Release|x64
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Release|x86.ActiveCfg = Release|Win32
+		{B8A4A4C2-DB93-4803-A384-F539686EA234}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -59,6 +59,19 @@ void PrepareStatementUpdateScenarioListInNotCNT()
 	DATA_INSTANCE->ResetScenarioList();
 }
 
+void PrepareStatementSelectInSceSEQScenarioListInSceTITLE()
+{
+	ComplexString title;
+	DATA_INSTANCE->GetScenarioList(NULL, NULL, &title);
+	DB_INSTANCE->SetString(1, title);
+	DATA_INSTANCE->ResetScenarioList();
+}
+
+void ResultSetSelectInSceSEQScenarioListInSceTITLE()
+{
+	DATA_INSTANCE->SetScenarioList(DB_INSTANCE->GetInt(0), "", 0);
+}
+
 ScenarioListDlgModelImp::ScenarioListDlgModelImp()
 {
 
@@ -131,6 +144,20 @@ bool ScenarioListDlgModelImp::UpdateScenarioListInNotCNT(int in_notCNT, int in_s
 	bool bSuccess = false;
 	DATA_INSTANCE->SetScenarioList(in_sceSEQ, "", in_notCNT);
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_SCENARIO_LIST_TABLE_IN_NOTCNT], PrepareStatementUpdateScenarioListInNotCNT);
+
+	DATA_INSTANCE->ResetScenarioList();
+
+	return bSuccess;
+}
+
+bool ScenarioListDlgModelImp::SelectInSceSEQScenarioListInSceTITLE(ComplexString in_sceTITLE, int* out_sceSEQ)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetScenarioList(0, in_sceTITLE, 0);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[SELECT_IN_SCETITLE_SCENARIO_LIST_IN_SCESEQ], PrepareStatementSelectInSceSEQScenarioListInSceTITLE, ResultSetSelectInSceSEQScenarioListInSceTITLE);
+
+	if (bSuccess)
+		DATA_INSTANCE->GetScenarioList(out_sceSEQ, NULL, NULL);
 
 	DATA_INSTANCE->ResetScenarioList();
 

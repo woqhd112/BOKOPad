@@ -13,6 +13,7 @@ enum DDL_QUERY_INDEX
 enum DML_QUERY_INDEX
 {
 	UPDATE_AUTOINCREMENT_RESET_SCENARIO_LIST = 0,
+	UPDATE_AUTOINCREMENT_RESET_NOTE_INFORMATION,
 	SELECT_ALL_SCENARIO_LIST_TABLE,
 	SELECT_ALL_NOTE_INFORMATION_TABLE,
 	SELECT_IN_SEQ_NOTE_INFORMATION_TABLE,
@@ -31,7 +32,8 @@ enum DML_QUERY_INDEX
 	UPDATE_NOTE_INFORMATION_TABLE_IN_NOTCONTENT,
 	UPDATE_NOTE_INFORMATION_TABLE_IN_NOTLOCK,
 	SELECT_IN_SCESEQ_SCENARIO_LIST_IN_NOTSEQ,
-	SELECT_IN_NOTCNT_SCENARIO_LIST_IN_SCESEQ
+	SELECT_IN_NOTCNT_SCENARIO_LIST_IN_SCESEQ,
+	SELECT_IN_SCETITLE_SCENARIO_LIST_IN_SCESEQ
 };
 
 static const char* DefinedDDLQuerys[] = { 
@@ -58,7 +60,9 @@ static const char* DefinedDDLQuerys[] = {
 
 static const char* DefinedDMLQuerys[] = {
 									// update scenario list primary key sequence reset
-									"UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = ScenarioList",
+									"UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'ScenarioList'",
+									// update note information primary key sequence reset
+									"UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'NoteInformation'",
 									// select all scenario list table
 									"SELECT * FROM ScenarioList",
 									// select all note information table
@@ -97,4 +101,6 @@ static const char* DefinedDMLQuerys[] = {
 									"SELECT sceSEQ, notCNT FROM ScenarioList WHERE sceSEQ = (SELECT sceSEQ FROM NoteInformation WHERE notSEQ = ?)",
 									// select notCNT scenario list in sceSEQ
 									"SELECT notCNT FROM ScenarioList WHERE sceSEQ = ?",
+									// select sceSEQ scenario list in sceTITLE
+									"SELECT sceSEQ FROM ScenarioList WHERE sceTITLE = ?",
 								   };

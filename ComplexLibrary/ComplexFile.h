@@ -134,6 +134,7 @@ namespace ComplexLibrary
 
 	private:
 
+
 		ComplexString m_filePath;
 
 	};

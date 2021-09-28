@@ -36,6 +36,12 @@ CBOKOPadApp::~CBOKOPadApp()
 		delete MVC_Controller;
 		MVC_Controller = nullptr;
 	}
+
+	if (Scenario_Manager)
+	{
+		delete Scenario_Manager;
+		Scenario_Manager = nullptr;
+	}
 }
 // 유일한 CBOKOPadApp 개체입니다.
 

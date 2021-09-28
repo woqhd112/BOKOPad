@@ -6,6 +6,7 @@
 #include "framework.h"
 #include "BOKOPad.h"
 #include "BOKOPadDlg.h"
+#include "BOKOOptionDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -89,6 +90,7 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_INPUT_SCENARIO, &CBOKOPadDlg::OnBnClickedButtonInputScenario)
 	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_TITLE_MODIFY, &CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify)
 	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_DELETE, &CBOKOPadDlg::OnBnClickedButtonScenarioDelete)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMDblclkListScenarioList)
 END_MESSAGE_MAP()
 
 
@@ -153,6 +155,8 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 	GotoDlgCtrl(&m_edit_input_scenario);
 	m_edit_input_scenario.LimitText(20);
+
+	Scenario_Manager->AttachManager(this);
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -306,6 +310,8 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 void CBOKOPadDlg::OnBnClickedButtonOption()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	BOKOOptionDlg optionDlg;
+	optionDlg.DoModal();
 }
 
 
@@ -362,4 +368,23 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	}
 
 	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+}
+
+
+void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	if (m_loadScenarioList.empty())
+		return;
+
+	int mark = m_list_scenario_list.GetSelectionMark();
+	// 시나리오가 이미 존재할 시
+	if (Scenario_Manager->SendMessages(SWP_EXIST, mark) == true)
+		return;
+
+	Scenario_Manager->SendMessages(SMP_CREATE, mark);
+	
+	*pResult = 0;
 }

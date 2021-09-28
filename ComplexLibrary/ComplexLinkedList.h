@@ -155,11 +155,22 @@ namespace ComplexLibrary
 				cnt++;
 			}
 
-			if (findNode != nullptr)
+			if (cnt == 0)
 			{
-				m_size--;
-				nextNode->m_next = findNode->m_next;
-				delete findNode;
+				if (m_head != nullptr)
+				{
+					delete m_head;
+					m_head = nullptr;
+				}
+			}
+			else
+			{
+				if (findNode != nullptr)
+				{
+					m_size--;
+					nextNode->m_next = findNode->m_next;
+					delete findNode;
+				}
 			}
 		}
 
