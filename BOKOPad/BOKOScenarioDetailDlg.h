@@ -1,14 +1,18 @@
 ﻿#pragma once
 #include "resource.h"
+#include "NoteListCtrl.h"
 
 // BOKOScenarioDetailDlg 대화 상자
+
+#define LIMIT_TEXT_FORMAT "%d / 500"
+#define CAST_INT(x) int((x)) 
 
 class BOKOScenarioDetailDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(BOKOScenarioDetailDlg)
 
 public:
-	BOKOScenarioDetailDlg(int thisIndex, CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruct, CWnd* pParent = nullptr);   // 표준 생성자입니다.
 	virtual ~BOKOScenarioDetailDlg();
 
 // 대화 상자 데이터입니다.
@@ -16,8 +20,17 @@ public:
 
 private:
 
-	int m_scenarioIndex;
+	void Initialize();
 
+private:
+
+	CEdit m_edit_note_input;
+	CButton m_btn_note_input;
+	CStatic m_stt_note_limit_size;
+	NoteListCtrl m_list_notePad;
+
+
+	ScenarioManagerStruct m_thisDataStruct;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -26,4 +39,8 @@ protected:
 public:
 	afx_msg void OnClose();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL OnInitDialog();
+	afx_msg void OnEnChangeEditNoteInput();
+	afx_msg void OnBnClickedButtonNoteInput();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 };

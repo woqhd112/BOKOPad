@@ -1,47 +1,40 @@
 #pragma once
-#include "ComplexMap.h"
-#include "BOKOScenarioDetailDlg.h"
-
-using namespace ComplexLibrary;
-
-enum SendMessageProcess
-{
-	SMP_CREATE = 0,
-	SMP_DESTROY,
-	SMP_SHOW,
-	SMP_HIDE,
-	SWP_EXIST
-};
+#include "ManagerManagement.h"
 
 
-class ScenarioManager
+class ScenarioManager : public ManagerManagement
 {
 public:
 
 	ScenarioManager();
-	~ScenarioManager();
+	virtual ~ScenarioManager();
 
-	void AttachManager(CWnd* dlgAttachPointer);
-	CWnd* DetachManager();
-
-	bool SendMessages(SendMessageProcess bindMessage, int scenarioIndex = -1);
+	virtual bool SendMessages(PerformanceMessage message);
 
 private:
 
-	bool HelpInvoker(SendMessageProcess bindMessage, int scenarioIndex = -1);
+	virtual bool HelpInvoker(PerformanceMessage message);
+	bool BringScenarioStruct();
+	void ReleaseScenarioStruct();
 
-	bool Create(int createScenario);
-	bool Destroy(int destroyScenario);
-	bool Show(int showScenario);
-	bool Hide(int hideScenario);
-	bool Exist(int existScenario);
+	bool Create();
+	bool Destroy();
+	bool Show();
+	bool Hide();
+	bool Exist();
+
+	bool DragMove();
+	bool DragDown();
+	bool DragUp();
+	bool TimeLineAttach();
+	bool TimeLineDetach();
+	bool TimeLineContactGridline();
+	bool TimeLineNotContactGridline();
+	bool DlgAttach();
 
 private:
 
-	bool m_bAttach;
-
-	CWnd* m_mainDlg;
+	ScenarioManagerStruct* m_GetScenarioStruct;
 	ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
-
 };
 

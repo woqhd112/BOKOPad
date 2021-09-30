@@ -209,13 +209,17 @@ namespace ComplexLibrary
 				throw ComplexIndexOutOfBoundsException("map size is zero.", "ComplexMap", "find");
 
 			int i = 0;
+			bool bFind = false;
 			for (i = 0; i < m_size; i++)
 			{
 				if (m_keys.at(i) == key)
 				{
+					bFind = true;
 					break;
 				}
 			}
+			if (!bFind)
+				return end();
 
 			return iterator(m_pairs.get_at(i));
 		}

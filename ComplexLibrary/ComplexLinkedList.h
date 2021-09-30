@@ -136,41 +136,35 @@ namespace ComplexLibrary
 			if (m_head == nullptr)
 				throw ComplexNullptrException("linked list head node is null point.", "ComplexLinkedList", "erase");
 
-			ComplexNode<T>* findNode = m_head;
-			ComplexNode<T>* nextNode = findNode;
+
+			ComplexNode<T>* cursor = m_head;
+			ComplexNode<T>* prevNode = nullptr;
 
 			int cnt = 0;
-			while (findNode != nullptr)
+			while (cursor != nullptr)
 			{
 				if (cnt == index)
-				{
 					break;
-				}
-				else
-				{
-					nextNode = findNode;
-					findNode = findNode->m_next;
-				}
 
+				prevNode = cursor;
+				cursor = cursor->next();
 				cnt++;
 			}
 
-			if (cnt == 0)
+			// 인덱스가 0번일 때 (사이즈가 0일때는 위에서 예외처리함)
+			if (prevNode == nullptr)
 			{
-				if (m_head != nullptr)
-				{
-					delete m_head;
-					m_head = nullptr;
-				}
+				m_size = 0;
+				delete m_head;
+				m_head = nullptr;
+				m_tail = nullptr;
 			}
 			else
 			{
-				if (findNode != nullptr)
-				{
-					m_size--;
-					nextNode->m_next = findNode->m_next;
-					delete findNode;
-				}
+				m_size--;
+				prevNode->m_next = cursor->m_next;
+				delete cursor;
+				cursor = nullptr;
 			}
 		}
 

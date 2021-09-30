@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_TITLE_MODIFY, &CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify)
 	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_DELETE, &CBOKOPadDlg::OnBnClickedButtonScenarioDelete)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMDblclkListScenarioList)
+	ON_NOTIFY(NM_CLICK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMClickListScenarioList)
 END_MESSAGE_MAP()
 
 
@@ -247,6 +248,9 @@ void CBOKOPadDlg::OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResu
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	pNMLV->iItem;
+	pNMLV->iSubItem;
 	*pResult = 0;
 }
 
@@ -290,6 +294,8 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 			OnBnClickedButtonInputScenario();
 			return TRUE;
 		}
+		else if (pMsg->wParam == VK_ESCAPE)
+			return TRUE;
 	}
 	else if (WM_LBUTTONDOWN == pMsg->message)
 	{
@@ -380,11 +386,31 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 
 	int mark = m_list_scenario_list.GetSelectionMark();
-	// 시나리오가 이미 존재할 시
-	if (Scenario_Manager->SendMessages(SWP_EXIST, mark) == true)
+	if (mark < 0)
 		return;
 
-	Scenario_Manager->SendMessages(SMP_CREATE, mark);
-	
+	// 시나리오가 이미 존재할 시
+	ScenarioManagerStruct scenarioStruct(m_loadScenarioList.at(mark), mark);
+	Scenario_Manager->InputScenarioStruct(&scenarioStruct);
+
+	if (Scenario_Manager->SendMessages(PM_EXIST) == true)
+		return;
+
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	Scenario_Manager->SendMessages(PM_CREATE);
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	*pResult = 0;
+}
+
+
+void CBOKOPadDlg::OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (pNMItemActivate->iItem == -1)
+	{
+		m_list_scenario_list.SetSelectionMark(-1);
+		m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	}
 	*pResult = 0;
 }

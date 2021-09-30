@@ -62,6 +62,18 @@
     <ClInclude Include="BOKOScenarioDetailDlg.h">
       <Filter>UI\Scenario</Filter>
     </ClInclude>
+    <ClInclude Include="NoteListCtrl.h">
+      <Filter>UI\Scenario</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ManagerManagement.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollProcess.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOPad.cpp">
@@ -84,6 +96,18 @@
     </ClCompile>
     <ClCompile Include="BOKOScenarioDetailDlg.cpp">
       <Filter>UI\Scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteListCtrl.cpp">
+      <Filter>UI\Scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ManagerManagement.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollProcess.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

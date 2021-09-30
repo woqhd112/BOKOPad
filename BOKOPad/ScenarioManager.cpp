@@ -1,81 +1,143 @@
 #include "pch.h"
 #include "ScenarioManager.h"
+#include "BOKOScenarioDetailDlg.h"
 
 ScenarioManager::ScenarioManager()
-	: m_bAttach(false)
-	, m_mainDlg(nullptr)
 {
-	
+	m_pStageManager->InitStage();
 }
 
 ScenarioManager::~ScenarioManager()
 {
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.begin();
 
+	while (iter != m_scenarioDlgManager.end())
+	{
+		BOKOScenarioDetailDlg* dlg = iter->value.value;
+		dlg->DestroyWindow();
+		delete dlg;
+		dlg = nullptr;
+
+		iter++;
+	}
+	m_scenarioDlgManager.clear();
 }
 
-void ScenarioManager::AttachManager(CWnd* dlgAttachPointer)
+bool ScenarioManager::BringScenarioStruct()
 {
-	m_bAttach = true;
-	m_mainDlg = dlgAttachPointer;
+	if (m_pPutScenarioStruct == nullptr)
+		return false;
+
+	m_GetScenarioStruct = m_pPutScenarioStruct;
+	return true;
 }
 
-CWnd* ScenarioManager::DetachManager()
+void ScenarioManager::ReleaseScenarioStruct()
 {
-	m_bAttach = false;
-	return m_mainDlg;
+	m_pPutScenarioStruct = nullptr;
+	m_GetScenarioStruct = nullptr;
 }
 
-bool ScenarioManager::SendMessages(SendMessageProcess bindMessage, int scenarioIndex)
+bool ScenarioManager::SendMessages(PerformanceMessage message)
 {
 	if (!m_bAttach)
 		return false;
 
-	return HelpInvoker(bindMessage, scenarioIndex);
+	return HelpInvoker(message);
 }
 
-bool ScenarioManager::HelpInvoker(SendMessageProcess bindMessage, int scenarioIndex)
+bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 {
-	bool bHelpSuccess = true;
+	bool bHelpSuccess = false;
 
-	switch (bindMessage)
+	if (message == PM_CREATE)
 	{
-	case SMP_CREATE:
-		bHelpSuccess = Create(scenarioIndex);
-		break;
-	case SMP_DESTROY:
-		bHelpSuccess = Destroy(scenarioIndex);
-		break;
-	case SMP_SHOW:
-		bHelpSuccess = Show(scenarioIndex);
-		break;
-
-	case SMP_HIDE:
-		bHelpSuccess = Hide(scenarioIndex);
-		break;
-
-	case SWP_EXIST:
-		bHelpSuccess = Exist(scenarioIndex);
-		break;
-
-	default:
-		break;
+		if (BringScenarioStruct())
+		{
+			bHelpSuccess = Create();
+		}
 	}
+	else if (message == PM_DESTROY)
+	{
+		if (BringScenarioStruct())
+		{
+			bHelpSuccess = Destroy();
+		}
+	}
+	else if (message == PM_SHOW)
+	{
+		if (BringScenarioStruct())
+		{
+			bHelpSuccess = Show();
+		}
+	}
+	else if (message == PM_HIDE)
+	{
+		if (BringScenarioStruct())
+		{
+			bHelpSuccess = Hide();
+		}
+	}
+	else if (message == PM_EXIST)
+	{
+		if (BringScenarioStruct())
+		{
+			bHelpSuccess = Exist();
+		}
+	}
+	else if (message == PM_DRAG_MOVE)
+	{
+		bHelpSuccess = DragMove();
+	}
+	else if (message == PM_DRAG_DOWN)
+	{
+		bHelpSuccess = DragDown();
+	}
+	else if (message == PM_DRAG_UP)
+	{
+		bHelpSuccess = DragUp();
+	}
+	else if (message == PM_TIMELINE_ATTACH)
+	{
+		bHelpSuccess = TimeLineAttach();
+	}
+	else if (message == PM_TIMELINE_DETACH)
+	{
+		bHelpSuccess = TimeLineDetach();
+	}
+	else if (message == PM_TIMELINE_CONTACT_GRIDLINE)
+	{
+		bHelpSuccess = TimeLineContactGridline();
+	}
+	else if (message == PM_TIMELINE_NOT_CONTACT_GRIDLINE)
+	{
+		bHelpSuccess = TimeLineNotContactGridline();
+	}
+	else if (message == PM_DLG_ATTACH)
+	{
+		bHelpSuccess = DlgAttach();
+	}
+
 
 	return bHelpSuccess;
 }
 
-bool ScenarioManager::Create(int createScenario)
+bool ScenarioManager::Create()
 {
-	if (createScenario < 0)
+	if (m_GetScenarioStruct->scenarioIndex < 0)
 		return false;
 
-	BOKOScenarioDetailDlg* scenarioDetail = new BOKOScenarioDetailDlg(createScenario, m_mainDlg);
+	ScenarioManagerStruct inputScenarioStruct;
+	inputScenarioStruct.scenarioData = m_GetScenarioStruct->scenarioData;
+	inputScenarioStruct.scenarioIndex = m_GetScenarioStruct->scenarioIndex;
+
+	BOKOScenarioDetailDlg* scenarioDetail = new BOKOScenarioDetailDlg(inputScenarioStruct, m_mainDlg);
 	bool bCreate = (bool)scenarioDetail->Create(scenarioDetail->IDD, m_mainDlg);
 	if (bCreate)
 	{
 		try
 		{
-			m_scenarioDlgManager.insert(createScenario, scenarioDetail);
+			m_scenarioDlgManager.insert(inputScenarioStruct.scenarioIndex, scenarioDetail);
 		}
 		catch (ComplexDuplicateException e)
 		{
@@ -83,23 +145,31 @@ bool ScenarioManager::Create(int createScenario)
 			scenarioDetail->DestroyWindow();
 			delete scenarioDetail;
 			scenarioDetail = nullptr;
+			ReleaseScenarioStruct();
 			return false;
 		}
 
 		scenarioDetail->ShowWindow(SW_SHOW);
 	}
+	else
+	{
+		delete scenarioDetail;
+		scenarioDetail = nullptr;
+	}
+
+	ReleaseScenarioStruct();
 
 	return bCreate;
 }
 
-bool ScenarioManager::Destroy(int destroyScenario)
+bool ScenarioManager::Destroy()
 {
-	if (destroyScenario < 0)
+	if (m_GetScenarioStruct->scenarioIndex < 0)
 		return false;
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(destroyScenario);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
@@ -110,53 +180,123 @@ bool ScenarioManager::Destroy(int destroyScenario)
 	delete findScenarioDlg;
 	findScenarioDlg = nullptr;
 
+	ReleaseScenarioStruct();
+
 	return true;
 }
 
-bool ScenarioManager::Show(int showScenario)
+bool ScenarioManager::Show()
 {
-	if (showScenario < 0)
+	if (m_GetScenarioStruct->scenarioIndex < 0)
 		return false;
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(showScenario);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
 	BOKOScenarioDetailDlg* findScenarioDlg = iter->value.value;
 	findScenarioDlg->ShowWindow(SW_SHOW);
 
+	ReleaseScenarioStruct();
+
 	return true;
 }
 
-bool ScenarioManager::Hide(int hideScenario)
+bool ScenarioManager::Hide()
 {
-	if (hideScenario < 0)
+	if (m_GetScenarioStruct->scenarioIndex < 0)
 		return false;
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(hideScenario);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
 	BOKOScenarioDetailDlg* findScenarioDlg = iter->value.value;
 	findScenarioDlg->ShowWindow(SW_HIDE);
 
+	ReleaseScenarioStruct();
+
 	return true;
 }
 
-bool ScenarioManager::Exist(int existScenario)
+bool ScenarioManager::Exist()
 {
-	if (existScenario < 0)
+	if (m_GetScenarioStruct->scenarioIndex < 0)
 		return false;
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(existScenario);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
+	ReleaseScenarioStruct();
+
 	return true;
+}
+
+bool ScenarioManager::DragMove()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
+}
+
+bool ScenarioManager::DragDown()
+{
+	bool bSuccess = false;
+
+	m_mainDlg->SetCapture();
+	// thread에 시그널 보내기
+
+	return bSuccess;
+}
+
+bool ScenarioManager::DragUp()
+{
+	bool bSuccess = false;
+
+	ReleaseCapture();
+	// thread에 시그널 보내기
+
+	return bSuccess;
+}
+
+bool ScenarioManager::TimeLineAttach()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
+}
+
+bool ScenarioManager::TimeLineDetach()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
+}
+
+bool ScenarioManager::TimeLineContactGridline()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
+}
+
+bool ScenarioManager::TimeLineNotContactGridline()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
+}
+
+bool ScenarioManager::DlgAttach()
+{
+	bool bSuccess = false;
+
+	return bSuccess;
 }
