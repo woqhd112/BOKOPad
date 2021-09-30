@@ -30,6 +30,9 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{a9e9d319-a013-4a1f-a53c-7eda17891a67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Drag">
+      <UniqueIdentifier>{c26f9063-ec99-412b-9858-20568bf3656f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -74,6 +77,9 @@
     <ClInclude Include="ScrollProcess.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="BOKODragDlg.h">
+      <Filter>UI\Drag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOPad.cpp">
@@ -108,6 +114,9 @@
     </ClCompile>
     <ClCompile Include="ScrollProcess.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKODragDlg.cpp">
+      <Filter>UI\Drag</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

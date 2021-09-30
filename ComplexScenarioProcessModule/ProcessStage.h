@@ -5,20 +5,10 @@
 #include "NoteProcess.h"
 #include "ComplexUniqueQueue.h"
 
-struct DragData
-{
-	int sceIndex;
-	int noteSEQ;
-	int sceSEQ;
-	ComplexString noteCONTENT;
-
-	int mousePos_X;
-	int mousePos_Y;
-};
-
+class CWnd;
 class DragStage;
 
-class COMPLEXSCENARIOPROCESSMODULE_DLL StageManager
+class StageManager : public ComplexThread
 {
 public:
 
@@ -26,23 +16,10 @@ public:
 	~StageManager();
 
 	void InitStage();
-	void SignalDragData(DragData dragData);
-
-private:
-
-	bool m_bInit;
-	DragStage* m_dragStageThread;
-
-};
-
-class DragStage : private ComplexThread
-{
-public:
-
-	friend class StageManager;
-
-	DragStage();
-	~DragStage();
+	void SignalDragData(DragData& dragData);
+	void UnloadDragData();
+	void ProcessingDragData(DragData& dragData);
+	DragData* GetDragData();
 
 protected:
 
@@ -50,13 +27,28 @@ protected:
 
 private:
 
-	DragProcess* m_pDragProc;
-	//TimelineProcess* m_pTimeProc;
-	//NoteProcess* m_pNoteProc;
-	void DragSignal(DragData dragData);
+	enum DragState
+	{
+		DS_NOTHING = 0,
+		DS_CREATE,
+		DS_MOVING,
+		DS_DESTROY
+	};
+
+	void SetDragState(DragState ds);
+
+	bool m_bInit;
+	//DragStage* m_dragStageThread;
+
+	DragState m_ds;
 
 	ComplexLock m_lock;
-	ComplexCondition m_cond;
-	ComplexUniqueQueue<DragData> m_dragQueue;
+	ComplexLock m_dsLock;
 
+	ComplexCondition m_cond;
+	DragData* m_dragData;
+
+	DragProcess* m_pDragProc;
+	TimelineProcess* m_pTimelineProc;
+	NoteProcess* m_pNoteProc;
 };
