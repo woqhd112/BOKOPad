@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ComplexScenarioProcessModule;$(SolutionDir)ComplexUtilProcess;$(SolutionDir)ComplexMVC2_Model;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ComplexUtilProcess;$(SolutionDir)ComplexMVC2_Model;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +147,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ComplexScenarioProcessModule;$(SolutionDir)ComplexUtilProcess;$(SolutionDir)ComplexMVC2_Model\;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ComplexUtilProcess;$(SolutionDir)ComplexMVC2_Model\;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

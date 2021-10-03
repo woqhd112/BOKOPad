@@ -1,10 +1,11 @@
 #include "pch.h"
 #include "ScenarioManager.h"
 #include "BOKOScenarioDetailDlg.h"
+#include "BOKODragDlg.h"
 
 ScenarioManager::ScenarioManager()
 {
-	m_pStageManager->InitStage();
+	
 }
 
 ScenarioManager::~ScenarioManager()
@@ -21,21 +22,7 @@ ScenarioManager::~ScenarioManager()
 		iter++;
 	}
 	m_scenarioDlgManager.clear();
-}
 
-bool ScenarioManager::BringScenarioStruct()
-{
-	if (m_pPutScenarioStruct == nullptr)
-		return false;
-
-	m_GetScenarioStruct = m_pPutScenarioStruct;
-	return true;
-}
-
-void ScenarioManager::ReleaseScenarioStruct()
-{
-	m_pPutScenarioStruct = nullptr;
-	m_GetScenarioStruct = nullptr;
 }
 
 bool ScenarioManager::SendMessages(PerformanceMessage message)
@@ -52,50 +39,23 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 
 	if (message == PM_CREATE)
 	{
-		if (BringScenarioStruct())
-		{
-			bHelpSuccess = Create();
-		}
+		bHelpSuccess = Create();
 	}
 	else if (message == PM_DESTROY)
 	{
-		if (BringScenarioStruct())
-		{
-			bHelpSuccess = Destroy();
-		}
+		bHelpSuccess = Destroy();
 	}
 	else if (message == PM_SHOW)
 	{
-		if (BringScenarioStruct())
-		{
-			bHelpSuccess = Show();
-		}
+		bHelpSuccess = Show();
 	}
 	else if (message == PM_HIDE)
 	{
-		if (BringScenarioStruct())
-		{
-			bHelpSuccess = Hide();
-		}
+		bHelpSuccess = Hide();
 	}
 	else if (message == PM_EXIST)
 	{
-		if (BringScenarioStruct())
-		{
-			bHelpSuccess = Exist();
-		}
-	}
-	else if (message == PM_DRAG_MOVE)
-	{
-		bHelpSuccess = DragMove();
-	}
-	else if (message == PM_DRAG_DOWN)
-	{
-		bHelpSuccess = DragDown();
-	}
-	else if (message == PM_DRAG_UP)
-	{
-		bHelpSuccess = DragUp();
+		bHelpSuccess = Exist();
 	}
 	else if (message == PM_TIMELINE_ATTACH)
 	{
@@ -113,10 +73,6 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = TimeLineNotContactGridline();
 	}
-	else if (message == PM_DLG_ATTACH)
-	{
-		bHelpSuccess = DlgAttach();
-	}
 
 
 	return bHelpSuccess;
@@ -124,12 +80,22 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 
 bool ScenarioManager::Create()
 {
-	if (m_GetScenarioStruct->scenarioIndex < 0)
+	ComplexScopedLock lock(&m_processLock);
+
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
 		return false;
 
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
 	ScenarioManagerStruct inputScenarioStruct;
-	inputScenarioStruct.scenarioData = m_GetScenarioStruct->scenarioData;
-	inputScenarioStruct.scenarioIndex = m_GetScenarioStruct->scenarioIndex;
+	inputScenarioStruct.scenarioData = scenarioDataStruct->scenarioData;
+	inputScenarioStruct.scenarioIndex = scenarioDataStruct->scenarioIndex;
 
 	BOKOScenarioDetailDlg* scenarioDetail = new BOKOScenarioDetailDlg(inputScenarioStruct, m_mainDlg);
 	bool bCreate = (bool)scenarioDetail->Create(scenarioDetail->IDD, m_mainDlg);
@@ -138,6 +104,7 @@ bool ScenarioManager::Create()
 		try
 		{
 			m_scenarioDlgManager.insert(inputScenarioStruct.scenarioIndex, scenarioDetail);
+			m_scenarioSeqMap.insert(scenarioDataStruct->scenarioIndex, scenarioDataStruct->scenarioData.GetSceSEQ());
 		}
 		catch (ComplexDuplicateException e)
 		{
@@ -164,18 +131,30 @@ bool ScenarioManager::Create()
 
 bool ScenarioManager::Destroy()
 {
-	if (m_GetScenarioStruct->scenarioIndex < 0)
-		return false;
+	ComplexScopedLock lock(&m_processLock);
+
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
 
 	BOKOScenarioDetailDlg* findScenarioDlg = iter->value.value;
 	m_scenarioDlgManager.erase(iter->value.key);
+	m_scenarioSeqMap.erase(iter->value.key);
 	findScenarioDlg->DestroyWindow();
 	delete findScenarioDlg;
 	findScenarioDlg = nullptr;
@@ -187,12 +166,23 @@ bool ScenarioManager::Destroy()
 
 bool ScenarioManager::Show()
 {
-	if (m_GetScenarioStruct->scenarioIndex < 0)
-		return false;
+	ComplexScopedLock lock(&m_processLock);
+
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
@@ -206,12 +196,23 @@ bool ScenarioManager::Show()
 
 bool ScenarioManager::Hide()
 {
-	if (m_GetScenarioStruct->scenarioIndex < 0)
-		return false;
+	ComplexScopedLock lock(&m_processLock);
+
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
@@ -225,12 +226,23 @@ bool ScenarioManager::Hide()
 
 bool ScenarioManager::Exist()
 {
-	if (m_GetScenarioStruct->scenarioIndex < 0)
-		return false;
+	ComplexScopedLock lock(&m_processLock);
+
 	if (m_scenarioDlgManager.empty())
 		return false;
 
-	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(m_GetScenarioStruct->scenarioIndex);
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
@@ -239,35 +251,11 @@ bool ScenarioManager::Exist()
 	return true;
 }
 
-bool ScenarioManager::DragMove()
-{
-	bool bSuccess = false;
-
-	return bSuccess;
-}
-
-bool ScenarioManager::DragDown()
-{
-	bool bSuccess = false;
-
-	m_mainDlg->SetCapture();
-	// thread에 시그널 보내기
-
-	return bSuccess;
-}
-
-bool ScenarioManager::DragUp()
-{
-	bool bSuccess = false;
-
-	ReleaseCapture();
-	// thread에 시그널 보내기
-
-	return bSuccess;
-}
 
 bool ScenarioManager::TimeLineAttach()
 {
+	ComplexScopedLock lock(&m_processLock);
+
 	bool bSuccess = false;
 
 	return bSuccess;
@@ -275,6 +263,8 @@ bool ScenarioManager::TimeLineAttach()
 
 bool ScenarioManager::TimeLineDetach()
 {
+	ComplexScopedLock lock(&m_processLock);
+
 	bool bSuccess = false;
 
 	return bSuccess;
@@ -282,6 +272,8 @@ bool ScenarioManager::TimeLineDetach()
 
 bool ScenarioManager::TimeLineContactGridline()
 {
+	ComplexScopedLock lock(&m_processLock);
+
 	bool bSuccess = false;
 
 	return bSuccess;
@@ -289,13 +281,8 @@ bool ScenarioManager::TimeLineContactGridline()
 
 bool ScenarioManager::TimeLineNotContactGridline()
 {
-	bool bSuccess = false;
+	ComplexScopedLock lock(&m_processLock);
 
-	return bSuccess;
-}
-
-bool ScenarioManager::DlgAttach()
-{
 	bool bSuccess = false;
 
 	return bSuccess;

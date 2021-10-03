@@ -39,6 +39,7 @@ CBOKOPadApp::~CBOKOPadApp()
 
 	if (Scenario_Manager)
 	{
+		Scenario_Manager->DetachManager();
 		delete Scenario_Manager;
 		Scenario_Manager = nullptr;
 	}

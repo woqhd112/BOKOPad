@@ -19,11 +19,11 @@ private:
 	};
 
 	virtual bool HelpInvoker(PerformanceMessage message);
-	bool BringNoteStruct();
-	void ReleaseNoteStruct();
 
 	bool Insert();
-
+	bool DragMove();
+	bool DragDown();
+	bool DragUp();
 
 private:
 
@@ -31,9 +31,11 @@ private:
 	int m_variableCtrlPos_y;
 	const int EDIT_WIDTH = 80;
 	const int EDIT_HEIGHT = 60;
+	const int DRAG_DLG_WIDTH = 30;
+	const int DRAG_DLG_HEIGHT = 30;
 
-	NoteManagerStruct* m_GetNoteStruct;
 	ComplexMap<int, NotePadStruct> m_notePadManager;
+	ComplexMap<int, int> m_noteSeqMap;
 
 };
 

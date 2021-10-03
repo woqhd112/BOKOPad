@@ -2,18 +2,14 @@
 #include "ComplexMap.h"
 #include "ScenarioListVO.h"
 #include "NoteInformationVO.h"
-#include "ProcessStage.h"
-
-#ifdef _DEBUG
-#pragma comment(lib, "ComplexScenarioProcessModule_dbg.lib")
-#else
-#pragma comment(lib, "ComplexScenarioProcessModule.lib")
-#endif
+#include "DragProcess.h"
+#include <memory>
 
 using namespace ComplexLibrary;
 
 class BOKOScenarioDetailDlg;
 class NoteListCtrl;
+class BOKODragDlg;
 
 // 0 ~ 4 -> scenario ddl event message
 // 5 ~ 11 -> scenario dlg event message
@@ -34,7 +30,6 @@ enum PerformanceMessage
 	PM_TIMELINE_NOT_CONTACT_GRIDLINE,
 	PM_NOTE_INSERT,
 	PM_NOTE_DELETE,
-	PM_DLG_ATTACH
 };
 
 struct ScenarioManagerStruct
@@ -66,9 +61,40 @@ struct NoteManagerStruct
 	{
 
 	}
-	NoteInformationVO* noteData;	// 저장할 노트 데이터
 	int noteIndex;	// 노트 리스트의 인덱스 번호
+	NoteInformationVO* noteData;	// 저장할 노트 데이터
 	CRect* noteRect;
+};
+
+struct DragDataStruct
+{
+	DragDataStruct()
+	{
+	
+	}
+	DragDataStruct(int sceIndex, int noteSEQ, int sceSEQ, int noteIndex, int buttonID, ComplexString noteCONTENT, int mousePos_X, int mousePos_Y)
+		: sceIndex(sceIndex)
+		, noteSEQ(noteSEQ)
+		, sceSEQ(sceSEQ)
+		, noteIndex(noteIndex)
+		, noteCONTENT(noteCONTENT)
+		, buttonID(buttonID)
+		, mousePos_X(mousePos_X)
+		, mousePos_Y(mousePos_Y)
+	{
+
+	}
+
+	int sceSEQ;
+	int sceIndex;
+	int noteSEQ;
+	int noteIndex;
+
+	int buttonID;
+	int mousePos_X;
+	int mousePos_Y;
+
+	ComplexString noteCONTENT;
 };
 
 class ManagerManagement
@@ -81,22 +107,37 @@ public:
 	void AttachManager(CWnd* dlgAttachPointer);
 	CWnd* DetachManager();
 
+	void InputDragStruct(DragDataStruct* dragDataStruct);
 	void InputScenarioStruct(ScenarioManagerStruct* scenarioDataStruct);
 	void InputNoteStruct(NoteManagerStruct* noteDataStruct);
+
 
 protected:
 
 	virtual bool SendMessages(PerformanceMessage message) = 0;
 	virtual bool HelpInvoker(PerformanceMessage message) = 0;
 
+	ScenarioManagerStruct* BringScenarioStruct() const;
+	void ReleaseScenarioStruct();
+
+	DragDataStruct* BringDragStruct() const;
+	void ReleaseDragStruct();
+
+	NoteManagerStruct* BringNoteStruct() const;
+	void ReleaseNoteStruct();
+
 
 	bool m_bAttach;
 	CWnd* m_mainDlg;
+	BOKODragDlg* m_dragDlg;
+	ComplexLock m_processLock;
+	static std::shared_ptr<DragProcess> m_dragProc;
+
+private:
 
 	ScenarioManagerStruct* m_pPutScenarioStruct;
 	NoteManagerStruct* m_pPutNoteStruct;
-
-	StageManager* m_pStageManager;
+	DragDataStruct* m_pPutDragStruct;
 
 };
 

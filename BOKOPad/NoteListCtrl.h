@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "ComplexMap.h"
 #include "ScrollProcess.h"
-#include "NoteManager.h"
 
+class NoteManager;
 // NoteListCtrl 대화 상자
 
 #define BUTTON_COLOR RGB(68, 68, 68)
@@ -45,9 +45,9 @@ private:
 
 	int m_noteSize;
 	ScenarioManagerStruct m_thisDataStruct;
+	DragDataStruct m_defaultDragData;
 
 	bool m_bDragProcessing;
-
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

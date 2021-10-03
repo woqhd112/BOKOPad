@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(BOKODragDlg, CDialogEx)
 BOKODragDlg::BOKODragDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_DRAG_DIALOG, pParent)
 {
-
+	
 }
 
 BOKODragDlg::~BOKODragDlg()
@@ -24,6 +24,8 @@ BOKODragDlg::~BOKODragDlg()
 void BOKODragDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT_DRAG_EDIT, m_edit_drag);
+	DDX_Control(pDX, IDC_STATIC_DRAG_STATIC, m_stt_drag);
 }
 
 
@@ -32,3 +34,9 @@ END_MESSAGE_MAP()
 
 
 // BOKODragDlg 메시지 처리기
+void BOKODragDlg::SetDragData(int& notSEQ, int& notIndex, ComplexString& notCONTENT)
+{
+	m_notSEQ = notSEQ;
+	m_notIndex = notIndex;
+	m_notCONTENT = notCONTENT;
+}

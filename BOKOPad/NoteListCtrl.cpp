@@ -4,11 +4,11 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "NoteListCtrl.h"
+#include "NoteManager.h"
 #include "afxdialogex.h"
 
 
-// NoteListCtrl 대화 상자
-
+// NoteListCtrl 대화 상자\
 
 IMPLEMENT_DYNAMIC(NoteListCtrl, CDialogEx)
 
@@ -134,6 +134,8 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 void NoteListCtrl::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
 	m_thisDataStruct = thisDataStruct;
+	m_defaultDragData.sceSEQ = thisDataStruct.scenarioData.GetSceSEQ();
+	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
 }
 
 void NoteListCtrl::SignalNoteInput(bool bPosSwitch)
@@ -214,25 +216,40 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 			UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
 			if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
 			{
-				m_bDragProcessing = Scenario_Manager->SendMessages(PM_DRAG_DOWN);
+				m_defaultDragData.mousePos_X = pMsg->pt.x;
+				m_defaultDragData.mousePos_Y = pMsg->pt.y;
+				m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				m_bDragProcessing = m_noteManager->SendMessages(PM_DRAG_DOWN);
+				//return TRUE;
 			}
 		}
 	}
 	else if (pMsg->message == WM_LBUTTONUP)
 	{
+		TRACE("드래그업 %d 번째 시나리오 접근!\n", m_thisDataStruct.scenarioIndex);
 		UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
 		if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
 		{
 			if (m_bDragProcessing)
-				Scenario_Manager->SendMessages(PM_DRAG_UP);
+			{
+				m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				m_noteManager->SendMessages(PM_DRAG_UP);
+			}
 			m_bDragProcessing = false;
 		}
 	}
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
+		TRACE("드래그 무브 %d 번째 시나리오 접근!\n", m_thisDataStruct.scenarioIndex);
+		//TRACE("드래그 상태 %s\n", m_bDragProcessing ? "true" : "false");
 		if (m_bDragProcessing)
 		{
-			Scenario_Manager->SendMessages(PM_DRAG_MOVE);
+			m_defaultDragData.mousePos_X = pMsg->pt.x;
+			m_defaultDragData.mousePos_Y = pMsg->pt.y;
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			m_noteManager->SendMessages(PM_DRAG_MOVE);
 		}
 	}
 
@@ -246,3 +263,4 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 
 	return CDialogEx::OnCommand(wParam, lParam);
 }
+

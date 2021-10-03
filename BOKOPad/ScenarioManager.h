@@ -14,8 +14,6 @@ public:
 private:
 
 	virtual bool HelpInvoker(PerformanceMessage message);
-	bool BringScenarioStruct();
-	void ReleaseScenarioStruct();
 
 	bool Create();
 	bool Destroy();
@@ -23,18 +21,15 @@ private:
 	bool Hide();
 	bool Exist();
 
-	bool DragMove();
-	bool DragDown();
-	bool DragUp();
 	bool TimeLineAttach();
 	bool TimeLineDetach();
 	bool TimeLineContactGridline();
 	bool TimeLineNotContactGridline();
-	bool DlgAttach();
 
 private:
 
-	ScenarioManagerStruct* m_GetScenarioStruct;
 	ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
+	ComplexMap<int, int> m_scenarioSeqMap;
+
 };
 
