@@ -1,5 +1,6 @@
 #pragma once
 
+#define SCROLL_LINE_NOTHING -1
 #define SCROLL_LINE_ADD 1
 #define SCROLL_LINE_DELETE 0
 

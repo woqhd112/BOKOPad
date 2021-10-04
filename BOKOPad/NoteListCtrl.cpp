@@ -64,6 +64,7 @@ BOOL NoteListCtrl::OnInitDialog()
 	info.scrollExecuteCtrl = this;
 	info.wheelSize = 70;
 	scroll.Init(info);
+	scroll.ExecuteScroll(SCROLL_LINE_NOTHING);
 
 	m_calculateItemPos.left = 0;
 	m_calculateItemPos.top = 0;

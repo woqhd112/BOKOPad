@@ -282,8 +282,8 @@ namespace ComplexLibrary
 		{
 			m_size = 0;
 
-			if (m_ptr != nullptr)
-				delete[] m_ptr;
+			/*if (m_ptr != nullptr)
+				delete[] m_ptr;*/
 
 			if (m_head != nullptr)
 			{

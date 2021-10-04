@@ -151,13 +151,24 @@ namespace ComplexLibrary
 				cnt++;
 			}
 
+			
 			// 인덱스가 0번일 때 (사이즈가 0일때는 위에서 예외처리함)
 			if (prevNode == nullptr)
 			{
-				m_size = 0;
-				delete m_head;
-				m_head = nullptr;
-				m_tail = nullptr;
+				if (m_size > 1)
+				{
+					--m_size;
+					m_head = cursor->next();
+					delete cursor;
+					cursor = nullptr;
+				}
+				else
+				{
+					m_size = 0;
+					delete m_head;
+					m_head = nullptr;
+					m_tail = nullptr;
+				}
 			}
 			else
 			{
