@@ -148,3 +148,10 @@ bool DlgController::UpdateNoteInformationInNotLOCK()
 	RequestScope->GetRequestAttributes(&note);
 	return m_noteInformationDlgService->UpdateNoteInformationInNotLOCK(note.IsNotLOCK(), note.GetNotSEQ());
 }
+
+bool DlgController::UpdateNoteInformationInSceSEQ()
+{
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->UpdateNoteInformationInSceSEQ(note.GetNotSEQ(), note.GetSceSEQ());
+}

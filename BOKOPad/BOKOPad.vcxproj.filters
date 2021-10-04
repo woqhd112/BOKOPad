@@ -29,7 +29,7 @@
     <Filter Include="PerformanceManager">
       <UniqueIdentifier>{a9e9d319-a013-4a1f-a53c-7eda17891a67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PerformanceManager\Manager">
+    <Filter Include="PerformanceManager\UI Manager">
       <UniqueIdentifier>{a961efcf-df52-49bf-8bb4-cb1ed56b6573}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -68,15 +68,18 @@
       <Filter>Default</Filter>
     </ClInclude>
     <ClInclude Include="ManagerManagement.h">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClInclude>
     <ClInclude Include="NoteManager.h">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClInclude>
     <ClInclude Include="ScenarioManager.h">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClInclude>
     <ClInclude Include="ScrollProcess.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteListInterface.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -106,13 +109,13 @@
       <Filter>Default</Filter>
     </ClCompile>
     <ClCompile Include="ManagerManagement.cpp">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClCompile>
     <ClCompile Include="NoteManager.cpp">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClCompile>
     <ClCompile Include="ScenarioManager.cpp">
-      <Filter>PerformanceManager\Manager</Filter>
+      <Filter>PerformanceManager\UI Manager</Filter>
     </ClCompile>
     <ClCompile Include="ScrollProcess.cpp">
       <Filter>UI</Filter>

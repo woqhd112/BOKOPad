@@ -203,6 +203,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="ManagerManagement.h" />
     <ClInclude Include="NoteListCtrl.h" />
+    <ClInclude Include="NoteListInterface.h" />
     <ClInclude Include="NoteManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />

@@ -7,7 +7,6 @@
 #include "NoteManager.h"
 #include "afxdialogex.h"
 
-
 // NoteListCtrl 대화 상자\
 
 IMPLEMENT_DYNAMIC(NoteListCtrl, CDialogEx)
@@ -16,10 +15,10 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_NOTE_LIST_CTRL, pParent)
 	, m_noteInformationContainer(new ComplexVector<NoteInformationVO>)
 	, m_noteManager(new NoteManager)
+	, m_downButton(nullptr)
 {
 	m_bMainScrollFocus = true;
 	m_noteSize = 0;
-	m_bDragProcessing = false;
 }
 
 NoteListCtrl::~NoteListCtrl()
@@ -80,10 +79,8 @@ BOOL NoteListCtrl::OnInitDialog()
 void NoteListCtrl::LoadNoteInformation()
 {
 	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, "");
-	RequestScope->SetRequestAttributes(inNote);
-	MVC_Controller->SelectInSceSEQNoteInformation();
+	if (UpdateScenarioList(&inNote))
 	{
-		RequestScope->GetRequestAttributes(m_noteInformationContainer);
 		ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
 
 		int i = 0;
@@ -94,11 +91,23 @@ void NoteListCtrl::LoadNoteInformation()
 			m_noteManager->InputNoteStruct(&noteManagerStruct);
 			m_noteManager->SendMessages(PM_NOTE_INSERT);
 
-			SignalNoteInput();
+			SignalNoteInput(true);
 			iter++;
 			i++;
 		}
 	}
+}
+
+bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
+{
+	RequestScope->SetRequestAttributes(*noteInform);
+	if (MVC_Controller->SelectInSceSEQNoteInformation())
+	{
+		m_noteInformationContainer->clear();
+		RequestScope->GetRequestAttributes(m_noteInformationContainer);
+		return true;
+	}
+	return false;
 }
 
 bool NoteListCtrl::InsertNote(ComplexString inpusString)
@@ -107,12 +116,8 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 	RequestScope->SetRequestAttributes(inNote);
 	if (MVC_Controller->InsertNoteInformation())
 	{
-		RequestScope->SetRequestAttributes(inNote);
-		if (MVC_Controller->SelectInSceSEQNoteInformation())
+		if (UpdateScenarioList(&inNote))
 		{
-			m_noteInformationContainer->clear();
-			RequestScope->GetRequestAttributes(m_noteInformationContainer);
-
 			if (m_noteInformationContainer->empty() == false)
 			{
 				CRect* itemRect = CalcNotePosition();
@@ -120,7 +125,7 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 				m_noteManager->InputNoteStruct(&noteManagerStruct);
 				m_noteManager->SendMessages(PM_NOTE_INSERT);
 
-				SignalNoteInput(true);
+				SignalNoteInput(true, true);
 			}
 		}
 		else
@@ -131,6 +136,31 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 	return false;
 }
 
+bool NoteListCtrl::DeleteNote(int notSEQ)
+{
+	NoteInformationVO inNote(notSEQ, m_thisDataStruct.scenarioData.GetSceSEQ(), false, "");
+	RequestScope->SetRequestAttributes(inNote);
+	if (MVC_Controller->DeleteNoteInformation())
+	{
+		if (UpdateScenarioList(&inNote))
+		{
+			m_noteInformationContainer->clear();
+			RequestScope->GetRequestAttributes(m_noteInformationContainer);
+			NoteManagerStruct noteManagerStruct(&inNote, NULL, -1);
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			m_noteManager->SendMessages(PM_NOTE_DELETE);
+
+			SignalNoteInput(false);
+		}
+		else
+			return false;
+
+		return true;
+	}
+
+	return false;
+}
+
 void NoteListCtrl::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
 	m_thisDataStruct = thisDataStruct;
@@ -138,12 +168,17 @@ void NoteListCtrl::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct
 	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
 }
 
-void NoteListCtrl::SignalNoteInput(bool bPosSwitch)
+void NoteListCtrl::SignalNoteInput(bool bAdd, bool bPosSwitch)
 {
 	if (m_noteSize % 4 == 0)
 	{
-		scroll.ExecuteScroll();
+		scroll.ExecuteScroll(bAdd ? SCROLL_LINE_ADD : SCROLL_LINE_DELETE);
 	}
+
+	if (bAdd)
+		++m_noteSize;
+	else
+		--m_noteSize;
 
 	if (bPosSwitch)
 	{
@@ -154,9 +189,17 @@ void NoteListCtrl::SignalNoteInput(bool bPosSwitch)
 			for (int i = 0; i < executeScrollCount; i++)
 				OnVScroll(SB_LINEDOWN, 0, GetScrollBarCtrl(SB_VERT));
 		}
+		// 현재 스크롤이 마지막일 때
+		else
+		{
+			// 노트가 삭제되면 페이지 업..
+			if (m_noteSize % 4 == 0)
+			{
+				if (!bAdd)
+					OnVScroll(SB_LINEUP, 0, GetScrollBarCtrl(SB_VERT));
+			}
+		}
 	}
-
-	++m_noteSize;
 }
 
 void NoteListCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -195,6 +238,83 @@ CRect* NoteListCtrl::CalcNotePosition()
 	return &m_calculateItemPos;
 }
 
+bool NoteListCtrl::DragDown(MSG* pMsg)
+{
+	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
+	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
+	{
+		m_downButton = (CButton*)FromHandle(pMsg->hwnd);
+		m_defaultDragData.mousePos_X = pMsg->pt.x;
+		m_defaultDragData.mousePos_Y = pMsg->pt.y;
+		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
+		m_noteManager->InputDragStruct(&m_defaultDragData);
+		m_bDragProcessing = m_noteManager->SendMessages(PM_DRAG_DOWN);
+		return true;
+	}
+	return false;
+}
+
+bool NoteListCtrl::DragMove(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
+
+	m_defaultDragData.mousePos_X = pMsg->pt.x;
+	m_defaultDragData.mousePos_Y = pMsg->pt.y;
+	m_noteManager->InputDragStruct(&m_defaultDragData);
+	m_noteManager->SendMessages(PM_DRAG_MOVE);
+	return true;
+}
+
+bool NoteListCtrl::DragUp(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
+
+	if (m_downButton == nullptr)
+		return false;
+
+	m_defaultDragData.buttonID = m_downButton->GetDlgCtrlID();
+	m_noteManager->InputDragStruct(&m_defaultDragData);
+	if (m_noteManager->SendMessages(PM_DRAG_UP))
+	{
+		DragUpState dus = m_noteManager->GetDragState();
+		if (dus == DUS_NOTHING)
+		{
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			m_noteManager->SendMessages(PM_DRAG_NOTHING);
+		}
+		else if (dus == DUS_THIS)
+		{
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			m_noteManager->SendMessages(PM_DRAG_THIS_ATTACH);
+		}
+		else if (dus == DUS_ANOTHER)
+		{
+			// db처리는 다이얼로그에서.. 매니저는 ui처리만 할것
+
+			// 현재 다이얼로그에서 노트정보 삭제
+			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, "");
+			RequestScope->SetRequestAttributes(inNote);
+			if (MVC_Controller->DeleteNoteInformation())
+			{
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				m_noteManager->SendMessages(PM_DRAG_ANOTHER_ATTACH);
+			}
+		}
+		else if (dus == DUS_THIS_TIMELINE)
+		{
+		}
+		else if (dus == DUS_ANOTHER_TIMELINE)
+		{
+		}
+	}
+
+	m_bDragProcessing = false;
+	m_downButton = nullptr;
+	return true;
+}
+
 
 BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 {
@@ -213,44 +333,19 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 		else
 		{
 			m_bMainScrollFocus = false;
-			UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
-			if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
-			{
-				m_defaultDragData.mousePos_X = pMsg->pt.x;
-				m_defaultDragData.mousePos_Y = pMsg->pt.y;
-				m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
-				m_noteManager->InputDragStruct(&m_defaultDragData);
-				m_bDragProcessing = m_noteManager->SendMessages(PM_DRAG_DOWN);
-				//return TRUE;
-			}
+			if (DragDown(pMsg))
+				return TRUE;
 		}
 	}
 	else if (pMsg->message == WM_LBUTTONUP)
 	{
-		TRACE("드래그업 %d 번째 시나리오 접근!\n", m_thisDataStruct.scenarioIndex);
-		UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
-		if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
-		{
-			if (m_bDragProcessing)
-			{
-				m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
-				m_noteManager->InputDragStruct(&m_defaultDragData);
-				m_noteManager->SendMessages(PM_DRAG_UP);
-			}
-			m_bDragProcessing = false;
-		}
+		if (DragUp(pMsg))
+			return TRUE;
 	}
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
-		TRACE("드래그 무브 %d 번째 시나리오 접근!\n", m_thisDataStruct.scenarioIndex);
-		//TRACE("드래그 상태 %s\n", m_bDragProcessing ? "true" : "false");
-		if (m_bDragProcessing)
-		{
-			m_defaultDragData.mousePos_X = pMsg->pt.x;
-			m_defaultDragData.mousePos_Y = pMsg->pt.y;
-			m_noteManager->InputDragStruct(&m_defaultDragData);
-			m_noteManager->SendMessages(PM_DRAG_MOVE);
-		}
+		if (DragMove(pMsg))
+			return FALSE;
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);

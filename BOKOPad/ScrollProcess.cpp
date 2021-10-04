@@ -24,22 +24,30 @@ void ScrollProcess::Init(ScrollInfo& info)
 	m_bInit = true;
 }
 
-void ScrollProcess::ExecuteScroll()
+void ScrollProcess::ExecuteScroll(int scrollLineFlag)
 {
 	if (!m_bInit)
 		return;
 
 	int nScrollMax = 0;
-	//if (nThisHeight < m_nAllPageSize)
 	if (m_nWheelSize < m_nAllPageSize)
 	{
 		nScrollMax = m_nAllPageSize - 1;
-		//m_nOnePageSize = nThisHeight;
 		m_nScrollPos = min(m_nScrollPos, m_nAllPageSize - m_nWheelSize - 1);
 	}
 
-	m_nAllPageSize += m_nWheelSize;
-	m_nPageCount++;
+	if (scrollLineFlag == SCROLL_LINE_ADD)
+	{
+		m_nAllPageSize += m_nWheelSize;
+		m_nPageCount++;
+	}
+	else if (scrollLineFlag == SCROLL_LINE_DELETE)
+	{
+		m_nAllPageSize -= m_nWheelSize;
+		m_nPageCount--;
+		if (m_nScrollProcessCount > m_nPageCount)
+			m_nScrollProcessCount = m_nPageCount;
+	}
 
 	SCROLLINFO si;
 	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;

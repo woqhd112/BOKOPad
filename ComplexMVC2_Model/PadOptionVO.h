@@ -19,6 +19,12 @@ public:
 
 	}
 
+	PadOptionVO(const PadOptionVO& vo)
+	{
+		test1 = vo.test1;
+		test2 = vo.test2;
+	}
+
 	~PadOptionVO()
 	{
 	

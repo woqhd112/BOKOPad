@@ -15,6 +15,7 @@ void ResultSetSelectInSceSEQScenarioListInNotSEQ();
 void PrepareStatementUpdateScenarioListInNotCNT_SUB();
 void PrepareStatementSelectInNotCNTScenarioListInSceSEQ();
 void ResultSetSelectInNotCNTScenarioListInSceSEQ();
+void PrepareStatementUpdateNoteInformationInSceSEQ();
 
 class NoteInformationDlgModelImp : public DlgModel
 {
@@ -33,6 +34,7 @@ public:
 	bool SelectInSceSEQScenarioListInNotSEQ(int in_notSEQ, ScenarioListVO* out_scenarioList);
 	bool UpdateScenarioListInNotCNT(int in_sceSEQ, int in_notCNT);
 	bool SelectInNotCNTScenarioListInSceSEQ(int in_sceSEQ, ScenarioListVO* out_scenarioList);
+	bool UpdateNoteInformationInSceSEQ(int in_notSEQ, int in_sceSEQ);
 
 private:
 

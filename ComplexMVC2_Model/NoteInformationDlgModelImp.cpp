@@ -120,6 +120,15 @@ void ResultSetSelectInNotCNTScenarioListInSceSEQ()
 	DATA_INSTANCE->SetScenarioList(0, "", DB_INSTANCE->GetInt(0));
 }
 
+void PrepareStatementUpdateNoteInformationInSceSEQ()
+{
+	int notSEQ, sceSEQ;
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, &sceSEQ, NULL, NULL);
+	DB_INSTANCE->SetInt(1, sceSEQ);
+	DB_INSTANCE->SetInt(2, notSEQ);
+	DATA_INSTANCE->ResetNoteInformation();
+}
+
 NoteInformationDlgModelImp::NoteInformationDlgModelImp()
 {
 
@@ -248,6 +257,17 @@ bool NoteInformationDlgModelImp::SelectInNotCNTScenarioListInSceSEQ(int in_sceSE
 		DATA_INSTANCE->GetScenarioList(out_scenarioList);
 
 	DATA_INSTANCE->ResetScenarioList();
+
+	return bSuccess;
+}
+
+bool NoteInformationDlgModelImp::UpdateNoteInformationInSceSEQ(int in_notSEQ, int in_sceSEQ)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, in_sceSEQ, false, "");
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_SCESEQ], PrepareStatementUpdateNoteInformationInSceSEQ);
+
+	DATA_INSTANCE->ResetNoteInformation();
 
 	return bSuccess;
 }

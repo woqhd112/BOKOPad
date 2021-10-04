@@ -15,6 +15,7 @@ public:
 	bool DeleteNoteInformation(int in_notSEQ);
 	bool UpdateNoteInformationInNotContent(ComplexString in_notCONTENT, int in_notSEQ);
 	bool UpdateNoteInformationInNotLOCK(bool in_notLOCK, int in_notSEQ);
+	bool UpdateNoteInformationInSceSEQ(int in_notSEQ, int in_sceSEQ);
 
 private:
 

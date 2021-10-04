@@ -10,8 +10,8 @@ namespace ComplexLibrary
 {
 	class ComplexString
 	{
-	public:
-
+	public: 
+		 
 		ComplexString()
 			: m_size(0), m_buf(nullptr)
 		{
@@ -43,7 +43,13 @@ namespace ComplexLibrary
 			m_size = static_cast<int>(strlen(buf)) + 1;
 
 			m_buf = new char[m_size];
-			strcpy_s(m_buf, m_size, buf);
+
+			for (int i = 0; i < m_size; i++)
+			{
+				m_buf[i] = buf[i];
+			}
+			m_buf[m_size - 1] = '\0';
+			//strcpy_s(m_buf, m_size, buf);
 		}
 
 		ComplexString(std::string buf)
@@ -52,8 +58,12 @@ namespace ComplexLibrary
 			m_size = static_cast<int>(buf.length());
 
 			m_buf = new char[m_size];
-
-			strcpy_s(m_buf, m_size, buf.c_str());
+			for (int i = 0; i < m_size; i++)
+			{
+				m_buf[i] = buf[i];
+			}
+			m_buf[m_size - 1] = '\0';
+			//strcpy_s(m_buf, m_size, buf.c_str());
 		}
 
 		ComplexString(const ComplexString& buf)
@@ -61,7 +71,13 @@ namespace ComplexLibrary
 		{
 			m_size = buf.m_size;
 			m_buf = new char[m_size];
-			strcpy_s(m_buf, m_size, buf.m_buf);
+
+			for (int i = 0; i < m_size; i++)
+			{
+				m_buf[i] = buf.m_buf[i];
+			}
+			m_buf[m_size - 1] = '\0';
+			//strcpy_s(m_buf, m_size, buf.m_buf);
 		}
 
 		~ComplexString()
@@ -535,7 +551,20 @@ namespace ComplexLibrary
 			return *this;
 		}
 
-		ComplexString& operator = (ComplexString& buf)
+		/*ComplexString& operator = (ComplexString& buf)
+		{
+			m_size = buf.m_size;
+
+			if (m_buf != nullptr)
+				delete[] m_buf;
+
+			m_buf = new char[m_size];
+			strcpy_s(m_buf, m_size, buf.m_buf);
+
+			return *this;
+		}*/
+
+		ComplexString& operator = (const ComplexString& buf)
 		{
 			m_size = buf.m_size;
 

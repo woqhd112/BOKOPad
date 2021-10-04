@@ -1,5 +1,8 @@
 #pragma once
 
+#define SCROLL_LINE_ADD 1
+#define SCROLL_LINE_DELETE 0
+
 class ScrollProcess
 {
 public:
@@ -14,7 +17,7 @@ public:
 	};
 
 	void Init(ScrollInfo& info);
-	void ExecuteScroll();
+	void ExecuteScroll(int scrollLineFlag);
 	bool OperateScroll(int nSBCode, int nPos);
 	UINT OperateWheel(short zDelta);
 

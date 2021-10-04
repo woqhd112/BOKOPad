@@ -142,6 +142,7 @@ namespace ComplexLibrary
 
 		~ComplexMap()
 		{
+			m_keys.clear();
 			m_pairs.clear();
 		}
 

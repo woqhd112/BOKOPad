@@ -21,15 +21,13 @@ private:
 	bool Hide();
 	bool Exist();
 
-	bool TimeLineAttach();
-	bool TimeLineDetach();
 	bool TimeLineContactGridline();
 	bool TimeLineNotContactGridline();
 
 private:
 
-	ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
-	ComplexMap<int, int> m_scenarioSeqMap;
+	/*ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
+	ComplexMap<int, int> m_scenarioSeqMap;*/
 
 };
 

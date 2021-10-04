@@ -2,7 +2,7 @@
 #include "ComplexMap.h"
 #include "ScenarioListVO.h"
 #include "NoteInformationVO.h"
-#include "DragProcess.h"
+#include "ComplexLock.h"
 #include <memory>
 
 using namespace ComplexLibrary;
@@ -11,9 +11,15 @@ class BOKOScenarioDetailDlg;
 class NoteListCtrl;
 class BOKODragDlg;
 
-// 0 ~ 4 -> scenario ddl event message
-// 5 ~ 11 -> scenario dlg event message
-// 12 ~ -> note event message
+enum DragUpState
+{
+	DUS_NOTHING = 0,
+	DUS_THIS,
+	DUS_ANOTHER,
+	DUS_THIS_TIMELINE,
+	DUS_ANOTHER_TIMELINE
+};
+
 enum PerformanceMessage
 {
 	PM_CREATE = 0,
@@ -24,8 +30,11 @@ enum PerformanceMessage
 	PM_DRAG_MOVE,
 	PM_DRAG_DOWN,
 	PM_DRAG_UP,
-	PM_TIMELINE_ATTACH,
-	PM_TIMELINE_DETACH,
+	PM_DRAG_NOTHING,
+	PM_DRAG_THIS_ATTACH,
+	PM_DRAG_ANOTHER_ATTACH,
+	PM_DRAG_THIS_TIMELINE_ATTACH,
+	PM_DRAG_ANOTHER_TIMELINE_ATTACH,
 	PM_TIMELINE_CONTACT_GRIDLINE,
 	PM_TIMELINE_NOT_CONTACT_GRIDLINE,
 	PM_NOTE_INSERT,
@@ -72,8 +81,9 @@ struct DragDataStruct
 	{
 	
 	}
-	DragDataStruct(int sceIndex, int noteSEQ, int sceSEQ, int noteIndex, int buttonID, ComplexString noteCONTENT, int mousePos_X, int mousePos_Y)
-		: sceIndex(sceIndex)
+	DragDataStruct(int target_sceSEQ, int sceIndex, int noteSEQ, int sceSEQ, int noteIndex, int buttonID, ComplexString noteCONTENT, int mousePos_X, int mousePos_Y)
+		: target_sceSEQ(target_sceSEQ)
+		, sceIndex(sceIndex)
 		, noteSEQ(noteSEQ)
 		, sceSEQ(sceSEQ)
 		, noteIndex(noteIndex)
@@ -85,14 +95,15 @@ struct DragDataStruct
 
 	}
 
-	int sceSEQ;
-	int sceIndex;
-	int noteSEQ;
-	int noteIndex;
+	int target_sceSEQ = -1;
+	int sceSEQ = -1;
+	int sceIndex = -1;
+	int noteSEQ = -1;
+	int noteIndex = -1;
 
-	int buttonID;
-	int mousePos_X;
-	int mousePos_Y;
+	int buttonID = -1;
+	int mousePos_X = -1;
+	int mousePos_Y = -1;
 
 	ComplexString noteCONTENT;
 };
@@ -111,8 +122,15 @@ public:
 	void InputScenarioStruct(ScenarioManagerStruct* scenarioDataStruct);
 	void InputNoteStruct(NoteManagerStruct* noteDataStruct);
 
+	DragUpState GetDragState() const;
 
 protected:
+
+	struct NotePadStruct
+	{
+		CEdit* noteEdit;
+		CButton* noteButton;
+	};
 
 	virtual bool SendMessages(PerformanceMessage message) = 0;
 	virtual bool HelpInvoker(PerformanceMessage message) = 0;
@@ -131,7 +149,14 @@ protected:
 	CWnd* m_mainDlg;
 	BOKODragDlg* m_dragDlg;
 	ComplexLock m_processLock;
-	static std::shared_ptr<DragProcess> m_dragProc;
+
+	static ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
+	static ComplexMap<int, int> m_scenarioSeqMap;
+
+	ComplexMap<int, NotePadStruct> m_notePadManager;
+	ComplexMap<int, int> m_noteSeqMap;
+
+	DragUpState m_dragState;
 
 private:
 

@@ -2,6 +2,7 @@
 #include <initializer_list>
 #include "ComplexIterator.h"
 
+// 벡터 이상하다..
 
 namespace ComplexLibrary
 {
@@ -14,6 +15,9 @@ namespace ComplexLibrary
 
 		ComplexVector(int capacity = 4)
 			: m_head(nullptr)
+			, m_ptr(nullptr)
+			, m_size(0)
+			, m_capacity(0)
 		{
 			m_ptr = new T[capacity];
 			m_capacity = capacity;
@@ -227,7 +231,6 @@ namespace ComplexLibrary
 			delete[] m_ptr;
 			m_ptr = tmp;
 			m_size--;
-
 		}
 
 		void erase(int startidx, int endidx)
@@ -281,8 +284,6 @@ namespace ComplexLibrary
 
 			if (m_ptr != nullptr)
 				delete[] m_ptr;
-
-			m_ptr = new T[m_capacity];
 
 			if (m_head != nullptr)
 			{
@@ -374,15 +375,6 @@ namespace ComplexLibrary
 		{
 			ComplexNode<T>* prev = nullptr;
 			ComplexNode<T>* cursor = m_head;
-
-			//while (cursor->has_next())
-			//{
-			//	// 이부분... == T의 오퍼레이터 구현이 불가능한거라 이부분 수정해야할거같은데..
-			//	if (&value == &cursor->value)
-			//		break;
-			//	prev = cursor;
-			//	cursor = cursor->next();
-			//}
 
 			int i = 0;
 			while (cursor->has_next())

@@ -33,7 +33,8 @@ enum DML_QUERY_INDEX
 	UPDATE_NOTE_INFORMATION_TABLE_IN_NOTLOCK,
 	SELECT_IN_SCESEQ_SCENARIO_LIST_IN_NOTSEQ,
 	SELECT_IN_NOTCNT_SCENARIO_LIST_IN_SCESEQ,
-	SELECT_IN_SCETITLE_SCENARIO_LIST_IN_SCESEQ
+	SELECT_IN_SCETITLE_SCENARIO_LIST_IN_SCESEQ,
+	UPDATE_NOTE_INFORMATION_TABLE_IN_SCESEQ,
 };
 
 static const char* DefinedDDLQuerys[] = { 
@@ -103,4 +104,6 @@ static const char* DefinedDMLQuerys[] = {
 									"SELECT notCNT FROM ScenarioList WHERE sceSEQ = ?",
 									// select sceSEQ scenario list in sceTITLE
 									"SELECT sceSEQ FROM ScenarioList WHERE sceTITLE = ?",
+									// update note information table in sceSEQ
+									"UPDATE NoteInformation SET sceSEQ = ? WHERE notSEQ = ?",
 								   };

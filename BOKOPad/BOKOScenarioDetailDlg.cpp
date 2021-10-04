@@ -82,9 +82,6 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 
 	Initialize();
 
-	m_list_notePad.SetScenarioManagerStruct(m_thisDataStruct);
-	m_list_notePad.LoadNoteInformation();
-
 	m_edit_note_input.LimitText(500);
 
 	GotoDlgCtrl(&m_edit_note_input);
@@ -153,4 +150,20 @@ BOOL BOKOScenarioDetailDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
 	return CDialogEx::OnCommand(wParam, lParam);
+}
+
+void BOKOScenarioDetailDlg::SignalLoadScenarioList()
+{
+	m_list_notePad.SetScenarioManagerStruct(m_thisDataStruct);
+	m_list_notePad.LoadNoteInformation();
+}
+
+void BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent)
+{
+	m_list_notePad.InsertNote(strNoteContent);
+}
+
+void BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
+{
+	m_list_notePad.DeleteNote(notSEQ);
 }

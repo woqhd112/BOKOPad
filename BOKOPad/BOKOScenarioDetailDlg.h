@@ -18,6 +18,13 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_SCENARIO_TIMELINE };
 
+public:
+
+	void SignalLoadScenarioList();
+
+	void SignalInsertNote(ComplexString& strNoteContent);
+	void SignalDeleteNote(int notSEQ);
+
 private:
 
 	void Initialize();

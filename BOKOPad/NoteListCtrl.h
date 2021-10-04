@@ -1,13 +1,14 @@
 ﻿#pragma once
 #include "ComplexMap.h"
 #include "ScrollProcess.h"
+#include "NoteListInterface.h"
 
 class NoteManager;
 // NoteListCtrl 대화 상자
 
 #define BUTTON_COLOR RGB(68, 68, 68)
 
-class NoteListCtrl : public CDialogEx
+class NoteListCtrl : public CDialogEx, public NoteListInterface
 {
 	DECLARE_DYNAMIC(NoteListCtrl)
 
@@ -21,12 +22,21 @@ public:
 
 	void LoadNoteInformation();
 
-	void SignalNoteInput(bool bPosSwitch = false);
+	void SignalNoteInput(bool bAdd, bool bPosSwitch = false);
 	CRect* CalcNotePosition();
 	void SetScenarioManagerStruct(ScenarioManagerStruct m_thisDataStruct);
 	bool InsertNote(ComplexString inpusString);
+	bool DeleteNote(int notSEQ);
 
 private:
+
+	bool UpdateScenarioList(NoteInformationVO* noteInform);
+
+protected:
+
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 public:
 
@@ -47,7 +57,8 @@ private:
 	ScenarioManagerStruct m_thisDataStruct;
 	DragDataStruct m_defaultDragData;
 
-	bool m_bDragProcessing;
+	CButton* m_downButton;
+
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

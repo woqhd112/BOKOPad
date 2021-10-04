@@ -14,6 +14,14 @@ public:
 	
 	}
 
+	NoteInformationVO(const NoteInformationVO& vo)
+	{
+		notSEQ = vo.notSEQ;
+		sceSEQ = vo.sceSEQ;
+		notLOCK = vo.notLOCK;
+		notCONTENT = vo.notCONTENT;
+	}
+
 	NoteInformationVO(int notSEQ, int sceSEQ, bool notLOCK, ComplexString notCONTENT)
 		: notSEQ(notSEQ)
 		, sceSEQ(sceSEQ)

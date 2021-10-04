@@ -22,7 +22,6 @@ ScenarioManager::~ScenarioManager()
 		iter++;
 	}
 	m_scenarioDlgManager.clear();
-
 }
 
 bool ScenarioManager::SendMessages(PerformanceMessage message)
@@ -56,14 +55,6 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	else if (message == PM_EXIST)
 	{
 		bHelpSuccess = Exist();
-	}
-	else if (message == PM_TIMELINE_ATTACH)
-	{
-		bHelpSuccess = TimeLineAttach();
-	}
-	else if (message == PM_TIMELINE_DETACH)
-	{
-		bHelpSuccess = TimeLineDetach();
 	}
 	else if (message == PM_TIMELINE_CONTACT_GRIDLINE)
 	{
@@ -117,6 +108,7 @@ bool ScenarioManager::Create()
 		}
 
 		scenarioDetail->ShowWindow(SW_SHOW);
+		scenarioDetail->SignalLoadScenarioList();
 	}
 	else
 	{
@@ -151,10 +143,10 @@ bool ScenarioManager::Destroy()
 	if (iter == m_scenarioDlgManager.end())
 		return false;
 
-
+	int scenarioIndexKey = iter->value.key;
 	BOKOScenarioDetailDlg* findScenarioDlg = iter->value.value;
-	m_scenarioDlgManager.erase(iter->value.key);
-	m_scenarioSeqMap.erase(iter->value.key);
+	m_scenarioDlgManager.erase(scenarioIndexKey);
+	m_scenarioSeqMap.erase(scenarioIndexKey);
 	findScenarioDlg->DestroyWindow();
 	delete findScenarioDlg;
 	findScenarioDlg = nullptr;
@@ -249,25 +241,6 @@ bool ScenarioManager::Exist()
 	ReleaseScenarioStruct();
 
 	return true;
-}
-
-
-bool ScenarioManager::TimeLineAttach()
-{
-	ComplexScopedLock lock(&m_processLock);
-
-	bool bSuccess = false;
-
-	return bSuccess;
-}
-
-bool ScenarioManager::TimeLineDetach()
-{
-	ComplexScopedLock lock(&m_processLock);
-
-	bool bSuccess = false;
-
-	return bSuccess;
 }
 
 bool ScenarioManager::TimeLineContactGridline()

@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "ManagerManagement.h"
+#include "BOKOScenarioDetailDlg.h"
 #include "BOKODragDlg.h"
 //#include "NoteListCtrl.h"
 
-std::shared_ptr<DragProcess> ManagerManagement::m_dragProc;
+ComplexMap<int, BOKOScenarioDetailDlg*> ManagerManagement::m_scenarioDlgManager;
+ComplexMap<int, int> ManagerManagement::m_scenarioSeqMap;
 
 ManagerManagement::ManagerManagement()
 	: m_bAttach(false)
@@ -12,12 +14,9 @@ ManagerManagement::ManagerManagement()
 	, m_pPutNoteStruct(nullptr)
 	, m_pPutDragStruct(nullptr)
 	, m_dragDlg(new BOKODragDlg)
+	, m_dragState(DUS_NOTHING)
 {
-	if (m_dragProc.get() == NULL)
-	{
-		m_dragProc.reset(new DragProcess);
-		//m_dragProc->Start();
-	}
+
 }
 
 ManagerManagement::~ManagerManagement()
@@ -39,10 +38,8 @@ void ManagerManagement::AttachManager(CWnd* dlgAttachPointer)
 
 CWnd* ManagerManagement::DetachManager()
 {
-	//m_dragProc->Stop();
-	//m_dragProc->Join();
-
 	m_bAttach = false;
+
 	return m_mainDlg;
 }
 
@@ -89,4 +86,9 @@ DragDataStruct* ManagerManagement::BringDragStruct() const
 void ManagerManagement::ReleaseDragStruct()
 {
 	m_pPutDragStruct = nullptr;
+}
+
+DragUpState ManagerManagement::GetDragState() const
+{
+	return m_dragState;
 }

@@ -12,18 +12,19 @@ public:
 
 private:
 
-	struct NotePadStruct
-	{
-		CEdit* noteEdit;
-		CButton* noteButton;
-	};
-
 	virtual bool HelpInvoker(PerformanceMessage message);
 
 	bool Insert();
+	bool Delete();
 	bool DragMove();
 	bool DragDown();
 	bool DragUp();
+
+	bool DragNothing();
+	bool DragThisAttach();
+	bool DragAnotherAttach();
+	bool DragThisTimelineAttach();
+	bool DragAnotherTimelineAttach();
 
 private:
 
@@ -34,8 +35,8 @@ private:
 	const int DRAG_DLG_WIDTH = 30;
 	const int DRAG_DLG_HEIGHT = 30;
 
-	ComplexMap<int, NotePadStruct> m_notePadManager;
-	ComplexMap<int, int> m_noteSeqMap;
+	/*ComplexMap<int, NotePadStruct> m_notePadManager;
+	ComplexMap<int, int> m_noteSeqMap;*/
 
 };
 

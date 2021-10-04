@@ -52,6 +52,8 @@ public:
 	bool UpdateNoteInformationInNotContent();
 	// 노트정보에서 잠금 내용 수정
 	bool UpdateNoteInformationInNotLOCK();
+	// 노트정보에서 시나리오 시퀀스 수정
+	bool UpdateNoteInformationInSceSEQ();
 
 private:
 

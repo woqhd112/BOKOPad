@@ -14,6 +14,13 @@ public:
 	
 	}
 
+	ScenarioListVO(const ScenarioListVO& vo)
+	{
+		sceSEQ = vo.sceSEQ;
+		notCNT = vo.notCNT;
+		sceTITLE = vo.sceTITLE;
+	}
+
 	ScenarioListVO(int sceSEQ, int notCNT, ComplexString sceTITLE)
 		: sceSEQ(sceSEQ)
 		, notCNT(notCNT)

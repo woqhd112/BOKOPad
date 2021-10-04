@@ -131,3 +131,17 @@ bool NoteInformationDlgService::UpdateNoteInformationInNotLOCK(bool in_notLOCK, 
 
 	return bSuccess;
 }
+
+bool NoteInformationDlgService::UpdateNoteInformationInSceSEQ(int in_notSEQ, int in_sceSEQ)
+{
+	bool bSuccess = false;
+
+	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInSceSEQ(in_notSEQ, in_sceSEQ);
+
+	if (bSuccess)
+		m_noteInformationDlgModel->Commit();
+	else
+		m_noteInformationDlgModel->Rollback();
+
+	return bSuccess;
+}
