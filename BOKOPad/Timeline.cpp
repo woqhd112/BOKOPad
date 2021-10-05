@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "Timeline.h"
+#include "NoteManager.h"
 #include "afxdialogex.h"
 
 
@@ -21,6 +22,7 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	m_nDataVariableWidth = 0;
 	m_nTimelineCount = 0;
 	m_nPointingTimeIDX = -1;
+	bDetailOpen = false;
 }
 
 Timeline::~Timeline()
@@ -53,12 +55,24 @@ BOOL Timeline::OnInitDialog()
 	m_drawHoverPen.CreatePen(PS_SOLID, 2, LINE_COLOR);
 	m_drawPen.CreatePen(PS_SOLID, 1, LINE_COLOR);
 
-	m_detailDlg.Create(m_detailDlg.IDD, this);
+	m_detailDlg.Create(TimelineDetail::IDD, this);
+	m_oneViewDlg.Create(BOKOTimelineOneViewDlg::IDD, this);
 	m_detailDlg.MoveWindow(0, 0, 400, 200);
 	m_detailDlg.ShowWindow(SW_HIDE);
+	m_oneViewDlg.ShowWindow(SW_HIDE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void Timeline::AttachNoteManager(NoteManager* manager)
+{
+	m_noteManager = manager;
+}
+
+void Timeline::HideTimelineDetail()
+{
+	m_detailDlg.ShowWindow(SW_HIDE);
 }
 
 int Timeline::ValidatePointToRect(POINT pt)
@@ -187,13 +201,6 @@ void Timeline::OnPaint()
 	}
 }
 
-void Timeline::Run()
-{
-	while (this->IsRunning())
-	{
-		m_cond.Wait();
-	}
-}
 
 void Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
@@ -251,8 +258,9 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 			m_nPointingTimeIDX = iter->value.key;
 			SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND));
 
-			m_detailDlg.SetWindowPos(NULL, pts.x - 400, pts.y - 200, 0, 0, SWP_NOSIZE);
+			m_detailDlg.SetWindowPos(NULL, pts.x - 400 - 5, pts.y - 200 - 5, 0, 0, SWP_NOSIZE);
 			m_detailDlg.ShowWindow(SW_SHOW);
+			bDetailOpen = true;
 			if (thisApproch)
 			{
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
@@ -302,6 +310,7 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 		{
 			m_nPointingTimeIDX = -1;
 
+			bDetailOpen = false;
 			m_detailDlg.ShowWindow(SW_HIDE);
 			if (thisApproch)
 				SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
@@ -310,6 +319,11 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 
 		}
 		Invalidate();
+	}
+	else
+	{
+		bDetailOpen = false;
+		m_detailDlg.ShowWindow(SW_HIDE);
 	}
 }
 
@@ -321,6 +335,92 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 	{
 		ThickEventTimeline(-1, pMsg->pt);
 	}
+	else if (pMsg->message == WM_LBUTTONDBLCLK)
+	{
+		POINT pt = pMsg->pt;
+		ScreenToClient(&pt);
+
+		if (PtInRect(m_timeLineRect, pt))
+			return FALSE;
+
+		CRect rect;
+		GetParent()->GetWindowRect(rect);
+		if (PtInRect(m_thisRect, pt))
+		{
+			m_oneViewDlg.SetWindowPos(NULL, rect.right, rect.top, 0, 0, SWP_NOSIZE);
+			m_oneViewDlg.ShowWindow(SW_SHOW);
+			TimelineOneViewProcess();
+		}
+	}
+	else if (pMsg->message == WM_LBUTTONDOWN)
+	{
+		if (DragDown(pMsg))
+			return TRUE;
+	}
+	else if (pMsg->message == WM_LBUTTONUP)
+	{
+		if (DragUp(pMsg))
+			return TRUE;
+	}
+	else if (pMsg->message == WM_MOUSEMOVE)
+	{
+		if (DragMove(pMsg))
+			return FALSE;
+	}
 
 	return __super::PreTranslateMessage(pMsg);
+}
+
+void Timeline::TimelineOneViewProcess()
+{
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	ComplexVector<TimelineVO>::iterator iter = m_timeLineContainer.begin();
+
+	ComplexString oneViewTimelineText;
+	while (iter != m_timeLineContainer.end())
+	{
+		NoteInformationVO note;
+		note.SetNotSEQ(iter->value.GetNotSEQ());
+		RequestScope->SetRequestAttributes(note);
+		if (MVC_Controller->SelectOneNoteInformation() == false)
+			return;
+
+		RequestScope->GetRequestAttributes(&note);
+		if (oneViewTimelineText.IsEmpty())
+			oneViewTimelineText.AppendFormat("%s", note.GetNotCONTENT().GetBuffer());
+		else
+			oneViewTimelineText.AppendFormat("\r\n%s", note.GetNotCONTENT().GetBuffer());
+
+
+		iter++;
+	}
+
+	m_oneViewDlg.SetTimelineText(oneViewTimelineText);
+
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+}
+
+
+bool Timeline::DragDown(MSG* pMsg)
+{
+	
+	return true;
+}
+
+bool Timeline::DragMove(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
+
+	
+	return true;
+}
+
+bool Timeline::DragUp(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
+
+
+	return true;
 }

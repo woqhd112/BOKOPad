@@ -42,6 +42,8 @@ private:
 	NoteListCtrl m_list_notePad;
 	Timeline m_timeline;
 
+	bool m_bAddOnButton;
+
 	ScenarioManagerStruct m_thisDataStruct;
 
 protected:

@@ -10,6 +10,8 @@ class NoteManager;
 
 class NoteListCtrl : public CDialogEx, public NoteListInterface
 {
+	// 노트매니저 접근권한
+	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(NoteListCtrl)
 
 public:

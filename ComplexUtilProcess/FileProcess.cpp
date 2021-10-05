@@ -44,6 +44,7 @@ namespace ComplexUtilProcess
 
 	COMPLEXUTILPROCESS_DLL void UTF8ToANSI(ComplexString& out_ansi, ComplexString in_utf8)
 	{
+		in_utf8.ReplaceAll("\n", "\r\n");
 		const char* pszCode = in_utf8.GetBuffer();
 
 		BSTR bstrWide;
@@ -67,6 +68,7 @@ namespace ComplexUtilProcess
 
 	COMPLEXUTILPROCESS_DLL void ANSIToUTF8(ComplexString& out_utf8, ComplexString in_ansi)
 	{
+		in_ansi.ReplaceAll("\r\n", "\n");
 		const char* pszCode = in_ansi.GetBuffer();
 
 		BSTR bstrCode;
@@ -82,7 +84,7 @@ namespace ComplexUtilProcess
 
 		WideCharToMultiByte(CP_UTF8, 0, bstrCode, -1, pszUTFCode, length2, NULL, NULL);
 		SysFreeString(bstrCode);
-
+		
 		out_utf8 = pszUTFCode;
 		delete[] pszUTFCode;
 	}

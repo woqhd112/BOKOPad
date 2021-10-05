@@ -1,15 +1,15 @@
 ﻿#pragma once
-#include "ComplexThread.h"
-#include "ComplexCondition.h"
-#include "ComplexLock.h"
 #include "TimelineVO.h"
 #include "TimelineDetail.h"
+#include "BOKOTimelineOneViewDlg.h"
+#include "NoteListInterface.h"
 
+class NoteManager;
 // Timeline 대화 상자
 
 #define LINE_COLOR RGB(0, 0, 0)
 
-class Timeline : public CDialogEx, public ComplexThread
+class Timeline : public CDialogEx, public NoteListInterface
 {
 	DECLARE_DYNAMIC(Timeline)
 
@@ -26,19 +26,24 @@ public:
 
 	void InsertTimeline(int notSEQ, POINT currentMPoint);
 	void ThickEventTimeline(int notSEQ, POINT pt, bool thisApproch = true);
+	void HideTimelineDetail();
+	void AttachNoteManager(NoteManager* manager);
+
+	bool bDetailOpen;
 
 protected:
 
-	virtual void Run();
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 private:
 
+	void TimelineOneViewProcess();
 	int ValidatePointToRect(POINT pt);
 	void UpdateTimelineIDX(int startUpdateTimeIDX);
 
 	bool m_bInit;
-	ComplexCondition m_cond;
-
 	ScenarioManagerStruct m_thisDataStruct;
 
 	CRect m_thisRect;
@@ -48,6 +53,8 @@ private:
 	CPen m_drawHoverPen;
 
 	TimelineDetail m_detailDlg;
+	BOKOTimelineOneViewDlg m_oneViewDlg;
+	NoteManager* m_noteManager;
 
 	int m_nLineStartPoint_X;
 	int m_nLineEndPoint_X;

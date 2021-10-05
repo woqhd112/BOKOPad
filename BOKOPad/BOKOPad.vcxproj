@@ -200,6 +200,7 @@
     <ClInclude Include="BOKOPad.h" />
     <ClInclude Include="BOKOPadDlg.h" />
     <ClInclude Include="BOKOScenarioDetailDlg.h" />
+    <ClInclude Include="BOKOTimelineOneViewDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="ManagerManagement.h" />
     <ClInclude Include="NoteListCtrl.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="BOKOPad.cpp" />
     <ClCompile Include="BOKOPadDlg.cpp" />
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
+    <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
     <ClCompile Include="ManagerManagement.cpp" />
     <ClCompile Include="NoteListCtrl.cpp" />
     <ClCompile Include="NoteManager.cpp" />

@@ -91,6 +91,9 @@
     <ClInclude Include="TimelineDetail.h">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClInclude>
+    <ClInclude Include="BOKOTimelineOneViewDlg.h">
+      <Filter>UI\Scenario\Timeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -133,6 +136,9 @@
       <Filter>UI\Scenario\Timeline</Filter>
     </ClCompile>
     <ClCompile Include="TimelineDetail.cpp">
+      <Filter>UI\Scenario\Timeline</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOTimelineOneViewDlg.cpp">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClCompile>
   </ItemGroup>
