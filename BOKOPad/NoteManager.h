@@ -16,6 +16,7 @@ private:
 
 	bool Insert();
 	bool Delete();
+	bool Move();
 	bool DragMove();
 	bool DragDown();
 	bool DragUp();
@@ -35,6 +36,8 @@ private:
 	const int DRAG_DLG_WIDTH = 30;
 	const int DRAG_DLG_HEIGHT = 30;
 
+	bool m_bCursorAttach;
+	bool m_bCursorDetach;
 	/*ComplexMap<int, NotePadStruct> m_notePadManager;
 	ComplexMap<int, int> m_noteSeqMap;*/
 

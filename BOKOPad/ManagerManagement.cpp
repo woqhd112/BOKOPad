@@ -92,3 +92,63 @@ DragUpState ManagerManagement::GetDragState() const
 {
 	return m_dragState;
 }
+
+void ManagerManagement::SortScenarioManagerKey()
+{
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter1 = m_scenarioDlgManager.begin();
+	ComplexMap<int, int>::iterator iter2 = m_scenarioSeqMap.begin();
+
+	ComplexMap<int, BOKOScenarioDetailDlg*> sortManagerMap;
+	ComplexMap<int, int> sortSeqMap;
+	int i = 0;
+	while (iter1 != m_scenarioDlgManager.end())
+	{
+		sortManagerMap.insert(i, iter1->value.value);
+		iter1++;
+		i++;
+	}
+
+	i = 0;
+	while (iter2 != m_scenarioSeqMap.end())
+	{
+		sortSeqMap.insert(i, iter2->value.value);
+		iter2++;
+		i++;
+	}
+
+	m_scenarioDlgManager.clear();
+	m_noteSeqMap.clear();
+
+	m_scenarioDlgManager = sortManagerMap;
+	m_scenarioSeqMap = sortSeqMap;
+}
+
+void ManagerManagement::SortNoteManagerKey()
+{
+	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
+	ComplexMap<int, int>::iterator iter2 = m_noteSeqMap.begin();
+
+	ComplexMap<int, NotePadStruct> sortManagerMap;
+	ComplexMap<int, int> sortSeqMap;
+	int i = 0;
+	while (iter1 != m_notePadManager.end())
+	{
+		sortManagerMap.insert(i, iter1->value.value);
+		iter1++;
+		i++;
+	}
+
+	i = 0;
+	while (iter2 != m_noteSeqMap.end())
+	{
+		sortSeqMap.insert(i, iter2->value.value);
+		iter2++;
+		i++;
+	}
+
+	m_notePadManager.clear();
+	m_noteSeqMap.clear();
+
+	m_notePadManager = sortManagerMap;
+	m_noteSeqMap = sortSeqMap;
+}

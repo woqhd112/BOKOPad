@@ -39,6 +39,7 @@ enum PerformanceMessage
 	PM_TIMELINE_NOT_CONTACT_GRIDLINE,
 	PM_NOTE_INSERT,
 	PM_NOTE_DELETE,
+	PM_NOTE_MOVE,
 };
 
 struct ScenarioManagerStruct
@@ -143,6 +144,9 @@ protected:
 
 	NoteManagerStruct* BringNoteStruct() const;
 	void ReleaseNoteStruct();
+
+	void SortScenarioManagerKey();
+	void SortNoteManagerKey();
 
 
 	bool m_bAttach;

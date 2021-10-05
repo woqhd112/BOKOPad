@@ -35,6 +35,11 @@ public:
 		m_kernel->SetPadOption(in);
 	}
 
+	void SetSession(TimelineVO& in)
+	{
+		m_kernel->SetTimeline(in);
+	}
+
 	void SetSession(ComplexVector<NoteInformationVO>& in)
 	{
 		ComplexVector<NoteInformationVO>::iterator iter = in.begin();
@@ -65,6 +70,16 @@ public:
 		}
 	}
 
+	void SetSession(ComplexVector<TimelineVO>& in)
+	{
+		ComplexVector<TimelineVO>::iterator iter = in.begin();
+		while (iter != in.end())
+		{
+			m_kernel->SetTimeline(iter->value);
+			iter++;
+		}
+	}
+
 	void GetSession(NoteInformationVO* out, int get_row_index = 0)
 	{
 		m_kernel->GetNoteInformation(out, get_row_index);
@@ -78,6 +93,11 @@ public:
 	void GetSession(PadOptionVO* out, int get_row_index = 0)
 	{
 		m_kernel->GetPadOption(out, get_row_index);
+	}
+
+	void GetSession(TimelineVO* out, int get_row_index = 0)
+	{
+		m_kernel->GetTimeline(out, get_row_index);
 	}
 
 	void GetSession(ComplexVector<NoteInformationVO>* out)
@@ -95,11 +115,18 @@ public:
 		m_kernel->GetPadOptionContainer(out);
 	}
 
+	void GetSession(ComplexVector<TimelineVO>* out)
+	{
+		m_kernel->GetTimelineContainer(out);
+		m_kernel->ResetTimeline();
+	}
+
 	void ResetSession()
 	{
 		m_kernel->ResetNoteInformation();
 		m_kernel->ResetScenarioList();
 		m_kernel->ResetPadOption();
+		m_kernel->ResetTimeline();
 	}
 
 private:

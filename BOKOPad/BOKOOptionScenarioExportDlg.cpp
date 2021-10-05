@@ -91,9 +91,9 @@ void BOKOOptionScenarioExportDlg::InsertScenario(ComplexString title, ComplexStr
 void BOKOOptionScenarioExportDlg::Initialize()
 {
 	if (m_bind == SCENARIO_EXPORT)
-		SetWindowTextA("불러올 시나리오 선택");
-	else
 		SetWindowTextA("내보낼 시나리오 선택");
+	else
+		SetWindowTextA("불러올 시나리오 선택");
 
 
 	m_list_export_scenario.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);

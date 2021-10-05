@@ -25,9 +25,6 @@
     <Filter Include="Service">
       <UniqueIdentifier>{78250764-d737-4e43-b983-084da1535281}</UniqueIdentifier>
     </Filter>
-    <Filter Include="View">
-      <UniqueIdentifier>{ebd4c92a-ac75-4202-ab32-6babed1342eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Model\DAO">
       <UniqueIdentifier>{dccb96d2-478f-4f10-a3ca-6010b199b7bb}</UniqueIdentifier>
     </Filter>
@@ -96,6 +93,15 @@
     <ClInclude Include="commonInclude.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="TimelineVO.h">
+      <Filter>Model\VO</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineDlgService.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineDlgModelImp.h">
+      <Filter>Model\DAO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -133,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="DataScope.cpp">
       <Filter>DataScope</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineDlgService.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineDlgModelImp.cpp">
+      <Filter>Model\DAO</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

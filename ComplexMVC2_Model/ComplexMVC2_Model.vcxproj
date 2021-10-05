@@ -181,6 +181,9 @@
     <ClInclude Include="ScenarioListDlgService.h" />
     <ClInclude Include="ScenarioListVO.h" />
     <ClInclude Include="SessionAttribute.h" />
+    <ClInclude Include="TimelineDlgModelImp.h" />
+    <ClInclude Include="TimelineDlgService.h" />
+    <ClInclude Include="TimelineVO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataScope.cpp" />
@@ -200,6 +203,8 @@
     </ClCompile>
     <ClCompile Include="ScenarioListDlgModelImp.cpp" />
     <ClCompile Include="ScenarioListDlgService.cpp" />
+    <ClCompile Include="TimelineDlgModelImp.cpp" />
+    <ClCompile Include="TimelineDlgService.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

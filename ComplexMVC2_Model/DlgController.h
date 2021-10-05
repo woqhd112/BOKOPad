@@ -2,6 +2,7 @@
 #include "MainDlgService.h"
 #include "ScenarioListDlgService.h"
 #include "NoteInformationDlgService.h"
+#include "TimelineDlgService.h"
 
 
 class COMPLEXMVC2_MODEL_DLL DlgController
@@ -55,10 +56,22 @@ public:
 	// 노트정보에서 시나리오 시퀀스 수정
 	bool UpdateNoteInformationInSceSEQ();
 
+	// time line control
+	// 시나리오 시퀀스로 타임라인정보 로드
+	bool SelectInSceSEQTimeline();
+	// 타임라인정보 등록
+	bool InsertTimeline();
+	// 타임라인정보 삭제
+	bool DeleteTimeline();
+	// 타임라인정보 timeIDX 수정
+	bool UpdateTimelineInTimeIDX();
+
 private:
 
 	MainDlgService* m_mainDlgService;
 	ScenarioListDlgService* m_scenarioListDlgService;
 	NoteInformationDlgService* m_noteInformationDlgService;
+	TimelineDlgService* m_timeLineDlgService;
+
 };
 

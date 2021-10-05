@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(BOKOScenarioDetailDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_EN_CHANGE(IDC_EDIT_NOTE_INPUT, &BOKOScenarioDetailDlg::OnEnChangeEditNoteInput)
 	ON_BN_CLICKED(IDC_BUTTON_NOTE_INPUT, &BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -94,15 +95,17 @@ void BOKOScenarioDetailDlg::Initialize()
 {
 	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
+	m_timeline.Create(Timeline::IDD, this);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
+	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.05), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.2));
 	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.3), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.3));
 	m_edit_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.65), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.15));
 	m_stt_note_limit_size.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.8), 100, 30);
 	m_btn_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.9 - 80), CAST_INT(thisRect.Height() * 0.8), 80, 25);
 	m_list_notePad.ShowWindow(SW_SHOW);
-
+	m_timeline.ShowWindow(SW_SHOW);
 }
 
 
@@ -155,6 +158,7 @@ BOOL BOKOScenarioDetailDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 void BOKOScenarioDetailDlg::SignalLoadScenarioList()
 {
 	m_list_notePad.SetScenarioManagerStruct(m_thisDataStruct);
+	m_timeline.SetScenarioManagerStruct(m_thisDataStruct);
 	m_list_notePad.LoadNoteInformation();
 }
 
@@ -166,4 +170,17 @@ void BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent)
 void BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
 {
 	m_list_notePad.DeleteNote(notSEQ);
+}
+
+void BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint)
+{
+	m_timeline.InsertTimeline(notSEQ, currentMPoint);
+}
+
+void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+
+	CDialogEx::OnMouseMove(nFlags, point);
 }

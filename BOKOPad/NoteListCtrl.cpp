@@ -79,6 +79,7 @@ BOOL NoteListCtrl::OnInitDialog()
 
 void NoteListCtrl::LoadNoteInformation()
 {
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
 	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, "");
 	if (UpdateScenarioList(&inNote))
 	{
@@ -87,16 +88,17 @@ void NoteListCtrl::LoadNoteInformation()
 		int i = 0;
 		while (iter != m_noteInformationContainer->end())
 		{
-			CRect* itemRect = CalcNotePosition();
+			CRect* itemRect = CalcNotePosition(i);
 			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
 			m_noteManager->InputNoteStruct(&noteManagerStruct);
 			m_noteManager->SendMessages(PM_NOTE_INSERT);
 
-			SignalNoteInput(true);
+			ScrollExecute(true);
 			iter++;
 			i++;
 		}
 	}
+	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
 }
 
 bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
@@ -121,12 +123,12 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 		{
 			if (m_noteInformationContainer->empty() == false)
 			{
-				CRect* itemRect = CalcNotePosition();
+				CRect* itemRect = CalcNotePosition(m_noteInformationContainer->size() - 1);
 				NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteInformationContainer->size() - 1);
 				m_noteManager->InputNoteStruct(&noteManagerStruct);
 				m_noteManager->SendMessages(PM_NOTE_INSERT);
 
-				SignalNoteInput(true, true);
+				ScrollExecute(true, true);
 			}
 		}
 		else
@@ -145,13 +147,16 @@ bool NoteListCtrl::DeleteNote(int notSEQ)
 	{
 		if (UpdateScenarioList(&inNote))
 		{
-			m_noteInformationContainer->clear();
 			RequestScope->GetRequestAttributes(m_noteInformationContainer);
 			NoteManagerStruct noteManagerStruct(&inNote, NULL, -1);
 			m_noteManager->InputNoteStruct(&noteManagerStruct);
-			m_noteManager->SendMessages(PM_NOTE_DELETE);
+			if (m_noteManager->SendMessages(PM_NOTE_DELETE))
+			{
+				// 삭제한 노트인덱스 부터 노트리스트의 마지막 인덱스까지 정렬
+				MoveNote(noteManagerStruct.noteIndex, m_noteInformationContainer->size() - 1);
+			}
 
-			SignalNoteInput(false);
+			ScrollExecute(false, true);
 		}
 		else
 			return false;
@@ -162,6 +167,31 @@ bool NoteListCtrl::DeleteNote(int notSEQ)
 	return false;
 }
 
+bool NoteListCtrl::MoveNote(int startMoveIndex, int endMoveIndex)
+{
+	int noteSize = m_noteInformationContainer->size();
+	// 첫인덱스가 리스트의 마지막인덱스보다 클 시
+	if (startMoveIndex > (noteSize - 1))
+		return false;
+	// 마지막인덱스가 리스트의 마지막인덱스보다 클 시
+	else if (endMoveIndex > (noteSize - 1))
+		return false;
+	// 첫 인덱스가 마지막인덱스보다 클 시 
+	else if (startMoveIndex > endMoveIndex)
+		return false;
+
+	for (int i = startMoveIndex; i <= endMoveIndex; i++)
+	{
+		NoteInformationVO moveVO = m_noteInformationContainer->at(i);
+		CRect* itemRect = CalcNotePosition(i);
+		NoteManagerStruct noteManagerStruct(&moveVO, itemRect, i);
+		m_noteManager->InputNoteStruct(&noteManagerStruct);
+		m_noteManager->SendMessages(PM_NOTE_MOVE);
+	}
+
+	return true;
+}
+
 void NoteListCtrl::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
 	m_thisDataStruct = thisDataStruct;
@@ -169,17 +199,24 @@ void NoteListCtrl::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct
 	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
 }
 
-void NoteListCtrl::SignalNoteInput(bool bAdd, bool bPosSwitch)
+void NoteListCtrl::ScrollExecute(bool bAdd, bool bPosSwitch)
 {
-	if (m_noteSize % 4 == 0)
-	{
-		scroll.ExecuteScroll(bAdd ? SCROLL_LINE_ADD : SCROLL_LINE_DELETE);
-	}
-
 	if (bAdd)
+	{
+		if (m_noteSize % 4 == 0)
+		{
+			scroll.ExecuteScroll(SCROLL_LINE_ADD);
+		}
 		++m_noteSize;
+	}
 	else
+	{
+		if ((m_noteSize - 1) % 4 == 0)
+		{
+			scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+		}
 		--m_noteSize;
+	}
 
 	if (bPosSwitch)
 	{
@@ -227,12 +264,12 @@ void NoteListCtrl::OnSize(UINT nType, int cx, int cy)
 }
 
 
-CRect* NoteListCtrl::CalcNotePosition()
+CRect* NoteListCtrl::CalcNotePosition(int itemIndex)
 {
 	int nCurrentScrollIndex = scroll.GetScrollCount();
 
-	m_calculateItemPos.left = (EDIT_WIDTH + 5) * (m_noteSize % 4);
-	m_calculateItemPos.top = ((EDIT_HEIGHT + 10) * ((m_noteSize / 4) - nCurrentScrollIndex));// -scroll.GetScrollSize();
+	m_calculateItemPos.left = (EDIT_WIDTH + 5) * (itemIndex % 4);
+	m_calculateItemPos.top = ((EDIT_HEIGHT + 10) * ((itemIndex / 4) - nCurrentScrollIndex));// -scroll.GetScrollSize();
 	m_calculateItemPos.right = m_calculateItemPos.left + EDIT_WIDTH;
 	m_calculateItemPos.bottom = m_calculateItemPos.top + EDIT_HEIGHT;
 
@@ -279,6 +316,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 	m_noteManager->InputDragStruct(&m_defaultDragData);
 	if (m_noteManager->SendMessages(PM_DRAG_UP))
 	{
+		SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
 		DragUpState dus = m_noteManager->GetDragState();
 		if (dus == DUS_NOTHING)
 		{
@@ -305,10 +343,14 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		}
 		else if (dus == DUS_THIS_TIMELINE)
 		{
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			m_noteManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH);
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
+			int a = 0;
 		}
+		SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
 	}
 
 	m_bDragProcessing = false;

@@ -75,6 +75,7 @@ void DlgModel::LoadDatabase()
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);
+			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_TIME_LINE_TABLE], NULL);
 			g_dbConnection.PrepareStatement_Execute(DefinedDMLQuerys[INSERT_PAD_OPTION_TABLE], PrePareStatementInsertPadOption);
 		}
 		g_dbConnection.SetAutoCommit(false);

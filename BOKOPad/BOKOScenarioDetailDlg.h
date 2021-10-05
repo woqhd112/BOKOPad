@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "resource.h"
 #include "NoteListCtrl.h"
+#include "Timeline.h"
 
 // BOKOScenarioDetailDlg 대화 상자
 
@@ -9,6 +10,9 @@
 
 class BOKOScenarioDetailDlg : public CDialogEx
 {
+	// 타임라인 접근권한
+	friend class NoteManager;
+
 	DECLARE_DYNAMIC(BOKOScenarioDetailDlg)
 
 public:
@@ -22,6 +26,7 @@ public:
 
 	void SignalLoadScenarioList();
 
+	void SignalInsertTimeline(int notSEQ, POINT currentMPoint);
 	void SignalInsertNote(ComplexString& strNoteContent);
 	void SignalDeleteNote(int notSEQ);
 
@@ -35,7 +40,7 @@ private:
 	CButton m_btn_note_input;
 	CStatic m_stt_note_limit_size;
 	NoteListCtrl m_list_notePad;
-
+	Timeline m_timeline;
 
 	ScenarioManagerStruct m_thisDataStruct;
 
@@ -50,4 +55,5 @@ public:
 	afx_msg void OnEnChangeEditNoteInput();
 	afx_msg void OnBnClickedButtonNoteInput();
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

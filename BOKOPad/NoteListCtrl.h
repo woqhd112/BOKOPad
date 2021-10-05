@@ -22,11 +22,12 @@ public:
 
 	void LoadNoteInformation();
 
-	void SignalNoteInput(bool bAdd, bool bPosSwitch = false);
-	CRect* CalcNotePosition();
-	void SetScenarioManagerStruct(ScenarioManagerStruct m_thisDataStruct);
+	void ScrollExecute(bool bAdd, bool bPosSwitch = false);
+	CRect* CalcNotePosition(int itemIndex);
+	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertNote(ComplexString inpusString);
 	bool DeleteNote(int notSEQ);
+	bool MoveNote(int startMoveIndex, int endMoveIndex);
 
 private:
 

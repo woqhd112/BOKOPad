@@ -210,6 +210,8 @@
     <ClInclude Include="ScenarioManager.h" />
     <ClInclude Include="ScrollProcess.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Timeline.h" />
+    <ClInclude Include="TimelineDetail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKODragDlg.cpp" />
@@ -229,6 +231,8 @@
     </ClCompile>
     <ClCompile Include="ScenarioManager.cpp" />
     <ClCompile Include="ScrollProcess.cpp" />
+    <ClCompile Include="Timeline.cpp" />
+    <ClCompile Include="TimelineDetail.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOKOPad.rc" />

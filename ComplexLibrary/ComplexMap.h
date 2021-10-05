@@ -55,77 +55,42 @@ namespace ComplexLibrary
 
 		ComplexMap(ComplexMap<T, N>& ptr)
 		{
-			int nPtr_size = ptr.m_size;
-			int nPtr_capacity = ptr.m_capacity;
+			clear();
+			m_size = ptr.m_size;
+			m_capacity = ptr.m_capacity;
+			m_keys.reserve(m_capacity);
 
-			if (m_pairs.size() > 0)
-				m_pairs.clear();
-
-			if (m_keys.size() > 0)
-			{
-				m_keys.erase(0, m_keys.size() - 1);
-				m_keys.clear();
-			}
-
-			m_keys.reserve(nPtr_capacity);
-
-			for (int i = 0; i < nPtr_size; i++)
+			for (int i = 0; i < m_size; i++)
 			{
 				ComplexPair<T, N> pair = ptr.m_pairs.at(i);
 				T key = pair.key;
 				m_pairs.push_tail(pair);
 				m_keys.push_back(key);
 			}
-
-			m_size = nPtr_size;
-			m_capacity = nPtr_capacity;
 		}
 
 		ComplexMap(ComplexMap<T, N>&& ptr)
 		{
-			int nPtr_size = ptr.m_size;
-			int nPtr_capacity = ptr.m_capacity;
+			clear();
+			m_size = ptr.m_size;
+			m_capacity = ptr.m_capacity;
+			m_keys.reserve(m_capacity);
 
-			if (m_pairs.size() > 0)
-				m_pairs.clear();
-
-			if (m_keys.size() > 0)
-			{
-				m_keys.erase(0, m_keys.size() - 1);
-				m_keys.clear();
-			}
-
-			m_keys.reserve(nPtr_capacity);
-
-			for (int i = 0; i < nPtr_size; i++)
+			for (int i = 0; i < m_size; i++)
 			{
 				ComplexPair<T, N> pair = ptr.m_pairs.at(i);
 				T key = pair.key;
 				m_pairs.push_tail(pair);
 				m_keys.push_back(key);
 			}
-
-			m_size = nPtr_size;
-			m_capacity = nPtr_capacity;
 		}
 
 		ComplexMap(std::initializer_list<std::pair<T, N>> list)
 		{
+			clear();
 			int size = list.size();
-
-			int nPtr_size = size;
-			int nPtr_capacity = size;
-
-			if (m_pairs.size() > 0)
-				m_pairs.clear();
-
-			if (m_keys.size() > 0)
-			{
-				m_keys.erase(0, m_keys.size() - 1);
-				m_keys.clear();
-			}
-
-			m_keys.reserve(nPtr_capacity);
+			m_capacity = size;
+			m_keys.reserve(m_capacity);
 
 			auto iter = list.begin();
 			while (iter != list.end())
@@ -135,9 +100,6 @@ namespace ComplexLibrary
 				m_keys.push_back(iter_pair.first);
 				iter++;
 			}
-
-			m_size = nPtr_size;
-			m_capacity = nPtr_capacity;
 		}
 
 		~ComplexMap()
@@ -272,50 +234,28 @@ namespace ComplexLibrary
 
 		ComplexMap<T, N>& operator = (ComplexMap<T, N>& other)
 		{
-			if (this != &other)
+			clear();
+			m_size = other.m_size;
+			m_capacity = other.m_capacity;
+			m_keys.reserve(m_capacity);
+
+			for (int i = 0; i < m_size; i++)
 			{
-				if (m_capacity != other.m_capacity)
-				{
-					m_capacity = other.m_capacity;
-					m_pairs.clear();
-					if (m_keys.size() > 0)
-					{
-						m_keys.erase(0, m_keys.size() - 1);
-						m_keys.clear();
-					}
-
-					m_keys.reserve(m_capacity);
-				}
-
-				m_size = other.m_size;
-				for (int i = 0; i < m_size; i++)
-				{
-					ComplexPair<T, N> pair = other.m_pairs.at(i);
-					T key = pair.key;
-					m_pairs.push_tail(pair);
-					m_keys.push_back(key);
-				}
+				ComplexPair<T, N> pair = other.m_pairs.at(i);
+				T key = pair.key;
+				m_pairs.push_tail(pair);
+				m_keys.push_back(key);
 			}
+
 			return *this;
 		}
 
 		ComplexMap<T, N>& operator = (std::initializer_list<std::pair<T, N>> list)
 		{
+			clear();
 			int size = list.size();
-
-			int nPtr_size = size;
-			int nPtr_capacity = size;
-
-			if (m_pairs.size() > 0)
-				m_pairs.clear();
-
-			if (m_keys.size() > 0)
-			{
-				m_keys.erase(0, m_keys.size() - 1);
-				m_keys.clear();
-			}
-
-			m_keys.reserve(nPtr_capacity);
+			m_capacity = size;
+			m_keys.reserve(m_capacity);
 
 			auto iter = list.begin();
 			while (iter != list.end())
@@ -325,9 +265,6 @@ namespace ComplexLibrary
 				m_keys.push_back(iter_pair.first);
 				iter++;
 			}
-
-			m_size = nPtr_size;
-			m_capacity = nPtr_capacity;
 
 			return *this;
 		}

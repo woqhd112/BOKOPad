@@ -32,6 +32,9 @@
     <Filter Include="PerformanceManager\UI Manager">
       <UniqueIdentifier>{a961efcf-df52-49bf-8bb4-cb1ed56b6573}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Scenario\Timeline">
+      <UniqueIdentifier>{d62dce94-0cef-4e05-8227-ead3c9682af7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -82,6 +85,12 @@
     <ClInclude Include="NoteListInterface.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="Timeline.h">
+      <Filter>UI\Scenario\Timeline</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineDetail.h">
+      <Filter>UI\Scenario\Timeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -119,6 +128,12 @@
     </ClCompile>
     <ClCompile Include="ScrollProcess.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Timeline.cpp">
+      <Filter>UI\Scenario\Timeline</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineDetail.cpp">
+      <Filter>UI\Scenario\Timeline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,9 @@ enum DDL_QUERY_INDEX
 	CREATE_NOTE_INFORMATION_TABLE,
 	DROP_NOTE_INFORMATION_TABLE,
 	CREATE_PAD_OPTION_TABLE,
-	DROP_PAD_OPTION_TABLE
+	DROP_PAD_OPTION_TABLE,
+	CREATE_TIME_LINE_TABLE,
+	DROP_TIME_LINE_TABLE
 };
 
 enum DML_QUERY_INDEX
@@ -35,27 +37,39 @@ enum DML_QUERY_INDEX
 	SELECT_IN_NOTCNT_SCENARIO_LIST_IN_SCESEQ,
 	SELECT_IN_SCETITLE_SCENARIO_LIST_IN_SCESEQ,
 	UPDATE_NOTE_INFORMATION_TABLE_IN_SCESEQ,
+	SELECT_ALL_TIME_LINE_TABLE_IN_SCESEQ,
+	INSERT_TIME_LINE_TABLE,
+	DELETE_TIME_LINE_TABLE,
+	UPDATE_TIME_LINE_TABLE_IN_TIMEIDX,
 };
 
 static const char* DefinedDDLQuerys[] = { 
-								  // create scenario list table
-								  "CREATE TABLE ScenarioList(sceSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
-															 sceTITLE TEXT NOT NULL, \
-															 notCNT INTEGER DEFAULT 0)",	
-								  // drop scenario list table
-								  "DROP TABLE ScenarioList",	
-								  // create note information table
-								  "CREATE TABLE NoteInformation(notSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
-																notCONTENT TEXT, \
-																notLOCK INTEGER DEFAULT 0, \
-																sceSEQ INTEGER, FOREIGN KEY (sceSEQ) REFERENCES ScenarioList(sceSEQ) ON DELETE CASCADE)",
-								  // drop note information table
-								  "DROP TABLE NoteInformation",
-								  // create pad option table
-								  "CREATE TABLE PadOption(test1 INTEGER DEFAULT 0, \
-														  test2 INTEGER DEFAULT 0)",
-								  // drop pad option table
-								  "DROP TABLE PadOption",
+									// create scenario list table
+									"CREATE TABLE ScenarioList(sceSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
+																sceTITLE TEXT NOT NULL, \
+																notCNT INTEGER DEFAULT 0)",	
+									// drop scenario list table
+									"DROP TABLE ScenarioList",	
+									// create note information table
+									"CREATE TABLE NoteInformation(notSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
+																	notCONTENT TEXT, \
+																	notLOCK INTEGER DEFAULT 0, \
+																	sceSEQ INTEGER, FOREIGN KEY (sceSEQ) REFERENCES ScenarioList(sceSEQ) ON DELETE CASCADE)",
+									// drop note information table
+									"DROP TABLE NoteInformation",
+									// create pad option table
+									"CREATE TABLE PadOption(test1 INTEGER DEFAULT 0, \
+															test2 INTEGER DEFAULT 0)",
+									// drop pad option table
+									"DROP TABLE PadOption",
+									// create timeline table
+									"CREATE TABLE Timeline(timeIDX INTEGER DEFAULT 0, \
+															notSEQ INTEGER, \
+															sceSEQ INTEGER, \
+															FOREIGN KEY (notSEQ) REFERENCES NoteInformation(notSEQ) ON DELETE CASCADE, \
+															FOREIGN KEY (sceSEQ) REFERENCES ScenarioList(sceSEQ) ON DELETE CASCADE)",
+									// drop timeline table
+									"DROP TABLE Timeline",
 
 								  };
 
@@ -106,4 +120,12 @@ static const char* DefinedDMLQuerys[] = {
 									"SELECT sceSEQ FROM ScenarioList WHERE sceTITLE = ?",
 									// update note information table in sceSEQ
 									"UPDATE NoteInformation SET sceSEQ = ? WHERE notSEQ = ?",
+									// select one time line table in sceSEQ
+									"SELECT * FROM Timeline WHERE sceSEQ = ?",
+									// insert time line table
+									"INSERT INTO Timeline (timeIDX, notSEQ, sceSEQ) VALUES (?, ?, ?)",
+									// delete time line table
+									"DELETE FROM Timeline WHERE notSEQ = ?",
+									// update time line in timeIDX
+									"UPDATE Timeline SET timeIDX = ? WHERE timeIDX = ?, sceSEQ = ?",
 								   };

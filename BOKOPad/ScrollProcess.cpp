@@ -29,13 +29,6 @@ void ScrollProcess::ExecuteScroll(int scrollLineFlag)
 	if (!m_bInit)
 		return;
 
-	int nScrollMax = 0;
-	if (m_nWheelSize < m_nAllPageSize)
-	{
-		nScrollMax = m_nAllPageSize - 1;
-		m_nScrollPos = min(m_nScrollPos, m_nAllPageSize - m_nWheelSize - 1);
-	}
-
 	if (scrollLineFlag == SCROLL_LINE_ADD)
 	{
 		m_nAllPageSize += m_nWheelSize;
@@ -48,6 +41,14 @@ void ScrollProcess::ExecuteScroll(int scrollLineFlag)
 		if (m_nScrollProcessCount > m_nPageCount)
 			m_nScrollProcessCount = m_nPageCount;
 	}
+
+	int nScrollMax = 0;
+	if (m_nWheelSize < m_nAllPageSize)
+	{
+		nScrollMax = m_nAllPageSize - 1;
+		m_nScrollPos = min(m_nScrollPos, m_nAllPageSize - m_nWheelSize - 1);
+	}
+
 
 	SCROLLINFO si;
 	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;

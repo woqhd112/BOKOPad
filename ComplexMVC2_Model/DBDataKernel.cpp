@@ -26,6 +26,11 @@ void DBDataKernel::ResetPadOption()
 	m_padOptionVOContainer.clear();
 }
 
+void DBDataKernel::ResetTimeline()
+{
+	m_timeLineContainer.clear();
+}
+
 void DBDataKernel::SetNoteInformation(NoteInformationVO& in)
 {
 	NoteInformationVO noteinfo;
@@ -51,6 +56,15 @@ void DBDataKernel::SetPadOption(PadOptionVO& in)
 	padOption.SetTest1(in.GetTest1());
 	padOption.SetTest2(in.GetTest2());
 	m_padOptionVOContainer.push_back(padOption);
+}
+
+void DBDataKernel::SetTimeline(TimelineVO& in)
+{
+	TimelineVO timeLine;
+	timeLine.SetTimeIDX(in.GetTimeIDX());
+	timeLine.SetNotSEQ(in.GetNotSEQ());
+	timeLine.SetSceSEQ(in.GetSceSEQ());
+	m_timeLineContainer.push_back(timeLine);
 }
 
 void DBDataKernel::SetNoteInformation(int notSEQ, int sceSEQ, bool notLOCK, ComplexString notCONTENT)
@@ -80,6 +94,15 @@ void DBDataKernel::SetPadOption(int test1, int test2)
 	m_padOptionVOContainer.push_back(padOption);
 }
 
+void DBDataKernel::SetTimeline(int timeIDX, int notSEQ, int sceSEQ)
+{
+	TimelineVO timeLine;
+	timeLine.SetTimeIDX(timeIDX);
+	timeLine.SetNotSEQ(notSEQ);
+	timeLine.SetSceSEQ(sceSEQ);
+	m_timeLineContainer.push_back(timeLine);
+}
+
 void DBDataKernel::GetNoteInformation(NoteInformationVO* out, int get_row_index)
 {
 	if (m_noteInformationVOContainer.empty())
@@ -92,7 +115,6 @@ void DBDataKernel::GetNoteInformation(NoteInformationVO* out, int get_row_index)
 		out->SetNotLOCK(m_noteInformationVOContainer.at(get_row_index).IsNotLOCK());
 		out->SetNotCONTENT(m_noteInformationVOContainer.at(get_row_index).GetNotCONTENT());
 	}
-	//ResetNoteInformation();
 }
 
 void DBDataKernel::GetScenarioList(ScenarioListVO* out, int get_row_index)
@@ -106,7 +128,6 @@ void DBDataKernel::GetScenarioList(ScenarioListVO* out, int get_row_index)
 		out->SetNotCNT(m_scenarioListVOContainer.at(get_row_index).GetNotCNT());
 		out->SetSceTITLE(m_scenarioListVOContainer.at(get_row_index).GetSceTITLE());
 	}
-	//ResetScenarioList();
 }
 
 void DBDataKernel::GetPadOption(PadOptionVO* out, int get_row_index)
@@ -119,7 +140,19 @@ void DBDataKernel::GetPadOption(PadOptionVO* out, int get_row_index)
 		out->SetTest1(m_padOptionVOContainer.at(get_row_index).GetTest1());
 		out->SetTest2(m_padOptionVOContainer.at(get_row_index).GetTest2());
 	}
-	//ResetPadOption();
+}
+
+void DBDataKernel::GetTimeline(TimelineVO* out, int get_row_index)
+{
+	if (m_timeLineContainer.empty())
+		return;
+
+	if (out)
+	{
+		out->SetTimeIDX(m_timeLineContainer.at(get_row_index).GetTimeIDX());
+		out->SetNotSEQ(m_timeLineContainer.at(get_row_index).GetNotSEQ());
+		out->SetSceSEQ(m_timeLineContainer.at(get_row_index).GetSceSEQ());
+	}
 }
 
 void DBDataKernel::GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* out_notLOCK, ComplexString* out_notCONTENT, int get_row_index)
@@ -135,7 +168,6 @@ void DBDataKernel::GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* ou
 		*out_notLOCK = m_noteInformationVOContainer.at(get_row_index).IsNotLOCK();
 	if (out_notCONTENT)
 		*out_notCONTENT = m_noteInformationVOContainer.at(get_row_index).GetNotCONTENT();
-	//ResetNoteInformation();
 }
 
 void DBDataKernel::GetScenarioList(int* out_sceSEQ, int* out_notCNT, ComplexString* out_sceTITLE, int get_row_index)
@@ -149,7 +181,6 @@ void DBDataKernel::GetScenarioList(int* out_sceSEQ, int* out_notCNT, ComplexStri
 		*out_notCNT = m_scenarioListVOContainer.at(get_row_index).GetNotCNT();
 	if (out_sceTITLE)
 		*out_sceTITLE = m_scenarioListVOContainer.at(get_row_index).GetSceTITLE();
-	//ResetScenarioList();
 }
 
 void DBDataKernel::GetPadOption(int* out_test1, int* out_test2, int get_row_index)
@@ -161,7 +192,19 @@ void DBDataKernel::GetPadOption(int* out_test1, int* out_test2, int get_row_inde
 		*out_test1 = m_padOptionVOContainer.at(get_row_index).GetTest1();
 	if (out_test2)
 		*out_test2 = m_padOptionVOContainer.at(get_row_index).GetTest2();
-	//ResetPadOption();
+}
+
+void DBDataKernel::GetTimeline(int* out_timeIDX, int* out_notSEQ, int* out_sceSEQ, int get_row_index)
+{
+	if (m_timeLineContainer.empty())
+		return;
+
+	if (out_timeIDX)
+		*out_timeIDX = m_timeLineContainer.at(get_row_index).GetTimeIDX();
+	if (out_notSEQ)
+		*out_notSEQ = m_timeLineContainer.at(get_row_index).GetNotSEQ();
+	if (out_sceSEQ)
+		*out_sceSEQ = m_timeLineContainer.at(get_row_index).GetSceSEQ();
 }
 
 void DBDataKernel::GetNoteInformationContainer(ComplexVector<NoteInformationVO>* out_noteInformationVOContainer)
@@ -181,7 +224,6 @@ void DBDataKernel::GetNoteInformationContainer(ComplexVector<NoteInformationVO>*
 			iter++;
 		}
 	}
-	//ResetNoteInformation();
 }
 
 void DBDataKernel::GetScenarioListContainer(ComplexVector<ScenarioListVO>* out_scenarioListVOContainer)
@@ -200,7 +242,6 @@ void DBDataKernel::GetScenarioListContainer(ComplexVector<ScenarioListVO>* out_s
 			iter++;
 		}
 	}
-	//ResetScenarioList();
 }
 
 void DBDataKernel::GetPadOptionContainer(ComplexVector<PadOptionVO>* out_padOptionVOContainer)
@@ -218,5 +259,22 @@ void DBDataKernel::GetPadOptionContainer(ComplexVector<PadOptionVO>* out_padOpti
 			iter++;
 		}
 	}
-	//ResetPadOption();
+}
+
+void DBDataKernel::GetTimelineContainer(ComplexVector<TimelineVO>* out_timeLineVOContainer)
+{
+	if (out_timeLineVOContainer)
+	{
+		ComplexVector<TimelineVO>::iterator iter = m_timeLineContainer.begin();
+
+		while (iter != m_timeLineContainer.end())
+		{
+			TimelineVO in_timeLine;
+			in_timeLine.SetTimeIDX(iter->value.GetTimeIDX());
+			in_timeLine.SetNotSEQ(iter->value.GetNotSEQ());
+			in_timeLine.SetSceSEQ(iter->value.GetSceSEQ());
+			out_timeLineVOContainer->push_back(in_timeLine);
+			iter++;
+		}
+	}
 }

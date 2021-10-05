@@ -6,6 +6,7 @@ DlgController::DlgController()
 	: m_mainDlgService(new MainDlgService)
 	, m_scenarioListDlgService(new ScenarioListDlgService)
 	, m_noteInformationDlgService(new NoteInformationDlgService)
+	, m_timeLineDlgService(new TimelineDlgService)
 {
 
 }
@@ -28,6 +29,12 @@ DlgController::~DlgController()
 	{
 		delete m_noteInformationDlgService;
 		m_noteInformationDlgService = nullptr;
+	}
+
+	if (m_timeLineDlgService)
+	{
+		delete m_timeLineDlgService;
+		m_timeLineDlgService = nullptr;
 	}
 }
 
@@ -154,4 +161,32 @@ bool DlgController::UpdateNoteInformationInSceSEQ()
 	NoteInformationVO note;
 	RequestScope->GetRequestAttributes(&note);
 	return m_noteInformationDlgService->UpdateNoteInformationInSceSEQ(note.GetNotSEQ(), note.GetSceSEQ());
+}
+
+bool DlgController::SelectInSceSEQTimeline()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->SelectInSceSEQTimeline(timeline.GetSceSEQ());
+}
+
+bool DlgController::InsertTimeline()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->InsertTimeline(timeline.GetTimeIDX(), timeline.GetNotSEQ(), timeline.GetSceSEQ());
+}
+
+bool DlgController::DeleteTimeline()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->DeleteTimeline(timeline.GetNotSEQ());
+}
+
+bool DlgController::UpdateTimelineInTimeIDX()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->UpdateTimelineInTimeIDX(timeline.GetSceSEQ(), timeline.GetTimeIDX());
 }
