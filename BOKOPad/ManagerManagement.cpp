@@ -6,6 +6,7 @@
 
 ComplexMap<int, BOKOScenarioDetailDlg*> ManagerManagement::m_scenarioDlgManager;
 ComplexMap<int, int> ManagerManagement::m_scenarioSeqMap;
+DragUpState ManagerManagement::m_dragState;
 
 ManagerManagement::ManagerManagement()
 	: m_bAttach(false)
@@ -14,9 +15,8 @@ ManagerManagement::ManagerManagement()
 	, m_pPutNoteStruct(nullptr)
 	, m_pPutDragStruct(nullptr)
 	, m_dragDlg(new BOKODragDlg)
-	, m_dragState(DUS_NOTHING)
 {
-
+	m_dragState = DUS_NOTHING;
 }
 
 ManagerManagement::~ManagerManagement()

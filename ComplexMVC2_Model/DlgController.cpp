@@ -125,14 +125,14 @@ bool DlgController::InsertNoteInformation()
 {
 	NoteInformationVO note;
 	RequestScope->GetRequestAttributes(&note);
-	return m_noteInformationDlgService->InsertNoteInformation(note.GetNotCONTENT(), note.IsNotLOCK(), note.GetSceSEQ());
+	return m_noteInformationDlgService->InsertNoteInformation(note.GetNotCONTENT(), note.IsSetTIMELINE(), note.IsNotLOCK(), note.GetSceSEQ());
 }
 
 bool DlgController::UpdateNoteInformation()
 {
 	NoteInformationVO note;
 	RequestScope->GetRequestAttributes(&note);
-	return m_noteInformationDlgService->UpdateNoteInformation(note.GetNotCONTENT(), note.IsNotLOCK(), note.GetNotSEQ());
+	return m_noteInformationDlgService->UpdateNoteInformation(note.GetNotCONTENT(), note.IsSetTIMELINE(), note.IsNotLOCK(), note.GetNotSEQ());
 }
 
 bool DlgController::DeleteNoteInformation()
@@ -161,6 +161,13 @@ bool DlgController::UpdateNoteInformationInSceSEQ()
 	NoteInformationVO note;
 	RequestScope->GetRequestAttributes(&note);
 	return m_noteInformationDlgService->UpdateNoteInformationInSceSEQ(note.GetNotSEQ(), note.GetSceSEQ());
+}
+
+bool DlgController::UpdateNoteInformationInSetTIMELINE()
+{
+	NoteInformationVO note;
+	RequestScope->GetRequestAttributes(&note);
+	return m_noteInformationDlgService->UpdateNoteInformationInSetTIMELINE(note.GetNotSEQ(), note.IsSetTIMELINE());
 }
 
 bool DlgController::SelectInSceSEQTimeline()

@@ -21,9 +21,6 @@ private:
 	bool Hide();
 	bool Exist();
 
-	bool TimeLineContactGridline();
-	bool TimeLineNotContactGridline();
-
 private:
 
 	/*ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;

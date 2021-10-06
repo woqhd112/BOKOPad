@@ -10,8 +10,6 @@ class NoteManager;
 
 class NoteListCtrl : public CDialogEx, public NoteListInterface
 {
-	// 노트매니저 접근권한
-	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(NoteListCtrl)
 
 public:
@@ -28,6 +26,7 @@ public:
 	CRect* CalcNotePosition(int itemIndex);
 	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertNote(ComplexString inpusString);
+	bool UpdateSetTIME(int notSEQ, int noteIndex);
 	bool DeleteNote(int notSEQ);
 	bool MoveNote(int startMoveIndex, int endMoveIndex);
 

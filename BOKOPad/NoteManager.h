@@ -31,10 +31,8 @@ private:
 
 	int m_variableCtrlPos_x;
 	int m_variableCtrlPos_y;
-	const int EDIT_WIDTH = 80;
-	const int EDIT_HEIGHT = 60;
-	const int DRAG_DLG_WIDTH = 30;
-	const int DRAG_DLG_HEIGHT = 30;
+
+
 
 	bool m_bCursorAttach;
 	bool m_bCursorDetach;

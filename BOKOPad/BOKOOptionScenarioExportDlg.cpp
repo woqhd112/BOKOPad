@@ -46,7 +46,7 @@ BOOL BOKOOptionScenarioExportDlg::OnInitDialog()
 
 	Initialize();
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	if (MVC_Controller->SelectAllScenarioList())
 	{
 		RequestScope->GetRequestAttributes(&m_loadScenarioList);
@@ -61,7 +61,7 @@ BOOL BOKOOptionScenarioExportDlg::OnInitDialog()
 			iter++;
 		}
 	}
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.

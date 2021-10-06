@@ -8,6 +8,7 @@ public:
 	NoteInformationVO()
 		: notSEQ(0)
 		, sceSEQ(0)
+		, setTIMELINE(false)
 		, notLOCK(false)
 		, notCONTENT("")
 	{
@@ -18,13 +19,15 @@ public:
 	{
 		notSEQ = vo.notSEQ;
 		sceSEQ = vo.sceSEQ;
+		setTIMELINE = vo.setTIMELINE;
 		notLOCK = vo.notLOCK;
 		notCONTENT = vo.notCONTENT;
 	}
 
-	NoteInformationVO(int notSEQ, int sceSEQ, bool notLOCK, ComplexString notCONTENT)
+	NoteInformationVO(int notSEQ, int sceSEQ, bool setTIMELINE, bool notLOCK, ComplexString notCONTENT)
 		: notSEQ(notSEQ)
 		, sceSEQ(sceSEQ)
+		, setTIMELINE(setTIMELINE)
 		, notLOCK(notLOCK)
 		, notCONTENT(notCONTENT)
 	{
@@ -40,6 +43,7 @@ public:
 	{
 		notSEQ = 0;
 		sceSEQ = 0;
+		setTIMELINE = false;
 		notLOCK = false;
 		notCONTENT = "";
 	}
@@ -52,6 +56,11 @@ public:
 	void SetSceSEQ(int in)
 	{
 		this->sceSEQ = in;
+	}
+
+	void SetSetTIMELINE(bool in)
+	{
+		this->setTIMELINE = in;
 	}
 
 	void SetNotLOCK(bool in)
@@ -74,6 +83,11 @@ public:
 		return sceSEQ;
 	}
 
+	bool IsSetTIMELINE() const
+	{
+		return setTIMELINE;
+	}
+
 	bool IsNotLOCK() const
 	{
 		return notLOCK;
@@ -88,6 +102,7 @@ private:
 
 	int notSEQ;
 	int sceSEQ;
+	bool setTIMELINE;
 	bool notLOCK;
 	ComplexString notCONTENT;
 

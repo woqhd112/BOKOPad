@@ -189,13 +189,16 @@ namespace ComplexLibrary
 
 			bool bFind = false;
 			int i = 0;
-			for (i = 0; i < m_size; i++)
+			ComplexNode<T>* tmp = m_head;
+			while (tmp != nullptr)
 			{
-				if (m_ptr[i] == iter->value)
+				if (iter == tmp)
 				{
 					bFind = true;
 					break;
 				}
+				i++;
+				tmp = tmp->m_next;
 			}
 
 			if (bFind)

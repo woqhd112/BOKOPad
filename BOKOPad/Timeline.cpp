@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "Timeline.h"
-#include "NoteManager.h"
+#include "TimelineManager.h"
 #include "afxdialogex.h"
 
 
@@ -14,19 +14,25 @@ IMPLEMENT_DYNAMIC(Timeline, CDialogEx)
 
 Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE, pParent)
+	, m_timeManager(new TimelineManager)
 {
 	m_bInit = false;
 	m_nLineStartPoint_X = 0;
 	m_nLineEndPoint_X = 0;
 	m_nLinePoint_Y = 0;
 	m_nDataVariableWidth = 0;
-	m_nTimelineCount = 0;
 	m_nPointingTimeIDX = -1;
 	bDetailOpen = false;
 }
 
 Timeline::~Timeline()
 {
+	if (m_timeManager)
+	{
+		delete m_timeManager;
+		m_timeManager = nullptr;
+	}
+
 	m_linePen.DeleteObject();
 	m_drawPen.DeleteObject();
 	m_drawHoverPen.DeleteObject();
@@ -50,6 +56,8 @@ BOOL Timeline::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	m_timeManager->AttachManager(this);
+
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	m_linePen.CreatePen(PS_SOLID, 3, LINE_COLOR);
 	m_drawHoverPen.CreatePen(PS_SOLID, 2, LINE_COLOR);
@@ -63,11 +71,6 @@ BOOL Timeline::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
-}
-
-void Timeline::AttachNoteManager(NoteManager* manager)
-{
-	m_noteManager = manager;
 }
 
 void Timeline::HideTimelineDetail()
@@ -108,7 +111,8 @@ int Timeline::ValidatePointToRect(POINT pt)
 
 void Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 {
-	for (int i = startUpdateTimeIDX; i < m_timeLineContainer.size(); i++)
+	// 업데이트를 오름차순으로 처리하면 같은값이 되서 내림차순으로 처리해야한다.
+	for (int i = m_timeLineContainer.size() - 1; i >= startUpdateTimeIDX; i--)
 	{
 		TimelineVO time;
 		time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
@@ -123,7 +127,7 @@ void Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 {
 	int timeIDX = ValidatePointToRect(currentMPoint);
 	if (timeIDX == -1)
-		timeIDX = m_nTimelineCount;
+		timeIDX = m_timeLineContainer.size();
 
 	UpdateTimelineIDX(timeIDX);
 
@@ -140,7 +144,6 @@ void Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 			m_timeLineContainer.clear();
 			RequestScope->GetRequestAttributes(&m_timeLineContainer);
 		}
-		m_nTimelineCount = m_timeLineContainer.size();
 		Invalidate();
 	}
 }
@@ -205,6 +208,8 @@ void Timeline::OnPaint()
 void Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
 	m_thisDataStruct = thisDataStruct;
+	m_defaultDragData.sceSEQ = thisDataStruct.scenarioData.GetSceSEQ();
+	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
 
 	GetClientRect(m_thisRect);
 	m_nLineStartPoint_X = m_thisRect.left + 5;
@@ -227,7 +232,6 @@ void Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 		RequestScope->GetRequestAttributes(&m_timeLineContainer);
 
 	}
-	m_nTimelineCount = m_timeLineContainer.size();
 	Invalidate();
 }
 
@@ -235,7 +239,7 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 {
 	// thisApproch는 true일때 마우스가 아무 동작하지않을 때 접근
 	// false일땐 드래그 이벤트 중에 접근했을 경우
-
+	
 	POINT pt = pts;
 	ScreenToClient(&pt);
 	if (PtInRect(m_timeLineRect, pt))
@@ -253,10 +257,12 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 			iter++;
 		}
 
+		// 마우스 커서가 노트있는 곳을 발견했을 때
 		if (bFind)
 		{
 			m_nPointingTimeIDX = iter->value.key;
-			SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND));
+			// 우선 마우스를 핸드로 변경
+			CURSOR_HAND;
 
 			m_detailDlg.SetWindowPos(NULL, pts.x - 400 - 5, pts.y - 200 - 5, 0, 0, SWP_NOSIZE);
 			m_detailDlg.ShowWindow(SW_SHOW);
@@ -306,6 +312,7 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 
 			}
 		}
+		// 발견하지 못했을 땐
 		else
 		{
 			m_nPointingTimeIDX = -1;
@@ -313,9 +320,9 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 			bDetailOpen = false;
 			m_detailDlg.ShowWindow(SW_HIDE);
 			if (thisApproch)
-				SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+				CURSOR_ARROW;	// 드래그이벤트로 접근하지 않았을 경우 화살표로 변경
 			else
-				SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
+				CURSOR_CROSS;	// 드래그이벤트로 접근했을 땐 마우스가 크로스로 접근했기 때문에 크로스로 되돌림
 
 		}
 		Invalidate();
@@ -331,11 +338,7 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
-	if (pMsg->message == WM_MOUSEMOVE)
-	{
-		ThickEventTimeline(-1, pMsg->pt);
-	}
-	else if (pMsg->message == WM_LBUTTONDBLCLK)
+	if (pMsg->message == WM_LBUTTONDBLCLK)
 	{
 		POINT pt = pMsg->pt;
 		ScreenToClient(&pt);
@@ -347,7 +350,11 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 		GetParent()->GetWindowRect(rect);
 		if (PtInRect(m_thisRect, pt))
 		{
-			m_oneViewDlg.SetWindowPos(NULL, rect.right, rect.top, 0, 0, SWP_NOSIZE);
+			if (GetSystemMetrics(SM_CXSCREEN) - 500 < rect.right)
+				m_oneViewDlg.SetWindowPos(NULL, rect.left - rect.Width(), rect.top, 0, 0, SWP_NOSIZE);
+			else
+				m_oneViewDlg.SetWindowPos(NULL, rect.right, rect.top, 0, 0, SWP_NOSIZE);
+
 			m_oneViewDlg.ShowWindow(SW_SHOW);
 			TimelineOneViewProcess();
 		}
@@ -364,6 +371,9 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 	}
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
+		if (!m_bDragProcessing)
+			ThickEventTimeline(-1, pMsg->pt);
+
 		if (DragMove(pMsg))
 			return FALSE;
 	}
@@ -373,7 +383,7 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 
 void Timeline::TimelineOneViewProcess()
 {
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	ComplexVector<TimelineVO>::iterator iter = m_timeLineContainer.begin();
 
 	ComplexString oneViewTimelineText;
@@ -397,13 +407,68 @@ void Timeline::TimelineOneViewProcess()
 
 	m_oneViewDlg.SetTimelineText(oneViewTimelineText);
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_CROSS;
 }
 
 
 bool Timeline::DragDown(MSG* pMsg)
 {
+	POINT pt = pMsg->pt;
+	ScreenToClient(&pt);
+	if (PtInRect(m_timeLineRect, pt) == false)
+		return false;
+
+	ComplexMap<int, CRect>::iterator iter = m_timeLinePointMap.begin();
+
+	bool bFind = false;
+	while (iter != m_timeLinePointMap.end())
+	{
+		if (PtInRect(iter->value.value, pt))
+		{
+			bFind = true;
+			break;
+		}
+		iter++;
+	}
+
+	if (!bFind)
+		return false;
+
+	if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
+		return false;
+
+	if (m_nPointingTimeIDX < 0)
+		return false;
+
+	if (bDetailOpen)
+	{
+		bDetailOpen = false;
+		m_detailDlg.ShowWindow(SW_HIDE);
+	}
 	
+	// 드래그 다이얼로그 띄우기
+	m_defaultDragData.mousePos_X = pMsg->pt.x;
+	m_defaultDragData.mousePos_Y = pMsg->pt.y;
+	// 노트인덱스값 구하기..
+	m_defaultDragData.noteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
+	m_timeManager->InputDragStruct(&m_defaultDragData);
+	m_bDragProcessing = m_timeManager->SendMessages(PM_TIMELINE_DRAG_DOWN);
+	
+	// 타임라인 맵에서 해당 데이터 삭제
+	// 우선 컨테이너에서만 삭제시킨다.
+	ComplexVector<TimelineVO>::iterator iter2 = m_timeLineContainer.begin();
+
+	while (iter2 != m_timeLineContainer.end())
+	{
+		if (iter2->value.GetTimeIDX() == m_nPointingTimeIDX)
+		{
+			m_timeLineContainer.erase(iter2);
+			Invalidate();
+			break;
+		}
+		iter2++;
+	}
+
 	return true;
 }
 
@@ -412,7 +477,11 @@ bool Timeline::DragMove(MSG* pMsg)
 	if (!m_bDragProcessing)
 		return false;
 
-	
+	m_defaultDragData.mousePos_X = pMsg->pt.x;
+	m_defaultDragData.mousePos_Y = pMsg->pt.y;
+	m_timeManager->InputDragStruct(&m_defaultDragData);
+	m_timeManager->SendMessages(PM_TIMELINE_DRAG_MOVE);
+
 	return true;
 }
 
@@ -421,6 +490,44 @@ bool Timeline::DragUp(MSG* pMsg)
 	if (!m_bDragProcessing)
 		return false;
 
+	m_defaultDragData.mousePos_X = pMsg->pt.x;
+	m_defaultDragData.mousePos_Y = pMsg->pt.y;
+	m_timeManager->InputDragStruct(&m_defaultDragData);
+	if (m_timeManager->SendMessages(PM_TIMELINE_DRAG_UP))
+	{
+		DragUpState dus = m_timeManager->GetDragState();
+		if (dus == DUS_NOTHING)
+		{
+			TimelineVO time;
+			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->SelectInSceSEQTimeline())
+			{
+				m_timeLineContainer.clear();
+				RequestScope->GetRequestAttributes(&m_timeLineContainer);
+			}
+			Invalidate();
+		}
+		else if (dus == DUS_THIS)
+		{
+			m_timeManager->InputDragStruct(&m_defaultDragData);
+			m_timeManager->SendMessages(PM_NOTE_INSERT);
+		}
+		else if (dus == DUS_ANOTHER)
+		{
+			int a = 0;
+		}
+		else if (dus == DUS_THIS_TIMELINE)
+		{
+			int a = 0;
+		}
+		else if (dus == DUS_ANOTHER_TIMELINE)
+		{
+			int a = 0;
+		}
+	}
+
+	m_bDragProcessing = false;
 
 	return true;
 }

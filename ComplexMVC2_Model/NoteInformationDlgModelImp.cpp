@@ -10,47 +10,48 @@ static char THIS_FILE[] = __FILE__;
 void PrepareStatementSelectInSceSEQNoteInformation()
 {
 	int sceSEQ;
-	DATA_INSTANCE->GetNoteInformation(NULL, &sceSEQ, NULL, NULL);
+	DATA_INSTANCE->GetNoteInformation(NULL, &sceSEQ, NULL, NULL, NULL);
 	DB_INSTANCE->SetInt(1, sceSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
 
 void ResultSetSelectInSceSEQNoteInformation()
 {
-	DATA_INSTANCE->SetNoteInformation(DB_INSTANCE->GetInt(0), DB_INSTANCE->GetInt(3), (bool)DB_INSTANCE->GetInt(2), DB_INSTANCE->GetString(1));
+	DATA_INSTANCE->SetNoteInformation(DB_INSTANCE->GetInt(0), DB_INSTANCE->GetInt(4), (bool)DB_INSTANCE->GetInt(2), (bool)DB_INSTANCE->GetInt(3), DB_INSTANCE->GetString(1));
 }
 
 void PrepareStatementSelectOneNoteInformation()
 {
 	int notSEQ;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL, NULL);
 	DB_INSTANCE->SetInt(1, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
 
 void ResultSetSelectOneNoteInformation()
 {
-	DATA_INSTANCE->SetNoteInformation(DB_INSTANCE->GetInt(0), DB_INSTANCE->GetInt(3), (bool)DB_INSTANCE->GetInt(2), DB_INSTANCE->GetString(1));
+	DATA_INSTANCE->SetNoteInformation(DB_INSTANCE->GetInt(0), DB_INSTANCE->GetInt(4), (bool)DB_INSTANCE->GetInt(2), (bool)DB_INSTANCE->GetInt(3), DB_INSTANCE->GetString(1));
 }
 
 void PrepareStatementInsertNoteInformation()
 {
 	int sceSEQ;
-	bool notLOCK;
+	bool notLOCK, setTIMELINE;
 	ComplexString notCONTENT;
-	DATA_INSTANCE->GetNoteInformation(NULL, &sceSEQ, &notLOCK, &notCONTENT);
+	DATA_INSTANCE->GetNoteInformation(NULL, &sceSEQ, &setTIMELINE, &notLOCK, &notCONTENT);
 	DB_INSTANCE->SetString(1, notCONTENT);
-	DB_INSTANCE->SetInt(2, notLOCK);
-	DB_INSTANCE->SetInt(3, sceSEQ);
+	DB_INSTANCE->SetInt(2, setTIMELINE);
+	DB_INSTANCE->SetInt(3, notLOCK);
+	DB_INSTANCE->SetInt(4, sceSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
 
 void PrepareStatementUpdateNoteInformation()
 {
 	int notSEQ;
-	bool notLOCK;
+	bool notLOCK, setTIMELINE;
 	ComplexString notCONTENT;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, &notLOCK, &notCONTENT);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, &setTIMELINE, &notLOCK, &notCONTENT);
 	DB_INSTANCE->SetString(1, notCONTENT);
 	DB_INSTANCE->SetInt(2, notLOCK);
 	DB_INSTANCE->SetInt(3, notSEQ);
@@ -60,7 +61,7 @@ void PrepareStatementUpdateNoteInformation()
 void PrepareStatementDeleteNoteInformation()
 {
 	int notSEQ;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL, NULL);
 	DB_INSTANCE->SetInt(1, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
@@ -69,7 +70,7 @@ void PrepareStatementUpdateNoteInformationInNotCONTENT()
 {
 	int notSEQ;
 	ComplexString notCONTENT;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, &notCONTENT);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL, &notCONTENT);
 	DB_INSTANCE->SetString(1, notCONTENT);
 	DB_INSTANCE->SetInt(2, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
@@ -79,7 +80,7 @@ void PrepareStatementUpdateNoteInformationInNotLOCK()
 {
 	int notSEQ;
 	bool notLOCK;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, &notLOCK, NULL);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, &notLOCK, NULL);
 	DB_INSTANCE->SetInt(1, (int)notLOCK);
 	DB_INSTANCE->SetInt(2, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
@@ -88,7 +89,7 @@ void PrepareStatementUpdateNoteInformationInNotLOCK()
 void PrepareStatementSelectInSceSEQScenarioListInNotSEQ()
 {
 	int notSEQ;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, NULL, NULL, NULL);
 	DB_INSTANCE->SetInt(1, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
@@ -123,8 +124,18 @@ void ResultSetSelectInNotCNTScenarioListInSceSEQ()
 void PrepareStatementUpdateNoteInformationInSceSEQ()
 {
 	int notSEQ, sceSEQ;
-	DATA_INSTANCE->GetNoteInformation(&notSEQ, &sceSEQ, NULL, NULL);
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, &sceSEQ, NULL, NULL, NULL);
 	DB_INSTANCE->SetInt(1, sceSEQ);
+	DB_INSTANCE->SetInt(2, notSEQ);
+	DATA_INSTANCE->ResetNoteInformation();
+}
+
+void PrepareStatementUpdateNoteInformationInSetTIMELINE()
+{
+	int notSEQ;
+	bool setTIMELINE;
+	DATA_INSTANCE->GetNoteInformation(&notSEQ, NULL, &setTIMELINE, NULL, NULL);
+	DB_INSTANCE->SetInt(1, (int)setTIMELINE);
 	DB_INSTANCE->SetInt(2, notSEQ);
 	DATA_INSTANCE->ResetNoteInformation();
 }
@@ -142,7 +153,7 @@ NoteInformationDlgModelImp::~NoteInformationDlgModelImp()
 bool NoteInformationDlgModelImp::SelectInSceSEQNoteInformation(int in_sceSEQ, ComplexVector<NoteInformationVO>* out_noteInformationContainer)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(0, in_sceSEQ, false, "");
+	DATA_INSTANCE->SetNoteInformation(0, in_sceSEQ, false, false, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[SELECT_IN_SEQ_NOTE_INFORMATION_TABLE], PrepareStatementSelectInSceSEQNoteInformation, ResultSetSelectInSceSEQNoteInformation);
 
 	if (bSuccess)
@@ -156,7 +167,7 @@ bool NoteInformationDlgModelImp::SelectInSceSEQNoteInformation(int in_sceSEQ, Co
 bool NoteInformationDlgModelImp::SelectOneNoteInformation(int in_notSEQ, NoteInformationVO* out_noteInformation)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, "");
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, false, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[SELECT_ONE_NOTE_INFORMATION_TABLE], PrepareStatementSelectOneNoteInformation, ResultSetSelectOneNoteInformation);
 
 	if (bSuccess)
@@ -167,10 +178,10 @@ bool NoteInformationDlgModelImp::SelectOneNoteInformation(int in_notSEQ, NoteInf
 	return bSuccess;
 }
 
-bool NoteInformationDlgModelImp::InsertNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_sceSEQ)
+bool NoteInformationDlgModelImp::InsertNoteInformation(ComplexString in_notCONTENT, bool in_setTIMELINE, bool in_notLOCK, int in_sceSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(0, in_sceSEQ, in_notLOCK, in_notCONTENT);
+	DATA_INSTANCE->SetNoteInformation(0, in_sceSEQ, in_setTIMELINE, in_notLOCK, in_notCONTENT);
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[INSERT_NOTE_INFORMATION_TABLE], PrepareStatementInsertNoteInformation);
 
 	DATA_INSTANCE->ResetNoteInformation();
@@ -178,10 +189,10 @@ bool NoteInformationDlgModelImp::InsertNoteInformation(ComplexString in_notCONTE
 	return bSuccess;
 }
 
-bool NoteInformationDlgModelImp::UpdateNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_notSEQ)
+bool NoteInformationDlgModelImp::UpdateNoteInformation(ComplexString in_notCONTENT, bool in_setTIMELINE, bool in_notLOCK, int in_notSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, in_notLOCK, in_notCONTENT);
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, in_setTIMELINE, in_notLOCK, in_notCONTENT);
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE], PrepareStatementUpdateNoteInformation);
 
 	DATA_INSTANCE->ResetNoteInformation();
@@ -192,7 +203,7 @@ bool NoteInformationDlgModelImp::UpdateNoteInformation(ComplexString in_notCONTE
 bool NoteInformationDlgModelImp::DeleteNoteInformation(int in_notSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, "");
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, false, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[DELETE_NOTE_INFORMATION_TABLE], PrepareStatementDeleteNoteInformation);
 
 	DATA_INSTANCE->ResetNoteInformation();
@@ -203,7 +214,7 @@ bool NoteInformationDlgModelImp::DeleteNoteInformation(int in_notSEQ)
 bool NoteInformationDlgModelImp::UpdateNoteInformationInNotContent(ComplexString in_notCONTENT, int in_notSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, in_notCONTENT);
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, false, in_notCONTENT);
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_NOTCONTENT], PrepareStatementDeleteNoteInformation);
 
 	DATA_INSTANCE->ResetNoteInformation();
@@ -214,7 +225,7 @@ bool NoteInformationDlgModelImp::UpdateNoteInformationInNotContent(ComplexString
 bool NoteInformationDlgModelImp::UpdateNoteInformationInNotLOCK(bool in_notLOCK, int in_notSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, in_notLOCK, "");
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, in_notLOCK, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_NOTLOCK], PrepareStatementDeleteNoteInformation);
 
 	DATA_INSTANCE->ResetNoteInformation();
@@ -225,7 +236,7 @@ bool NoteInformationDlgModelImp::UpdateNoteInformationInNotLOCK(bool in_notLOCK,
 bool NoteInformationDlgModelImp::SelectInSceSEQScenarioListInNotSEQ(int in_notSEQ, ScenarioListVO* out_scenarioList)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, "");
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, false, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[SELECT_IN_SCESEQ_SCENARIO_LIST_IN_NOTSEQ], PrepareStatementSelectInSceSEQScenarioListInNotSEQ, ResultSetSelectInSceSEQScenarioListInNotSEQ);
 
 	if (bSuccess)
@@ -264,8 +275,19 @@ bool NoteInformationDlgModelImp::SelectInNotCNTScenarioListInSceSEQ(int in_sceSE
 bool NoteInformationDlgModelImp::UpdateNoteInformationInSceSEQ(int in_notSEQ, int in_sceSEQ)
 {
 	bool bSuccess = false;
-	DATA_INSTANCE->SetNoteInformation(in_notSEQ, in_sceSEQ, false, "");
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, in_sceSEQ, false, false, "");
 	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_SCESEQ], PrepareStatementUpdateNoteInformationInSceSEQ);
+
+	DATA_INSTANCE->ResetNoteInformation();
+
+	return bSuccess;
+}
+
+bool NoteInformationDlgModelImp::UpdateNoteInformationInSetTIMELINE(int in_notSEQ, bool in_setTIMELINE)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, in_setTIMELINE, false, "");
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_SETTIMELINE], PrepareStatementUpdateNoteInformationInSetTIMELINE);
 
 	DATA_INSTANCE->ResetNoteInformation();
 

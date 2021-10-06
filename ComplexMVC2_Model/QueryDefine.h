@@ -41,6 +41,7 @@ enum DML_QUERY_INDEX
 	INSERT_TIME_LINE_TABLE,
 	DELETE_TIME_LINE_TABLE,
 	UPDATE_TIME_LINE_TABLE_IN_TIMEIDX,
+	UPDATE_NOTE_INFORMATION_TABLE_IN_SETTIMELINE,
 };
 
 static const char* DefinedDDLQuerys[] = { 
@@ -53,6 +54,7 @@ static const char* DefinedDDLQuerys[] = {
 									// create note information table
 									"CREATE TABLE NoteInformation(notSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
 																	notCONTENT TEXT, \
+																	setTIMELINE INTEGER DEFAULT 0, \
 																	notLOCK INTEGER DEFAULT 0, \
 																	sceSEQ INTEGER, FOREIGN KEY (sceSEQ) REFERENCES ScenarioList(sceSEQ) ON DELETE CASCADE)",
 									// drop note information table
@@ -97,9 +99,9 @@ static const char* DefinedDMLQuerys[] = {
 									// delete scenario list table
 									"DELETE FROM ScenarioList WHERE sceSEQ = ?",
 									// insert note information table
-									"INSERT INTO NoteInformation (notCONTENT, notLOCK, sceSEQ) VALUES (?, ?, ?)",
+									"INSERT INTO NoteInformation (notCONTENT, setTIMELINE, notLOCK, sceSEQ) VALUES (?, ?, ?, ?)",
 									// update note information table
-									"UPDATE NoteInformation SET notCONTENT = ?, notLOCK = ? WHERE notSEQ = ?",
+									"UPDATE NoteInformation SET notCONTENT = ?, setTIMELINE = ?, notLOCK = ? WHERE notSEQ = ?",
 									// delete note information table
 									"DELETE FROM NoteInformation WHERE notSEQ = ?",
 									// select one note information table
@@ -121,11 +123,13 @@ static const char* DefinedDMLQuerys[] = {
 									// update note information table in sceSEQ
 									"UPDATE NoteInformation SET sceSEQ = ? WHERE notSEQ = ?",
 									// select one time line table in sceSEQ
-									"SELECT * FROM Timeline WHERE sceSEQ = ?",
+									"SELECT * FROM Timeline WHERE sceSEQ = ? ORDER BY timeIDX ASC",
 									// insert time line table
 									"INSERT INTO Timeline (timeIDX, notSEQ, sceSEQ) VALUES (?, ?, ?)",
 									// delete time line table
 									"DELETE FROM Timeline WHERE notSEQ = ?",
 									// update time line in timeIDX
-									"UPDATE Timeline SET timeIDX = ? WHERE timeIDX = ?, sceSEQ = ?",
+									"UPDATE Timeline SET timeIDX = ? WHERE timeIDX = ? AND sceSEQ = ?",
+									// update note information in setTIMELINE
+									"UPDATE NoteInformation SET setTIMELINE = ? WHERE notSEQ = ?",
 								   };

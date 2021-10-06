@@ -55,6 +55,8 @@ public:
 	bool UpdateNoteInformationInNotLOCK();
 	// 노트정보에서 시나리오 시퀀스 수정
 	bool UpdateNoteInformationInSceSEQ();
+	// 노트정보에서 타임라인 설정 수정
+	bool UpdateNoteInformationInSetTIMELINE();
 
 	// time line control
 	// 시나리오 시퀀스로 타임라인정보 로드

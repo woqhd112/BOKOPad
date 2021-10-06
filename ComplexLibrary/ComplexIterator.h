@@ -56,6 +56,16 @@ namespace ComplexLibrary
 			return m_cur != eq.m_cur;
 		}
 
+		bool operator == (const ComplexNode<T>* eq)
+		{
+			return m_cur == eq;
+		}
+
+		bool operator != (const ComplexNode<T>* eq)
+		{
+			return m_cur != eq;
+		}
+
 	private:
 
 		ComplexNode<T>* m_cur;

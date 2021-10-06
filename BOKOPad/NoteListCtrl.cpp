@@ -79,8 +79,8 @@ BOOL NoteListCtrl::OnInitDialog()
 
 void NoteListCtrl::LoadNoteInformation()
 {
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
-	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, "");
+	CURSOR_WAIT;
+	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, false, "");
 	if (UpdateScenarioList(&inNote))
 	{
 		ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
@@ -88,17 +88,20 @@ void NoteListCtrl::LoadNoteInformation()
 		int i = 0;
 		while (iter != m_noteInformationContainer->end())
 		{
-			CRect* itemRect = CalcNotePosition(i);
-			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
-			m_noteManager->InputNoteStruct(&noteManagerStruct);
-			m_noteManager->SendMessages(PM_NOTE_INSERT);
+			if (iter->value.IsSetTIMELINE() == false)
+			{
+				CRect* itemRect = CalcNotePosition(i);
+				NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+				m_noteManager->InputNoteStruct(&noteManagerStruct);
+				m_noteManager->SendMessages(PM_NOTE_INSERT);
 
-			ScrollExecute(true);
+				ScrollExecute(true);
+				i++;
+			}
 			iter++;
-			i++;
 		}
 	}
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 }
 
 bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
@@ -113,9 +116,26 @@ bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
 	return false;
 }
 
+bool NoteListCtrl::UpdateSetTIME(int notSEQ, int noteIndex)
+{
+	NoteInformationVO note;
+	note.SetNotSEQ(notSEQ);
+	note.SetSetTIMELINE(false);
+	RequestScope->SetRequestAttributes(note);
+	if (MVC_Controller->UpdateNoteInformationInSetTIMELINE())
+	{
+		// 타임라인 보이기 false로 업데이트 완료했으니 노트들 무빙시켜야함
+		MoveNote(noteIndex, m_noteInformationContainer->size() - 1);
+
+		ScrollExecute(true, true);
+		return true;
+	}
+	return false;
+}
+
 bool NoteListCtrl::InsertNote(ComplexString inpusString)
 {
-	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, inpusString);
+	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, false, inpusString);
 	RequestScope->SetRequestAttributes(inNote);
 	if (MVC_Controller->InsertNoteInformation())
 	{
@@ -123,8 +143,8 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 		{
 			if (m_noteInformationContainer->empty() == false)
 			{
-				CRect* itemRect = CalcNotePosition(m_noteInformationContainer->size() - 1);
-				NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteInformationContainer->size() - 1);
+				CRect* itemRect = CalcNotePosition(m_noteSize);
+				NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteSize);
 				m_noteManager->InputNoteStruct(&noteManagerStruct);
 				m_noteManager->SendMessages(PM_NOTE_INSERT);
 
@@ -141,7 +161,7 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 
 bool NoteListCtrl::DeleteNote(int notSEQ)
 {
-	NoteInformationVO inNote(notSEQ, m_thisDataStruct.scenarioData.GetSceSEQ(), false, "");
+	NoteInformationVO inNote(notSEQ, m_thisDataStruct.scenarioData.GetSceSEQ(), false, false, "");
 	RequestScope->SetRequestAttributes(inNote);
 	if (MVC_Controller->DeleteNoteInformation())
 	{
@@ -179,14 +199,21 @@ bool NoteListCtrl::MoveNote(int startMoveIndex, int endMoveIndex)
 	// 첫 인덱스가 마지막인덱스보다 클 시 
 	else if (startMoveIndex > endMoveIndex)
 		return false;
+	else if (startMoveIndex < 0)
+		return false;
 
+	int bDetectedTimelineCnt = 0;
 	for (int i = startMoveIndex; i <= endMoveIndex; i++)
 	{
 		NoteInformationVO moveVO = m_noteInformationContainer->at(i);
-		CRect* itemRect = CalcNotePosition(i);
-		NoteManagerStruct noteManagerStruct(&moveVO, itemRect, i);
-		m_noteManager->InputNoteStruct(&noteManagerStruct);
-		m_noteManager->SendMessages(PM_NOTE_MOVE);
+		if (moveVO.IsSetTIMELINE() == false)
+		{
+			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
+			NoteManagerStruct noteManagerStruct(&moveVO, itemRect, bDetectedTimelineCnt);
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			m_noteManager->SendMessages(PM_NOTE_MOVE);
+			bDetectedTimelineCnt++;
+		}
 	}
 
 	return true;
@@ -316,7 +343,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 	m_noteManager->InputDragStruct(&m_defaultDragData);
 	if (m_noteManager->SendMessages(PM_DRAG_UP))
 	{
-		SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+		CURSOR_WAIT;
 		DragUpState dus = m_noteManager->GetDragState();
 		if (dus == DUS_NOTHING)
 		{
@@ -333,7 +360,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			// db처리는 다이얼로그에서.. 매니저는 ui처리만 할것
 
 			// 현재 다이얼로그에서 노트정보 삭제
-			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, "");
+			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, false, "");
 			RequestScope->SetRequestAttributes(inNote);
 			if (MVC_Controller->DeleteNoteInformation())
 			{
@@ -344,13 +371,28 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		else if (dus == DUS_THIS_TIMELINE)
 		{
 			m_noteManager->InputDragStruct(&m_defaultDragData);
-			m_noteManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH);
+			if (m_noteManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH))
+			{
+				// 노트 없애기 (db에 bool 값 줘서 변경하여 안보이게하는게 나을듯?) (노트화면출력은 bool 값이 true일때만 출력되게하고..)
+				NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, true, false, "");
+				RequestScope->SetRequestAttributes(inNote);
+				if (MVC_Controller->UpdateNoteInformationInSetTIMELINE())
+				{
+					NoteManagerStruct noteManagerStruct(&inNote, NULL, m_defaultDragData.noteIndex);
+					m_noteManager->InputNoteStruct(&noteManagerStruct);
+					m_noteManager->SendMessages(PM_NOTE_DELETE);
+					// 스크롤 처리
+					ScrollExecute(false, true);
+					// 노트없앤 인덱스부터 에딧 이동
+					MoveNote(m_defaultDragData.noteIndex, m_noteInformationContainer->size() - 1);
+				}
+			}
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
 			int a = 0;
 		}
-		SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+		CURSOR_ARROW;
 	}
 
 	m_bDragProcessing = false;

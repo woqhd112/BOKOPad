@@ -2,14 +2,22 @@
 #include "ComplexMap.h"
 #include "ScenarioListVO.h"
 #include "NoteInformationVO.h"
+#include "TimelineVO.h"
 #include "ComplexLock.h"
-#include <memory>
+//#include <memory>
 
 using namespace ComplexLibrary;
 
 class BOKOScenarioDetailDlg;
 class NoteListCtrl;
 class BOKODragDlg;
+
+#define CURSOR_HAND SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND))
+#define CURSOR_ARROW SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW))
+#define CURSOR_CROSS SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS))
+#define CURSOR_HAND SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND))
+#define CURSOR_WAIT SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT))
+
 
 enum DragUpState
 {
@@ -35,11 +43,12 @@ enum PerformanceMessage
 	PM_DRAG_ANOTHER_ATTACH,
 	PM_DRAG_THIS_TIMELINE_ATTACH,
 	PM_DRAG_ANOTHER_TIMELINE_ATTACH,
-	PM_TIMELINE_CONTACT_GRIDLINE,
-	PM_TIMELINE_NOT_CONTACT_GRIDLINE,
 	PM_NOTE_INSERT,
 	PM_NOTE_DELETE,
 	PM_NOTE_MOVE,
+	PM_TIMELINE_DRAG_DOWN,
+	PM_TIMELINE_DRAG_MOVE,
+	PM_TIMELINE_DRAG_UP,
 };
 
 struct ScenarioManagerStruct
@@ -156,11 +165,16 @@ protected:
 
 	static ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
 	static ComplexMap<int, int> m_scenarioSeqMap;
+	static DragUpState m_dragState;
 
 	ComplexMap<int, NotePadStruct> m_notePadManager;
 	ComplexMap<int, int> m_noteSeqMap;
 
-	DragUpState m_dragState;
+
+	const int EDIT_WIDTH = 80;
+	const int EDIT_HEIGHT = 60;
+	const int DRAG_DLG_WIDTH = 30;
+	const int DRAG_DLG_HEIGHT = 30;
 
 private:
 

@@ -49,7 +49,7 @@ BOOL BOKOOptionDlg::OnInitDialog()
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	bool bInit = false;
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	if (MVC_Controller->SelectAllPadOption())
 	{
 		bInit = true;
@@ -74,7 +74,7 @@ BOOL BOKOOptionDlg::OnInitDialog()
 		m_workPath.Remove(DB_MODULE_NANE);
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -106,11 +106,11 @@ void BOKOOptionDlg::OnBnClickedButtonExportFile()
 		RequestScope->GetRequestAttributes(&outputScenario);
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 
 	CString strFullPath = fd.GetPathName();
 
-	NoteInformationVO note(0, outputScenario.GetSceSEQ(), false, "");
+	NoteInformationVO note(0, outputScenario.GetSceSEQ(), false, false, "");
 	RequestScope->SetRequestAttributes(note);
 	if (MVC_Controller->SelectInSceSEQNoteInformation())
 	{
@@ -124,20 +124,21 @@ void BOKOOptionDlg::OnBnClickedButtonExportFile()
 
 			ComplexString strWriteAnsiContent, strConvertUTF8Content;
 			strWriteAnsiContent = noteInform.GetNotCONTENT();
-			ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
-			ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
+			//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
+			//ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
+			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
 
 			iter++;
 		}
 	}
 	else
 	{
-		SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+		CURSOR_ARROW;
 		MessageBox("데이터 불러오기에 실패하였습니다.");
 		return;
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 	MessageBox("파일 내보내기에 성공하였습니다.");
 }
 
@@ -167,7 +168,7 @@ void BOKOOptionDlg::OnBnClickedButtonImportFile()
 		RequestScope->GetRequestAttributes(&outputScenario);
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	POSITION pos = fd.GetStartPosition();
 
 	while (pos != NULL)
@@ -175,18 +176,19 @@ void BOKOOptionDlg::OnBnClickedButtonImportFile()
 		ComplexString strPathName = fd.GetNextPathName(pos).GetBuffer();
 		ComplexString strReadUTF8Content, strConvertAnsiContent;
 		ComplexUtilProcess::ImportFile(strReadUTF8Content, strPathName);
-		ComplexUtilProcess::UTF8ToANSI(strConvertAnsiContent, strReadUTF8Content);
+		//ComplexUtilProcess::UTF8ToANSI(strConvertAnsiContent, strReadUTF8Content);
 
-		NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, strConvertAnsiContent);
+		//NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, strConvertAnsiContent);
+		NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, false, strReadUTF8Content);
 		RequestScope->SetRequestAttributes(insertNote);
 		if (MVC_Controller->InsertNoteInformation() == false)
 		{
-			SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+			CURSOR_ARROW;
 			MessageBox("데이터 저장에 실패하였습니다.");
 			return;
 		}
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 	MessageBox("파일 불러오기에 성공하였습니다.");
 }

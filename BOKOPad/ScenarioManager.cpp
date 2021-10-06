@@ -56,14 +56,6 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = Exist();
 	}
-	else if (message == PM_TIMELINE_CONTACT_GRIDLINE)
-	{
-		bHelpSuccess = TimeLineContactGridline();
-	}
-	else if (message == PM_TIMELINE_NOT_CONTACT_GRIDLINE)
-	{
-		bHelpSuccess = TimeLineNotContactGridline();
-	}
 
 
 	return bHelpSuccess;
@@ -241,22 +233,4 @@ bool ScenarioManager::Exist()
 	ReleaseScenarioStruct();
 
 	return true;
-}
-
-bool ScenarioManager::TimeLineContactGridline()
-{
-	ComplexScopedLock lock(&m_processLock);
-
-	bool bSuccess = false;
-
-	return bSuccess;
-}
-
-bool ScenarioManager::TimeLineNotContactGridline()
-{
-	ComplexScopedLock lock(&m_processLock);
-
-	bool bSuccess = false;
-
-	return bSuccess;
 }

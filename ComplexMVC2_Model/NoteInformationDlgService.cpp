@@ -42,7 +42,7 @@ bool NoteInformationDlgService::SelectOneNoteInformation(int in_notSEQ)
 	return bSuccess;
 }
 
-bool NoteInformationDlgService::InsertNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_sceSEQ)
+bool NoteInformationDlgService::InsertNoteInformation(ComplexString in_notCONTENT, bool in_setTIMELINE, bool in_notLOCK, int in_sceSEQ)
 {
 	bool bSuccess = false;
 
@@ -51,7 +51,7 @@ bool NoteInformationDlgService::InsertNoteInformation(ComplexString in_notCONTEN
 	bSuccess = m_noteInformationDlgModel->SelectInNotCNTScenarioListInSceSEQ(in_sceSEQ, &scenarioList);
 
 	if (bSuccess)
-		bSuccess = m_noteInformationDlgModel->InsertNoteInformation(in_notCONTENT, in_notLOCK, in_sceSEQ);
+		bSuccess = m_noteInformationDlgModel->InsertNoteInformation(in_notCONTENT, in_setTIMELINE, in_notLOCK, in_sceSEQ);
 
 	if (bSuccess)
 	{
@@ -67,11 +67,11 @@ bool NoteInformationDlgService::InsertNoteInformation(ComplexString in_notCONTEN
 	return bSuccess;
 }
 
-bool NoteInformationDlgService::UpdateNoteInformation(ComplexString in_notCONTENT, bool in_notLOCK, int in_notSEQ)
+bool NoteInformationDlgService::UpdateNoteInformation(ComplexString in_notCONTENT, bool in_setTIMELINE, bool in_notLOCK, int in_notSEQ)
 {
 	bool bSuccess = false;
 
-	bSuccess = m_noteInformationDlgModel->UpdateNoteInformation(in_notCONTENT, in_notLOCK, in_notSEQ);
+	bSuccess = m_noteInformationDlgModel->UpdateNoteInformation(in_notCONTENT, in_setTIMELINE, in_notLOCK, in_notSEQ);
 
 	if (bSuccess)
 		m_noteInformationDlgModel->Commit();
@@ -137,6 +137,20 @@ bool NoteInformationDlgService::UpdateNoteInformationInSceSEQ(int in_notSEQ, int
 	bool bSuccess = false;
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInSceSEQ(in_notSEQ, in_sceSEQ);
+
+	if (bSuccess)
+		m_noteInformationDlgModel->Commit();
+	else
+		m_noteInformationDlgModel->Rollback();
+
+	return bSuccess;
+}
+
+bool NoteInformationDlgService::UpdateNoteInformationInSetTIMELINE(int in_notSEQ, bool in_setTIMELINE)
+{
+	bool bSuccess = false;
+
+	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInSetTIMELINE(in_notSEQ, in_setTIMELINE);
 
 	if (bSuccess)
 		m_noteInformationDlgModel->Commit();

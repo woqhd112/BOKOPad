@@ -97,6 +97,7 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 		bHelpSuccess = DragAnotherTimelineAttach();
 	}
 
+
 	return bHelpSuccess;
 }
 
@@ -204,27 +205,32 @@ bool NoteManager::Delete()
 		return false;
 	}
 
-	// 버튼, 에딧컨트롤 삭제하기
-	bool bFind = false;
-	ComplexMap<int, int>::iterator iter1 = m_noteSeqMap.begin();
-	while (iter1 != m_noteSeqMap.end())
+	int notIndex = noteDataStruct->noteIndex;
+	if (notIndex < 0)
 	{
-		if (iter1->value.value == noteDataStruct->noteData->GetNotSEQ())
+		// 버튼, 에딧컨트롤 삭제하기
+		bool bFind = false;
+		ComplexMap<int, int>::iterator iter1 = m_noteSeqMap.begin();
+		while (iter1 != m_noteSeqMap.end())
 		{
-			noteDataStruct->noteIndex = iter1->value.key;
-			bFind = true;
-			break;
+			if (iter1->value.value == noteDataStruct->noteData->GetNotSEQ())
+			{
+				notIndex = iter1->value.key;
+				noteDataStruct->noteIndex = notIndex;
+				bFind = true;
+				break;
+			}
+			iter1++;
 		}
-		iter1++;
+
+		if (!bFind)
+		{
+			ReleaseNoteStruct();
+			return false;
+		}
 	}
 
-	if (!bFind)
-	{
-		ReleaseNoteStruct();
-		return false;
-	}
-
-	ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.find(iter1->value.key);
+	ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.find(notIndex);
 	if (iter2 == m_notePadManager.end())
 	{
 		ReleaseNoteStruct();
@@ -322,7 +328,10 @@ bool NoteManager::DragDown()
 		dragDataStruct->noteCONTENT = strEditContent.GetBuffer();
 	}
 	else
+	{
+		ReleaseDragStruct();
 		return false;
+	}
 
 	m_dragState = DUS_NOTHING;
 	m_dragDlg->SetDragData(dragDataStruct->noteSEQ, dragDataStruct->noteIndex, dragDataStruct->noteCONTENT);
@@ -366,7 +375,7 @@ bool NoteManager::DragMove()
 				m_bCursorAttach = true;
 				ShowCursor(TRUE);
 				m_dragDlg->ShowWindow(SW_HIDE);
-				SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
+				CURSOR_CROSS;
 				m_bCursorDetach = false;
 
 			}
@@ -479,8 +488,9 @@ bool NoteManager::DragUp()
 
 	m_dragDlg->ShowWindow(SW_HIDE);
 	ReleaseDragStruct();
-	ShowCursor(TRUE);
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	if (!m_bCursorDetach)
+		ShowCursor(TRUE);
+	CURSOR_ARROW;
 	ReleaseCapture();
 	return true;
 }

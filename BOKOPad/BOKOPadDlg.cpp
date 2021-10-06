@@ -130,7 +130,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 	Initialize();
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	// 옵션 로드
 	if (MVC_Controller->SelectAllPadOption())
 	{
@@ -152,7 +152,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 			iter++;
 		}
 	}
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 
 	GotoDlgCtrl(&m_edit_input_scenario);
 	m_edit_input_scenario.LimitText(20);
@@ -266,7 +266,7 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 
 	ComplexString inputScenarioTitle = getText.GetBuffer();
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	RequestScope->SetRequestAttributes(ScenarioListVO(0, 0, inputScenarioTitle));
 	if (MVC_Controller->InsertScenarioList())
 	{
@@ -280,7 +280,7 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 			RequestScope->GetRequestAttributes(&m_loadScenarioList);
 		}
 	}
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 }
 
 
@@ -341,7 +341,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	if (m_loadScenarioList.empty())
 		return;
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	int selectedCount = m_list_scenario_list.GetSelectedCount();
 	POSITION selectPos = m_list_scenario_list.GetFirstSelectedItemPosition();
 
@@ -373,7 +373,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		MVC_Controller->UpdateScenarioListAutoIncrementSeq();
 	}
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 }
 
 
@@ -396,9 +396,9 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 	if (Scenario_Manager->SendMessages(PM_EXIST) == true)
 		return;
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	Scenario_Manager->SendMessages(PM_CREATE);
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 	*pResult = 0;
 }
 

@@ -97,7 +97,6 @@ void BOKOScenarioDetailDlg::Initialize()
 	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
 	m_timeline.Create(Timeline::IDD, this);
-	m_timeline.AttachNoteManager(m_list_notePad.m_noteManager);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
@@ -139,14 +138,14 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 	if (strInputText.IsEmpty())
 		return;
 
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT));
+	CURSOR_WAIT;
 	if (m_list_notePad.InsertNote(strInputText.GetBuffer()))
 	{
 		m_edit_note_input.SetWindowTextA("");
 		m_stt_note_limit_size.SetWindowTextA("0 / 500");
 		m_edit_note_input.SetFocus();
 	}
-	SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+	CURSOR_ARROW;
 }
 
 
@@ -177,6 +176,11 @@ void BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
 void BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint)
 {
 	m_timeline.InsertTimeline(notSEQ, currentMPoint);
+}
+
+void BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ, int noteIndex)
+{
+	m_list_notePad.UpdateSetTIME(notSEQ, noteIndex);
 }
 
 void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)

@@ -36,6 +36,7 @@ void DBDataKernel::SetNoteInformation(NoteInformationVO& in)
 	NoteInformationVO noteinfo;
 	noteinfo.SetNotSEQ(in.GetNotSEQ());
 	noteinfo.SetSceSEQ(in.GetSceSEQ());
+	noteinfo.SetSetTIMELINE(in.IsSetTIMELINE());
 	noteinfo.SetNotLOCK(in.IsNotLOCK());
 	noteinfo.SetNotCONTENT(in.GetNotCONTENT());
 	m_noteInformationVOContainer.push_back(noteinfo);
@@ -67,11 +68,12 @@ void DBDataKernel::SetTimeline(TimelineVO& in)
 	m_timeLineContainer.push_back(timeLine);
 }
 
-void DBDataKernel::SetNoteInformation(int notSEQ, int sceSEQ, bool notLOCK, ComplexString notCONTENT)
+void DBDataKernel::SetNoteInformation(int notSEQ, int sceSEQ, bool setTIMELINE, bool notLOCK, ComplexString notCONTENT)
 {
 	NoteInformationVO noteinfo;
 	noteinfo.SetNotSEQ(notSEQ);
 	noteinfo.SetSceSEQ(sceSEQ);
+	noteinfo.SetSetTIMELINE(setTIMELINE);
 	noteinfo.SetNotLOCK(notLOCK);
 	noteinfo.SetNotCONTENT(notCONTENT);
 	m_noteInformationVOContainer.push_back(noteinfo);
@@ -112,6 +114,7 @@ void DBDataKernel::GetNoteInformation(NoteInformationVO* out, int get_row_index)
 	{
 		out->SetNotSEQ(m_noteInformationVOContainer.at(get_row_index).GetNotSEQ());
 		out->SetSceSEQ(m_noteInformationVOContainer.at(get_row_index).GetSceSEQ());
+		out->SetSetTIMELINE(m_noteInformationVOContainer.at(get_row_index).IsSetTIMELINE());
 		out->SetNotLOCK(m_noteInformationVOContainer.at(get_row_index).IsNotLOCK());
 		out->SetNotCONTENT(m_noteInformationVOContainer.at(get_row_index).GetNotCONTENT());
 	}
@@ -155,7 +158,7 @@ void DBDataKernel::GetTimeline(TimelineVO* out, int get_row_index)
 	}
 }
 
-void DBDataKernel::GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* out_notLOCK, ComplexString* out_notCONTENT, int get_row_index)
+void DBDataKernel::GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* out_setTIMELINE, bool* out_notLOCK, ComplexString* out_notCONTENT, int get_row_index)
 {
 	if (m_noteInformationVOContainer.empty())
 		return;
@@ -164,6 +167,8 @@ void DBDataKernel::GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* ou
 		*out_notSEQ = m_noteInformationVOContainer.at(get_row_index).GetNotSEQ();
 	if (out_sceSEQ)
 		*out_sceSEQ = m_noteInformationVOContainer.at(get_row_index).GetSceSEQ();
+	if (out_setTIMELINE)
+		*out_setTIMELINE = m_noteInformationVOContainer.at(get_row_index).IsSetTIMELINE();
 	if (out_notLOCK)
 		*out_notLOCK = m_noteInformationVOContainer.at(get_row_index).IsNotLOCK();
 	if (out_notCONTENT)
@@ -218,6 +223,7 @@ void DBDataKernel::GetNoteInformationContainer(ComplexVector<NoteInformationVO>*
 			NoteInformationVO in_noteInformation;
 			in_noteInformation.SetNotSEQ(iter->value.GetNotSEQ());
 			in_noteInformation.SetSceSEQ(iter->value.GetSceSEQ());
+			in_noteInformation.SetSetTIMELINE(iter->value.IsSetTIMELINE());
 			in_noteInformation.SetNotLOCK(iter->value.IsNotLOCK());
 			in_noteInformation.SetNotCONTENT(iter->value.GetNotCONTENT());
 			out_noteInformationVOContainer->push_back(in_noteInformation);

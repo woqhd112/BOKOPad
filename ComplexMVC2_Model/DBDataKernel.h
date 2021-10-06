@@ -21,7 +21,7 @@ public:
 	void SetScenarioList(ScenarioListVO& in);
 	void SetPadOption(PadOptionVO& in);
 	void SetTimeline(TimelineVO& in);
-	void SetNoteInformation(int notSEQ, int sceSEQ, bool notLOCK, ComplexString notCONTENT);
+	void SetNoteInformation(int notSEQ, int sceSEQ, bool setTIMELINE, bool notLOCK, ComplexString notCONTENT);
 	void SetScenarioList(int sceSEQ, ComplexString sceTITLE, int notCNT);
 	void SetPadOption(int test1, int test2);
 	void SetTimeline(int timeIDX, int notSEQ, int sceSEQ);
@@ -31,7 +31,7 @@ public:
 	void GetScenarioList(ScenarioListVO* out, int get_row_index = 0);
 	void GetPadOption(PadOptionVO* out, int get_row_index = 0);
 	void GetTimeline(TimelineVO* out, int get_row_index = 0);
-	void GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* out_notLOCK, ComplexString* out_notCONTENT, int get_row_index = 0);
+	void GetNoteInformation(int* out_notSEQ, int* out_sceSEQ, bool* out_setTIMELINE, bool* out_notLOCK, ComplexString* out_notCONTENT, int get_row_index = 0);
 	void GetScenarioList(int* out_sceSEQ, int* out_notCNT, ComplexString* out_sceTITLE, int get_row_index = 0);
 	void GetPadOption(int* out_test1, int* out_test2, int get_row_index = 0);
 	void GetTimeline(int* out_timeIDX, int* out_notSEQ, int* out_sceSEQ, int get_row_index = 0);
