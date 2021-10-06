@@ -26,7 +26,7 @@ public:
 	CRect* CalcNotePosition(int itemIndex);
 	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertNote(ComplexString inpusString);
-	bool UpdateSetTIME(int notSEQ, int noteIndex);
+	bool UpdateSetTIME(int notSEQ);
 	bool DeleteNote(int notSEQ);
 	bool MoveNote(int startMoveIndex, int endMoveIndex);
 

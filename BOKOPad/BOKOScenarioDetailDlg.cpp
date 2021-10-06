@@ -178,9 +178,9 @@ void BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint
 	m_timeline.InsertTimeline(notSEQ, currentMPoint);
 }
 
-void BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ, int noteIndex)
+void BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
 {
-	m_list_notePad.UpdateSetTIME(notSEQ, noteIndex);
+	m_list_notePad.UpdateSetTIME(notSEQ);
 }
 
 void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)

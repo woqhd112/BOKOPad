@@ -29,7 +29,7 @@ public:
 	void SignalInsertTimeline(int notSEQ, POINT currentMPoint);
 	void SignalInsertNote(ComplexString& strNoteContent);
 	void SignalDeleteNote(int notSEQ);
-	void SignalUpdateSetTIME(int notSEQ, int noteIndex);
+	void SignalUpdateSetTIME(int notSEQ);
 
 private:
 

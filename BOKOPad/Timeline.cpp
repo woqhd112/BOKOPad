@@ -511,7 +511,24 @@ bool Timeline::DragUp(MSG* pMsg)
 		else if (dus == DUS_THIS)
 		{
 			m_timeManager->InputDragStruct(&m_defaultDragData);
-			m_timeManager->SendMessages(PM_NOTE_INSERT);
+			if (m_timeManager->SendMessages(PM_NOTE_INSERT))
+			{
+				TimelineVO time;
+				time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+				time.SetNotSEQ(m_defaultDragData.noteSEQ);
+				RequestScope->SetRequestAttributes(time);
+				if (MVC_Controller->DeleteTimeline() == false)
+					return false;
+
+				RequestScope->SetRequestAttributes(time);
+				if (MVC_Controller->SelectInSceSEQTimeline())
+				{
+					m_timeLineContainer.clear();
+					RequestScope->GetRequestAttributes(&m_timeLineContainer);
+				}
+				Invalidate();
+
+			}
 		}
 		else if (dus == DUS_ANOTHER)
 		{

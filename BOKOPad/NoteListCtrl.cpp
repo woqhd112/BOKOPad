@@ -86,18 +86,20 @@ void NoteListCtrl::LoadNoteInformation()
 		ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
 
 		int i = 0;
+		int bDetectedTimelineCnt = 0;
 		while (iter != m_noteInformationContainer->end())
 		{
+			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
+			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			m_noteManager->SendMessages(PM_NOTE_INSERT);
+
 			if (iter->value.IsSetTIMELINE() == false)
 			{
-				CRect* itemRect = CalcNotePosition(i);
-				NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
-				m_noteManager->InputNoteStruct(&noteManagerStruct);
-				m_noteManager->SendMessages(PM_NOTE_INSERT);
-
+				bDetectedTimelineCnt++;
 				ScrollExecute(true);
-				i++;
 			}
+			i++;
 			iter++;
 		}
 	}
@@ -116,7 +118,7 @@ bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
 	return false;
 }
 
-bool NoteListCtrl::UpdateSetTIME(int notSEQ, int noteIndex)
+bool NoteListCtrl::UpdateSetTIME(int notSEQ)
 {
 	NoteInformationVO note;
 	note.SetNotSEQ(notSEQ);
@@ -124,8 +126,18 @@ bool NoteListCtrl::UpdateSetTIME(int notSEQ, int noteIndex)
 	RequestScope->SetRequestAttributes(note);
 	if (MVC_Controller->UpdateNoteInformationInSetTIMELINE())
 	{
+		NoteManagerStruct noteManagerStruct(&note, NULL, notSEQ);
+
+		m_noteManager->InputNoteStruct(&noteManagerStruct);
+		if (m_noteManager->SendMessages(PM_FIND_NOTE_INDEX) == false)
+			return false;
+
+		m_noteManager->InputNoteStruct(&noteManagerStruct);
+		if (m_noteManager->SendMessages(PM_NOTE_SHOW) == false)
+			return false;
+		
 		// 타임라인 보이기 false로 업데이트 완료했으니 노트들 무빙시켜야함
-		MoveNote(noteIndex, m_noteInformationContainer->size() - 1);
+		MoveNote(noteManagerStruct.noteIndex, m_noteInformationContainer->size() - 1);
 
 		ScrollExecute(true, true);
 		return true;
@@ -144,7 +156,7 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 			if (m_noteInformationContainer->empty() == false)
 			{
 				CRect* itemRect = CalcNotePosition(m_noteSize);
-				NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteSize);
+				NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteInformationContainer->size() - 1);
 				m_noteManager->InputNoteStruct(&noteManagerStruct);
 				m_noteManager->SendMessages(PM_NOTE_INSERT);
 
@@ -209,7 +221,7 @@ bool NoteListCtrl::MoveNote(int startMoveIndex, int endMoveIndex)
 		if (moveVO.IsSetTIMELINE() == false)
 		{
 			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
-			NoteManagerStruct noteManagerStruct(&moveVO, itemRect, bDetectedTimelineCnt);
+			NoteManagerStruct noteManagerStruct(&moveVO, itemRect, i);
 			m_noteManager->InputNoteStruct(&noteManagerStruct);
 			m_noteManager->SendMessages(PM_NOTE_MOVE);
 			bDetectedTimelineCnt++;
@@ -293,6 +305,7 @@ void NoteListCtrl::OnSize(UINT nType, int cx, int cy)
 
 CRect* NoteListCtrl::CalcNotePosition(int itemIndex)
 {
+	// 이부분이 조금 이상한듯? 그리고 타임라인에서 노트쪽으로 드래그할때 마우스포인트도 처리할것
 	int nCurrentScrollIndex = scroll.GetScrollCount();
 
 	m_calculateItemPos.left = (EDIT_WIDTH + 5) * (itemIndex % 4);
@@ -374,13 +387,18 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			if (m_noteManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH))
 			{
 				// 노트 없애기 (db에 bool 값 줘서 변경하여 안보이게하는게 나을듯?) (노트화면출력은 bool 값이 true일때만 출력되게하고..)
-				NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, true, false, "");
+				NoteInformationVO inNote(m_defaultDragData.noteSEQ, m_thisDataStruct.scenarioData.GetSceSEQ(), true, false, "");
 				RequestScope->SetRequestAttributes(inNote);
 				if (MVC_Controller->UpdateNoteInformationInSetTIMELINE())
 				{
 					NoteManagerStruct noteManagerStruct(&inNote, NULL, m_defaultDragData.noteIndex);
 					m_noteManager->InputNoteStruct(&noteManagerStruct);
-					m_noteManager->SendMessages(PM_NOTE_DELETE);
+					if (m_noteManager->SendMessages(PM_NOTE_HIDE) == false)
+						return false;
+
+					if (UpdateScenarioList(&inNote) == false)
+						return false;
+
 					// 스크롤 처리
 					ScrollExecute(false, true);
 					// 노트없앤 인덱스부터 에딧 이동

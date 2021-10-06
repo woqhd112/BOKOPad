@@ -60,6 +60,14 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = Delete();
 	}
+	else if (message == PM_NOTE_SHOW)
+	{
+		bHelpSuccess = Show();
+	}
+	else if (message == PM_NOTE_HIDE)
+	{
+		bHelpSuccess = Hide();
+	}
 	else if (message == PM_NOTE_MOVE)
 	{
 		bHelpSuccess = Move();
@@ -96,7 +104,10 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = DragAnotherTimelineAttach();
 	}
-
+	else if (message == PM_FIND_NOTE_INDEX)
+	{
+		bHelpSuccess = FindNoteIndex();
+	}
 
 	return bHelpSuccess;
 }
@@ -148,11 +159,11 @@ bool NoteManager::Insert()
 
 		noteInputButton->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top, noteManagerStruct.noteRect->Width(), 10);
 		noteInputButton->SetWindowTextA("...");
-		noteInputButton->ShowWindow(SW_SHOW);
+		noteInputButton->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 
 		noteInputEdit->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top + 10, noteManagerStruct.noteRect->Width(), noteManagerStruct.noteRect->Height());
 		noteInputEdit->SetWindowTextA(noteManagerStruct.noteData->GetNotCONTENT().GetBuffer());
-		noteInputEdit->ShowWindow(SW_SHOW);
+		noteInputEdit->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 
 	}
 	else if (!bCreate1 && bCreate2)
@@ -239,6 +250,7 @@ bool NoteManager::Delete()
 
 	CButton* deleteButton = iter2->value.value.noteButton;
 	CEdit* deleteEdit = iter2->value.value.noteEdit;
+	
 	delete deleteButton;
 	delete deleteEdit;
 	deleteButton = nullptr;
@@ -249,6 +261,74 @@ bool NoteManager::Delete()
 	m_noteSeqMap.erase(findKey);
 
 	SortNoteManagerKey();
+
+	return true;
+}
+
+bool NoteManager::Show()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (noteDataStruct->noteIndex < 0)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
+	if (iter == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	iter->value.value.noteButton->ShowWindow(SW_SHOW);
+	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+
+	ReleaseNoteStruct();
+
+	return true;
+}
+
+bool NoteManager::Hide()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (noteDataStruct->noteIndex < 0)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
+	if (iter == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	iter->value.value.noteButton->ShowWindow(SW_HIDE);
+	iter->value.value.noteEdit->ShowWindow(SW_HIDE);
+
+	ReleaseNoteStruct();
 
 	return true;
 }
@@ -670,4 +750,35 @@ bool NoteManager::DragAnotherTimelineAttach()
 	bool bSuccess = false;
 
 	return bSuccess;
+}
+
+bool NoteManager::FindNoteIndex()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	ComplexMap<int, int>::iterator iter = m_noteSeqMap.begin();
+
+	bool bFind = false;
+	while (iter != m_noteSeqMap.end())
+	{
+		if (iter->value.value == noteDataStruct->noteData->GetNotSEQ())
+		{
+			bFind = true;
+			break;
+		}
+		iter++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	noteDataStruct->noteIndex = iter->value.key;
+
+	return true;
 }

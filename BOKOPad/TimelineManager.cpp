@@ -208,7 +208,7 @@ bool TimelineManager::NoteInsert()
 		return false;
 	}
 
-	iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ, dragDataStruct->noteIndex);
+	iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ);
 
 	ReleaseDragStruct();
 

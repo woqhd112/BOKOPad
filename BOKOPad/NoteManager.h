@@ -16,6 +16,8 @@ private:
 
 	bool Insert();
 	bool Delete();
+	bool Show();
+	bool Hide();
 	bool Move();
 	bool DragMove();
 	bool DragDown();
@@ -26,6 +28,8 @@ private:
 	bool DragAnotherAttach();
 	bool DragThisTimelineAttach();
 	bool DragAnotherTimelineAttach();
+
+	bool FindNoteIndex();
 
 private:
 

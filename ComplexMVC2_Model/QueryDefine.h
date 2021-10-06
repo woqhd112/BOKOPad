@@ -81,11 +81,11 @@ static const char* DefinedDMLQuerys[] = {
 									// update note information primary key sequence reset
 									"UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'NoteInformation'",
 									// select all scenario list table
-									"SELECT * FROM ScenarioList",
+									"SELECT * FROM ScenarioList ORDER BY sceSEQ ASC",
 									// select all note information table
 									"SELECT * FROM NoteInformation",
 									// select note information table in sceSEQ
-									"SELECT * FROM NoteInformation WHERE sceSEQ = ?",
+									"SELECT * FROM NoteInformation WHERE sceSEQ = ? ORDER BY notSEQ ASC",
 									// select pad option table
 									"SELECT * FROM PadOption",
 									// insert pad option table

@@ -49,6 +49,9 @@ enum PerformanceMessage
 	PM_TIMELINE_DRAG_DOWN,
 	PM_TIMELINE_DRAG_MOVE,
 	PM_TIMELINE_DRAG_UP,
+	PM_FIND_NOTE_INDEX,
+	PM_NOTE_SHOW,
+	PM_NOTE_HIDE,
 };
 
 struct ScenarioManagerStruct
