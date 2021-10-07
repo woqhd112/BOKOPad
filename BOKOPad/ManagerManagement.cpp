@@ -7,6 +7,7 @@
 ComplexMap<int, BOKOScenarioDetailDlg*> ManagerManagement::m_scenarioDlgManager;
 ComplexMap<int, int> ManagerManagement::m_scenarioSeqMap;
 DragUpState ManagerManagement::m_dragState;
+int ManagerManagement::m_cursorEventCnt;
 
 ManagerManagement::ManagerManagement()
 	: m_bAttach(false)
@@ -151,4 +152,21 @@ void ManagerManagement::SortNoteManagerKey()
 
 	m_notePadManager = sortManagerMap;
 	m_noteSeqMap = sortSeqMap;
+}
+
+void ManagerManagement::CursorCountRestore(int setCursorCnt)
+{
+	while (m_cursorEventCnt != setCursorCnt)
+	{
+		if (m_cursorEventCnt < setCursorCnt)
+		{
+			m_cursorEventCnt = ShowCursor(TRUE);
+		}
+		else
+		{
+			m_cursorEventCnt = ShowCursor(FALSE);
+		}
+	}
+
+	m_cursorEventCnt = setCursorCnt;
 }

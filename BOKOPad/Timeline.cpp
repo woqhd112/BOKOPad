@@ -5,6 +5,7 @@
 #include "BOKOPad.h"
 #include "Timeline.h"
 #include "TimelineManager.h"
+#include "NoteManager.h"
 #include "afxdialogex.h"
 
 
@@ -16,13 +17,14 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE, pParent)
 	, m_timeManager(new TimelineManager)
 {
+	m_bAttachManagerInit = false;
 	m_bInit = false;
 	m_nLineStartPoint_X = 0;
 	m_nLineEndPoint_X = 0;
 	m_nLinePoint_Y = 0;
 	m_nDataVariableWidth = 0;
 	m_nPointingTimeIDX = -1;
-	bDetailOpen = false;
+	m_bDetailOpen = false;
 }
 
 Timeline::~Timeline()
@@ -73,6 +75,12 @@ BOOL Timeline::OnInitDialog()
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
+void Timeline::AttachNoteManager(NoteManager* manager)
+{
+	m_bAttachManagerInit = true;
+	m_noteManager = manager;
+}
+
 void Timeline::HideTimelineDetail()
 {
 	m_detailDlg.ShowWindow(SW_HIDE);
@@ -109,43 +117,48 @@ int Timeline::ValidatePointToRect(POINT pt)
 	return -1;
 }
 
-void Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
+bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 {
 	// 업데이트를 오름차순으로 처리하면 같은값이 되서 내림차순으로 처리해야한다.
+	TimelineVO time;
+	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	for (int i = m_timeLineContainer.size() - 1; i >= startUpdateTimeIDX; i--)
 	{
-		TimelineVO time;
-		time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 		time.SetTimeIDX(i);
 		RequestScope->SetRequestAttributes(time);
 		if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
-			return;
+			return false;
 	}
+
+	return true;
 }
 
-void Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
+bool Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 {
 	int timeIDX = ValidatePointToRect(currentMPoint);
 	if (timeIDX == -1)
 		timeIDX = m_timeLineContainer.size();
 
-	UpdateTimelineIDX(timeIDX);
+	if (UpdateTimelineIDX(timeIDX) == false)
+		return false;
 
 	TimelineVO time;
 	time.SetNotSEQ(notSEQ);
 	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	time.SetTimeIDX(timeIDX);
 	RequestScope->SetRequestAttributes(time);
-	if (MVC_Controller->InsertTimeline())
-	{
-		RequestScope->SetRequestAttributes(time);
-		if (MVC_Controller->SelectInSceSEQTimeline())
-		{
-			m_timeLineContainer.clear();
-			RequestScope->GetRequestAttributes(&m_timeLineContainer);
-		}
-		Invalidate();
-	}
+	if (MVC_Controller->InsertTimeline() == false)
+		return false;
+
+	RequestScope->SetRequestAttributes(time);
+	if (MVC_Controller->SelectInSceSEQTimeline() == false)
+		return false;
+
+	m_timeLineContainer.clear();
+	RequestScope->GetRequestAttributes(&m_timeLineContainer);
+	Invalidate();
+
+	return true;
 }
 
 void Timeline::OnPaint()
@@ -205,8 +218,11 @@ void Timeline::OnPaint()
 }
 
 
-void Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
+bool Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 {
+	if (!m_bAttachManagerInit)
+		return false;
+
 	m_thisDataStruct = thisDataStruct;
 	m_defaultDragData.sceSEQ = thisDataStruct.scenarioData.GetSceSEQ();
 	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
@@ -222,20 +238,20 @@ void Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 	m_timeLineRect.top = m_nLinePoint_Y - LINE_HEIGHT;
 	m_timeLineRect.bottom = m_nLinePoint_Y + LINE_HEIGHT;
 
-
 	TimelineVO time;
 	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	RequestScope->SetRequestAttributes(time);
-	if (MVC_Controller->SelectInSceSEQTimeline())
-	{
-		m_bInit = true;
-		RequestScope->GetRequestAttributes(&m_timeLineContainer);
+	if (MVC_Controller->SelectInSceSEQTimeline() == false)
+		return false;
 
-	}
+	m_bInit = true;
+	RequestScope->GetRequestAttributes(&m_timeLineContainer);
 	Invalidate();
+
+	return true;
 }
 
-void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
+bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 {
 	// thisApproch는 true일때 마우스가 아무 동작하지않을 때 접근
 	// false일땐 드래그 이벤트 중에 접근했을 경우
@@ -266,31 +282,30 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 
 			m_detailDlg.SetWindowPos(NULL, pts.x - 400 - 5, pts.y - 200 - 5, 0, 0, SWP_NOSIZE);
 			m_detailDlg.ShowWindow(SW_SHOW);
-			bDetailOpen = true;
+			m_bDetailOpen = true;
 			if (thisApproch)
 			{
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
-					return;
+					return false;
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note;
 				note.SetNotSEQ(thisNoteSEQ);
 				RequestScope->SetRequestAttributes(note);
-				if (MVC_Controller->SelectOneNoteInformation())
-				{
-					RequestScope->GetRequestAttributes(&note);
-					// this쪽에만 입력
-					m_detailDlg.SetText(note.GetNotCONTENT(), "");
-				}
+				if (MVC_Controller->SelectOneNoteInformation() == false)
+					return false;
 
+				RequestScope->GetRequestAttributes(&note);
+				// this쪽에만 입력
+				m_detailDlg.SetText(note.GetNotCONTENT(), "");
 			}
 			else
 			{
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
-					return;
+					return false;
 
 				if (notSEQ < 0)
-					return;
+					return false;
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note1, note2;
@@ -298,13 +313,13 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 				note2.SetNotSEQ(notSEQ);
 				RequestScope->SetRequestAttributes(note1);
 				if (MVC_Controller->SelectOneNoteInformation() == false)
-					return;
+					return false;
 
 				RequestScope->GetRequestAttributes(&note1);
 
 				RequestScope->SetRequestAttributes(note2);
 				if (MVC_Controller->SelectOneNoteInformation() == false)
-					return;
+					return false;
 
 				RequestScope->GetRequestAttributes(&note2);
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
@@ -317,7 +332,7 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 		{
 			m_nPointingTimeIDX = -1;
 
-			bDetailOpen = false;
+			m_bDetailOpen = false;
 			m_detailDlg.ShowWindow(SW_HIDE);
 			if (thisApproch)
 				CURSOR_ARROW;	// 드래그이벤트로 접근하지 않았을 경우 화살표로 변경
@@ -329,9 +344,11 @@ void Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 	}
 	else
 	{
-		bDetailOpen = false;
+		m_bDetailOpen = false;
 		m_detailDlg.ShowWindow(SW_HIDE);
 	}
+
+	return true;
 }
 
 BOOL Timeline::PreTranslateMessage(MSG* pMsg)
@@ -381,7 +398,7 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 	return __super::PreTranslateMessage(pMsg);
 }
 
-void Timeline::TimelineOneViewProcess()
+bool Timeline::TimelineOneViewProcess()
 {
 	CURSOR_WAIT;
 	ComplexVector<TimelineVO>::iterator iter = m_timeLineContainer.begin();
@@ -393,7 +410,7 @@ void Timeline::TimelineOneViewProcess()
 		note.SetNotSEQ(iter->value.GetNotSEQ());
 		RequestScope->SetRequestAttributes(note);
 		if (MVC_Controller->SelectOneNoteInformation() == false)
-			return;
+			return false;
 
 		RequestScope->GetRequestAttributes(&note);
 		if (oneViewTimelineText.IsEmpty())
@@ -408,6 +425,8 @@ void Timeline::TimelineOneViewProcess()
 	m_oneViewDlg.SetTimelineText(oneViewTimelineText);
 
 	CURSOR_CROSS;
+
+	return true;
 }
 
 
@@ -440,19 +459,21 @@ bool Timeline::DragDown(MSG* pMsg)
 	if (m_nPointingTimeIDX < 0)
 		return false;
 
-	if (bDetailOpen)
+	if (m_bDetailOpen)
 	{
-		bDetailOpen = false;
+		m_bDetailOpen = false;
 		m_detailDlg.ShowWindow(SW_HIDE);
 	}
 	
 	// 드래그 다이얼로그 띄우기
 	m_defaultDragData.mousePos_X = pMsg->pt.x;
 	m_defaultDragData.mousePos_Y = pMsg->pt.y;
-	// 노트인덱스값 구하기..
 	m_defaultDragData.noteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 	m_timeManager->InputDragStruct(&m_defaultDragData);
 	m_bDragProcessing = m_timeManager->SendMessages(PM_TIMELINE_DRAG_DOWN);
+
+	if (!m_bDragProcessing)
+		return false;
 	
 	// 타임라인 맵에서 해당 데이터 삭제
 	// 우선 컨테이너에서만 삭제시킨다.
@@ -495,44 +516,84 @@ bool Timeline::DragUp(MSG* pMsg)
 	m_timeManager->InputDragStruct(&m_defaultDragData);
 	if (m_timeManager->SendMessages(PM_TIMELINE_DRAG_UP))
 	{
+		CURSOR_WAIT;
 		DragUpState dus = m_timeManager->GetDragState();
 		if (dus == DUS_NOTHING)
 		{
 			TimelineVO time;
 			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 			RequestScope->SetRequestAttributes(time);
-			if (MVC_Controller->SelectInSceSEQTimeline())
+			if (MVC_Controller->SelectInSceSEQTimeline() == false)
 			{
-				m_timeLineContainer.clear();
-				RequestScope->GetRequestAttributes(&m_timeLineContainer);
+				m_bDragProcessing = false;
+				return false;
 			}
+
+			m_timeLineContainer.clear();
+			RequestScope->GetRequestAttributes(&m_timeLineContainer);
 			Invalidate();
 		}
 		else if (dus == DUS_THIS)
 		{
 			m_timeManager->InputDragStruct(&m_defaultDragData);
-			if (m_timeManager->SendMessages(PM_NOTE_INSERT))
+			if (m_timeManager->SendMessages(PM_NOTE_INSERT) == false)
 			{
-				TimelineVO time;
-				time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
-				time.SetNotSEQ(m_defaultDragData.noteSEQ);
-				RequestScope->SetRequestAttributes(time);
-				if (MVC_Controller->DeleteTimeline() == false)
-					return false;
-
-				RequestScope->SetRequestAttributes(time);
-				if (MVC_Controller->SelectInSceSEQTimeline())
-				{
-					m_timeLineContainer.clear();
-					RequestScope->GetRequestAttributes(&m_timeLineContainer);
-				}
-				Invalidate();
-
+				m_bDragProcessing = false;
+				return false;
 			}
+
+			TimelineVO time;
+			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+			time.SetNotSEQ(m_defaultDragData.noteSEQ);
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->DeleteTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->SelectInSceSEQTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+
+			m_timeLineContainer.clear();
+			RequestScope->GetRequestAttributes(&m_timeLineContainer);
+			Invalidate();
 		}
 		else if (dus == DUS_ANOTHER)
 		{
-			int a = 0;
+			// 현재 다이얼로그에서 노트정보 삭제 (timeline <-> noteinformation cascade 관계라 note만 지워도 됨)
+			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, false, "");
+			RequestScope->SetRequestAttributes(inNote);
+			if (MVC_Controller->DeleteNoteInformation() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+
+			TimelineVO time;
+			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->SelectInSceSEQTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+
+			// 타임라인 컨테이너 갱신
+			m_timeLineContainer.clear();
+			RequestScope->GetRequestAttributes(&m_timeLineContainer);
+
+			// 노트매니저와 노트컨트롤쪽 컨테이너, 맵 삭제
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
 		}
 		else if (dus == DUS_THIS_TIMELINE)
 		{
@@ -542,6 +603,8 @@ bool Timeline::DragUp(MSG* pMsg)
 		{
 			int a = 0;
 		}
+
+		CURSOR_ARROW;
 	}
 
 	m_bDragProcessing = false;

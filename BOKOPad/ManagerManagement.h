@@ -160,6 +160,7 @@ protected:
 	void SortScenarioManagerKey();
 	void SortNoteManagerKey();
 
+	void CursorCountRestore(int setCursorCnt);
 
 	bool m_bAttach;
 	CWnd* m_mainDlg;
@@ -169,10 +170,10 @@ protected:
 	static ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
 	static ComplexMap<int, int> m_scenarioSeqMap;
 	static DragUpState m_dragState;
+	static int m_cursorEventCnt;
 
 	ComplexMap<int, NotePadStruct> m_notePadManager;
 	ComplexMap<int, int> m_noteSeqMap;
-
 
 	const int EDIT_WIDTH = 80;
 	const int EDIT_HEIGHT = 60;

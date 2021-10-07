@@ -24,12 +24,12 @@ public:
 
 public:
 
-	void SignalLoadScenarioList();
+	bool SignalLoadScenarioList();
 
-	void SignalInsertTimeline(int notSEQ, POINT currentMPoint);
-	void SignalInsertNote(ComplexString& strNoteContent);
-	void SignalDeleteNote(int notSEQ);
-	void SignalUpdateSetTIME(int notSEQ);
+	bool SignalInsertTimeline(int notSEQ, POINT currentMPoint);
+	bool SignalInsertNote(ComplexString& strNoteContent);
+	bool SignalDeleteNote(int notSEQ);
+	bool SignalUpdateSetTIME(int notSEQ);
 
 private:
 

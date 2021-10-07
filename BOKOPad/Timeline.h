@@ -5,6 +5,7 @@
 #include "BOKOTimelineOneViewDlg.h"
 #include "NoteListInterface.h"
 
+class NoteManager;
 class TimelineManager;
 // Timeline 대화 상자
 
@@ -12,6 +13,8 @@ class TimelineManager;
 
 class Timeline : public CDialogEx, public NoteListInterface
 {
+	friend class NoteManager;
+	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(Timeline)
 
 public:
@@ -23,14 +26,7 @@ public:
 
 public:
 
-	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
-
-	void InsertTimeline(int notSEQ, POINT currentMPoint);
-	void ThickEventTimeline(int notSEQ, POINT pt, bool thisApproch = true);
-	void HideTimelineDetail();
-
-	bool bDetailOpen;
-
+	
 protected:
 
 	virtual bool DragDown(MSG* pMsg);
@@ -39,10 +35,21 @@ protected:
 
 private:
 
-	void TimelineOneViewProcess();
-	int ValidatePointToRect(POINT pt);
-	void UpdateTimelineIDX(int startUpdateTimeIDX);
+	void AttachNoteManager(NoteManager* manager);
 
+	// 시그널 함수
+	bool SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
+	bool InsertTimeline(int notSEQ, POINT currentMPoint);
+	bool ThickEventTimeline(int notSEQ, POINT pt, bool thisApproch = true);
+	void HideTimelineDetail();
+
+	// 내부 함수
+	bool TimelineOneViewProcess();
+	int ValidatePointToRect(POINT pt);
+	bool UpdateTimelineIDX(int startUpdateTimeIDX);
+
+	bool m_bDetailOpen;
+	bool m_bAttachManagerInit;
 	bool m_bInit;
 	// 현재 타임라인이 사용중인 시나리오
 	ScenarioManagerStruct m_thisDataStruct;
@@ -67,6 +74,8 @@ private:
 	BOKOTimelineOneViewDlg m_oneViewDlg;
 	// 타임라인 매니저
 	TimelineManager* m_timeManager;
+	// 노트 매니저
+	NoteManager* m_noteManager;
 
 	// 타임라인 x축 선의 시작지점
 	int m_nLineStartPoint_X;

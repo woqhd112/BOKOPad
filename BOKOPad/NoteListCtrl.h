@@ -10,6 +10,7 @@ class NoteManager;
 
 class NoteListCtrl : public CDialogEx, public NoteListInterface
 {
+	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(NoteListCtrl)
 
 public:
@@ -20,18 +21,20 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_NOTE_LIST_CTRL };
 
-	void LoadNoteInformation();
 
-	void ScrollExecute(bool bAdd, bool bPosSwitch = false);
+private:
+
+	// 시그널 함수
+	bool LoadNoteInformation();
 	CRect* CalcNotePosition(int itemIndex);
 	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertNote(ComplexString inpusString);
 	bool UpdateSetTIME(int notSEQ);
 	bool DeleteNote(int notSEQ);
-	bool MoveNote(int startMoveIndex, int endMoveIndex);
+	bool MoveNote();
 
-private:
-
+	// 내부 함수
+	void ScrollExecute(bool bAdd, bool bPosSwitch = false);
 	bool UpdateScenarioList(NoteInformationVO* noteInform);
 
 protected:

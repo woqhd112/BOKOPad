@@ -100,7 +100,14 @@ bool ScenarioManager::Create()
 		}
 
 		scenarioDetail->ShowWindow(SW_SHOW);
-		scenarioDetail->SignalLoadScenarioList();
+		if (scenarioDetail->SignalLoadScenarioList() == false)
+		{
+			scenarioDetail->DestroyWindow();
+			delete scenarioDetail;
+			scenarioDetail = nullptr;
+			ReleaseScenarioStruct();
+			return false;
+		}
 	}
 	else
 	{

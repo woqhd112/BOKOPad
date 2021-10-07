@@ -188,7 +188,7 @@ bool DlgController::DeleteTimeline()
 {
 	TimelineVO timeline;
 	RequestScope->GetRequestAttributes(&timeline);
-	return m_timeLineDlgService->DeleteTimeline(timeline.GetNotSEQ());
+	return m_timeLineDlgService->DeleteTimeline(timeline.GetNotSEQ(), timeline.GetSceSEQ());
 }
 
 bool DlgController::UpdateTimelineInTimeIDX()

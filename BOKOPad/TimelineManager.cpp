@@ -81,7 +81,7 @@ bool TimelineManager::TimelineDragMove()
 		if (m_bCursorDetach)
 		{
 			m_bCursorAttach = true;
-			ShowCursor(TRUE);
+			CursorCountRestore(0);
 			m_dragDlg->ShowWindow(SW_HIDE);
 			CURSOR_CROSS;
 			m_bCursorDetach = false;
@@ -94,7 +94,7 @@ bool TimelineManager::TimelineDragMove()
 		if (m_bCursorAttach)
 		{
 			m_bCursorDetach = true;
-			ShowCursor(FALSE);
+			CursorCountRestore(-1);
 			m_dragDlg->ShowWindow(SW_SHOW);
 			m_bCursorAttach = false;
 		}
@@ -174,8 +174,7 @@ bool TimelineManager::TimelineDragUp()
 
 	m_dragDlg->ShowWindow(SW_HIDE);
 	ReleaseDragStruct();
-	if (m_bCursorDetach)
-		ShowCursor(TRUE);
+	CursorCountRestore(0);
 	CURSOR_ARROW;
 	ReleaseCapture();
 	return true;
@@ -208,7 +207,11 @@ bool TimelineManager::NoteInsert()
 		return false;
 	}
 
-	iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ);
+	if (iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
 
 	ReleaseDragStruct();
 

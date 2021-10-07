@@ -42,6 +42,8 @@ enum DML_QUERY_INDEX
 	DELETE_TIME_LINE_TABLE,
 	UPDATE_TIME_LINE_TABLE_IN_TIMEIDX,
 	UPDATE_NOTE_INFORMATION_TABLE_IN_SETTIMELINE,
+	SELECT_COUNT_TIME_LINE_TABLE_IN_SCESEQ,
+	SELECT_IN_TIMEIDX_TIME_LINE_TABLE_IN_NOTSEQ,
 };
 
 static const char* DefinedDDLQuerys[] = { 
@@ -132,4 +134,8 @@ static const char* DefinedDMLQuerys[] = {
 									"UPDATE Timeline SET timeIDX = ? WHERE timeIDX = ? AND sceSEQ = ?",
 									// update note information in setTIMELINE
 									"UPDATE NoteInformation SET setTIMELINE = ? WHERE notSEQ = ?",
+									// select count time line table
+									"SELECT COUNT(*) FROM Timeline WHERE sceSEQ = ?",
+									// select timeIDX time line table in notSEQ
+									"SELECT timeIDX FROM Timeline WHERE notSEQ = ?",
 								   };

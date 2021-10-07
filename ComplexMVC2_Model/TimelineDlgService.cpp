@@ -45,11 +45,37 @@ bool TimelineDlgService::InsertTimeline(int timeIDX, int notSEQ, int sceSEQ)
 	return bSuccess;
 }
 
-bool TimelineDlgService::DeleteTimeline(int notSEQ)
+bool TimelineDlgService::DeleteTimeline(int notSEQ, int sceSEQ)
 {
 	bool bSuccess = false;
 
-	bSuccess = m_timelineDlgModel->DeleteTimeline(notSEQ);
+	// 삭제 전 해당 notSEQ에 맞는 timeIDX를 가져온다.
+	TimelineVO time;
+	bSuccess = m_timelineDlgModel->SelectInTimeIDXTimelineInNotSEQ(notSEQ, &time);
+
+	// 타임라인 테이블의 총 레코드 개수를 가져온다.
+	int recordCount = 0;
+	if (bSuccess)
+		bSuccess = m_timelineDlgModel->SelectCountTimelineInSceSEQ(sceSEQ, &recordCount);
+
+	// 해당 notSEQ의 타임라인을 삭제한다.
+	if (bSuccess)
+		bSuccess = m_timelineDlgModel->DeleteTimeline(notSEQ);
+
+	// 삭제한 timeIDX 이후의 레코드들을 전부
+	int deleteTimeIDX = time.GetTimeIDX();
+
+	if (recordCount > deleteTimeIDX)
+	{
+		for (int i = deleteTimeIDX + 1; i <= recordCount; i++)
+		{
+			bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(sceSEQ, i, false);
+			if (!bSuccess)
+				break;
+		}
+	}
+	else
+		bSuccess = false;
 
 	if (bSuccess)
 		m_timelineDlgModel->Commit();
@@ -63,7 +89,7 @@ bool TimelineDlgService::UpdateTimelineInTimeIDX(int sceSEQ, int timeIDX)
 {
 	bool bSuccess = false;
 
-	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(sceSEQ, timeIDX);
+	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(sceSEQ, timeIDX, true);
 
 	if (bSuccess)
 		m_timelineDlgModel->Commit();

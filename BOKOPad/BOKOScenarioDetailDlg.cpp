@@ -97,6 +97,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
 	m_timeline.Create(Timeline::IDD, this);
+	m_timeline.AttachNoteManager(m_list_notePad.m_noteManager);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
@@ -156,37 +157,42 @@ BOOL BOKOScenarioDetailDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 	return CDialogEx::OnCommand(wParam, lParam);
 }
 
-void BOKOScenarioDetailDlg::SignalLoadScenarioList()
+bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 {
 	m_list_notePad.SetScenarioManagerStruct(m_thisDataStruct);
-	m_timeline.SetScenarioManagerStruct(m_thisDataStruct);
-	m_list_notePad.LoadNoteInformation();
+	if (m_timeline.SetScenarioManagerStruct(m_thisDataStruct) == false)
+		return false;
+
+	if (m_list_notePad.LoadNoteInformation() == false)
+		return false;
+
+	return true;
 }
 
-void BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent)
+bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent)
 {
-	m_list_notePad.InsertNote(strNoteContent);
+	return m_list_notePad.InsertNote(strNoteContent);
 }
 
-void BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
+bool BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
 {
-	m_list_notePad.DeleteNote(notSEQ);
+	return m_list_notePad.DeleteNote(notSEQ);
 }
 
-void BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint)
+bool BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint)
 {
-	m_timeline.InsertTimeline(notSEQ, currentMPoint);
+	return m_timeline.InsertTimeline(notSEQ, currentMPoint);
 }
 
-void BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
+bool BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
 {
-	m_list_notePad.UpdateSetTIME(notSEQ);
+	return m_list_notePad.UpdateSetTIME(notSEQ);
 }
 
 void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (m_timeline.bDetailOpen)
+	if (m_timeline.m_bDetailOpen)
 	{
 		m_timeline.HideTimelineDetail();
 	}

@@ -421,7 +421,8 @@ bool NoteManager::DragDown()
 	iter->value.value.noteButton->ShowWindow(SW_HIDE);
 	iter->value.value.noteEdit->ShowWindow(SW_HIDE);
 
-	ShowCursor(FALSE);
+	//m_cursorEventCnt = ShowCursor(FALSE);
+	CursorCountRestore(-1);
 	m_mainDlg->SetCapture();
 	ReleaseDragStruct();
 
@@ -453,7 +454,7 @@ bool NoteManager::DragMove()
 			if (m_bCursorDetach)
 			{
 				m_bCursorAttach = true;
-				ShowCursor(TRUE);
+				CursorCountRestore(0);
 				m_dragDlg->ShowWindow(SW_HIDE);
 				CURSOR_CROSS;
 				m_bCursorDetach = false;
@@ -466,7 +467,7 @@ bool NoteManager::DragMove()
 			if (m_bCursorAttach)
 			{
 				m_bCursorDetach = true;
-				ShowCursor(FALSE);
+				CursorCountRestore(-1);
 				m_dragDlg->ShowWindow(SW_SHOW);
 				m_bCursorAttach = false;
 			}
@@ -568,8 +569,7 @@ bool NoteManager::DragUp()
 
 	m_dragDlg->ShowWindow(SW_HIDE);
 	ReleaseDragStruct();
-	if (!m_bCursorDetach)
-		ShowCursor(TRUE);
+	CursorCountRestore(0);
 	CURSOR_ARROW;
 	ReleaseCapture();
 	return true;
@@ -611,6 +611,8 @@ bool NoteManager::DragNothing()
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
 	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
 
+	ReleaseDragStruct();
+
 	return true;
 }
 
@@ -650,6 +652,7 @@ bool NoteManager::DragThisAttach()
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
 	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
 
+	ReleaseDragStruct();
 	return true;
 }
 
@@ -685,29 +688,42 @@ bool NoteManager::DragAnotherAttach()
 		iter1++;
 	}
 
-	if (bFind)
+	if (!bFind)
 	{
-		ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
-		ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
-
-		if (iter2 == m_scenarioDlgManager.end())
-		{
-			ReleaseDragStruct();
-			return false;
-		}
-
-		if (iter3 == m_scenarioDlgManager.end())
-		{
-			ReleaseDragStruct();
-			return false;
-		}
-
-		// 현재 시나리오에서 노트삭제
-		iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ);
-		// 타겟 시나리오에서 노트추가
-		iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT);
+		ReleaseDragStruct();
+		return false;
 	}
 
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
+
+	if (iter2 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (iter3 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 시나리오에서 노트삭제
+	if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 시나리오에서 노트추가
+	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ReleaseDragStruct();
 	return true;
 }
 
@@ -738,7 +754,12 @@ bool NoteManager::DragThisTimelineAttach()
 	}
 	
 	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
-	iter1->value.value->SignalInsertTimeline(dragDataStruct->noteSEQ, pt);
+	
+	if (iter1->value.value->SignalInsertTimeline(dragDataStruct->noteSEQ, pt) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
 
 	ReleaseDragStruct();
 
@@ -779,6 +800,7 @@ bool NoteManager::FindNoteIndex()
 	}
 
 	noteDataStruct->noteIndex = iter->value.key;
+	ReleaseNoteStruct();
 
 	return true;
 }

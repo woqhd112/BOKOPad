@@ -10,7 +10,7 @@ public:
 
 	bool SelectInSceSEQTimeline(int sceSEQ);
 	bool InsertTimeline(int timeIDX, int notSEQ, int sceSEQ);
-	bool DeleteTimeline(int notSEQ);
+	bool DeleteTimeline(int notSEQ, int sceSEQ);
 	bool UpdateTimelineInTimeIDX(int sceSEQ, int timeIDX);
 
 private:
