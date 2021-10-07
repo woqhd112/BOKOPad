@@ -2,7 +2,8 @@
 
 enum DDL_QUERY_INDEX
 {
-	CREATE_SCENARIO_LIST_TABLE = 0,
+	DELETE_CASCADE_ON = 0,
+	CREATE_SCENARIO_LIST_TABLE,
 	DROP_SCENARIO_LIST_TABLE,
 	CREATE_NOTE_INFORMATION_TABLE,
 	DROP_NOTE_INFORMATION_TABLE,
@@ -47,6 +48,8 @@ enum DML_QUERY_INDEX
 };
 
 static const char* DefinedDDLQuerys[] = { 
+									// on delete cascade 
+									"PRAGMA foreign_keys=ON",
 									// create scenario list table
 									"CREATE TABLE ScenarioList(sceSEQ INTEGER PRIMARY KEY AUTOINCREMENT, \
 																sceTITLE TEXT NOT NULL, \

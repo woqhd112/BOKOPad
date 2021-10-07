@@ -147,18 +147,17 @@ namespace ComplexLibrary
 					break;
 
 				prevNode = cursor;
-				cursor = cursor->next();
+				cursor = cursor->m_next;
 				cnt++;
 			}
 
-			
 			// 인덱스가 0번일 때 (사이즈가 0일때는 위에서 예외처리함)
 			if (prevNode == nullptr)
 			{
 				if (m_size > 1)
 				{
 					--m_size;
-					m_head = cursor->next();
+					m_head = cursor->m_next;
 					delete cursor;
 					cursor = nullptr;
 				}
@@ -173,10 +172,21 @@ namespace ComplexLibrary
 			else
 			{
 				m_size--;
-				prevNode->m_next = cursor->m_next;
+
+				// 맨 마지막일때
+				if (cursor == m_tail)
+				{
+					m_tail = prevNode;
+					prevNode->m_next = nullptr;
+				}
+				else
+				{
+					prevNode->m_next = cursor->m_next;
+				}
 				delete cursor;
 				cursor = nullptr;
 			}
+
 		}
 
 		ComplexNode<T>* get_at(int index)

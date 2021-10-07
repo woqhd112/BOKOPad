@@ -567,6 +567,17 @@ bool Timeline::DragUp(MSG* pMsg)
 		{
 			// 현재 다이얼로그에서 노트정보 삭제 (timeline <-> noteinformation cascade 관계라 note만 지워도 됨)
 			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, false, "");
+			// 해당 notSEQ로 notCONTENT 뽑아오기
+			RequestScope->SetRequestAttributes(inNote);
+			if (MVC_Controller->SelectOneNoteInformation() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+			RequestScope->GetRequestAttributes(&inNote);
+			m_defaultDragData.noteCONTENT = inNote.GetNotCONTENT();
+
+			// 노트 삭제
 			RequestScope->SetRequestAttributes(inNote);
 			if (MVC_Controller->DeleteNoteInformation() == false)
 			{
@@ -574,6 +585,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				return false;
 			}
 
+			// 타임라인정보 갱신
 			TimelineVO time;
 			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 			RequestScope->SetRequestAttributes(time);
@@ -582,12 +594,11 @@ bool Timeline::DragUp(MSG* pMsg)
 				m_bDragProcessing = false;
 				return false;
 			}
-
-			// 타임라인 컨테이너 갱신
 			m_timeLineContainer.clear();
 			RequestScope->GetRequestAttributes(&m_timeLineContainer);
 
-			// 노트매니저와 노트컨트롤쪽 컨테이너, 맵 삭제
+			
+			// 노트매니저와 노트컨트롤쪽 컨테이너, 맵 삭제하고 타겟 다이얼로그에 노트 등록
 			m_noteManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
 			{

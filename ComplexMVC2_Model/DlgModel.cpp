@@ -72,6 +72,7 @@ void DlgModel::LoadDatabase()
 	{
 		if (!bExist)
 		{
+			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[DELETE_CASCADE_ON], NULL);
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
 			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);

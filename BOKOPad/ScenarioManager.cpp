@@ -81,7 +81,7 @@ bool ScenarioManager::Create()
 	inputScenarioStruct.scenarioIndex = scenarioDataStruct->scenarioIndex;
 
 	BOKOScenarioDetailDlg* scenarioDetail = new BOKOScenarioDetailDlg(inputScenarioStruct, m_mainDlg);
-	bool bCreate = (bool)scenarioDetail->Create(scenarioDetail->IDD, m_mainDlg);
+	bool bCreate = (bool)scenarioDetail->Create(BOKOScenarioDetailDlg::IDD, m_mainDlg);
 	if (bCreate)
 	{
 		try
