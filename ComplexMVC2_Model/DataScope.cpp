@@ -4,6 +4,7 @@
 
 static std::shared_ptr<RequestAttribute> g_request;
 static std::shared_ptr<SessionAttribute> g_session;
+static std::shared_ptr<TransactionManager> g_transaction;
 
 RequestAttribute* GetRequestScope()
 {
@@ -23,4 +24,14 @@ SessionAttribute* GetSessionScope()
 	}
 
 	return g_session.get();
+}
+
+TransactionManager* GetTransactionManager()
+{
+	if (g_transaction.get() == NULL)
+	{
+		g_transaction.reset(new TransactionManager);
+	}
+
+	return g_transaction.get();
 }

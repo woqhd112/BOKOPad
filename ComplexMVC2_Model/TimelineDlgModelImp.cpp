@@ -33,15 +33,35 @@ void PrepareStatementDeleteTimeline()
 
 void PrepareStatementUpdateTimelineInTimeIDXPlus()
 {
-	int sceSEQ, timeIDX;
-	DATA_INSTANCE->GetTimeline(&timeIDX, NULL, &sceSEQ);
+	int notSEQ, timeIDX;
+	DATA_INSTANCE->GetTimeline(&timeIDX, &notSEQ, NULL);
 	DB_INSTANCE->SetInt(1, timeIDX + 1);
 	DB_INSTANCE->SetInt(2, timeIDX);
-	DB_INSTANCE->SetInt(3, sceSEQ);
+	DB_INSTANCE->SetInt(3, notSEQ);
 	DATA_INSTANCE->ResetTimeline();
 }
 
 void PrepareStatementUpdateTimelineInTimeIDXMinus()
+{
+	int notSEQ, timeIDX;
+	DATA_INSTANCE->GetTimeline(&timeIDX, &notSEQ, NULL);
+	DB_INSTANCE->SetInt(1, timeIDX - 1);
+	DB_INSTANCE->SetInt(2, timeIDX);
+	DB_INSTANCE->SetInt(3, notSEQ);
+	DATA_INSTANCE->ResetTimeline();
+}
+
+void PrepareStatementUpdateTimelineInTimeIDX()
+{
+	int notSEQ, baseTimeIDX, updateTimeIDX;
+	DATA_INSTANCE->GetTimeline(&baseTimeIDX, &notSEQ, NULL);
+	DATA_INSTANCE->GetInt(&updateTimeIDX);
+	DB_INSTANCE->SetInt(1, updateTimeIDX);
+	DB_INSTANCE->SetInt(2, baseTimeIDX);
+	DB_INSTANCE->SetInt(3, notSEQ);
+}
+
+void PrepareStatementUpdateTimelineInTimeIDXMinusInSceSEQ()
 {
 	int sceSEQ, timeIDX;
 	DATA_INSTANCE->GetTimeline(&timeIDX, NULL, &sceSEQ);
@@ -74,7 +94,7 @@ void PrepareStatementSelectInTimeIDXTimelineInNotSEQ()
 
 void ResultSetSelectInTimeIDXTimelineInNotSEQ()
 {
-	DATA_INSTANCE->SetTimeline(0, DB_INSTANCE->GetInt(0), 0);
+	DATA_INSTANCE->SetTimeline(DB_INSTANCE->GetInt(0), 0, 0);
 }
 
 TimelineDlgModelImp::TimelineDlgModelImp()
@@ -123,11 +143,45 @@ bool TimelineDlgModelImp::DeleteTimeline(int in_notSEQ)
 	return bSuccess;
 }
 
-bool TimelineDlgModelImp::UpdateTimelineInTimeIDX(int in_sceSEQ, int in_timeIDX, bool plus)
+bool TimelineDlgModelImp::UpdateTimelineInTimeIDXPlus(int in_notSEQ, int in_timeIDX)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetTimeline(in_timeIDX, in_notSEQ, 0);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_TIME_LINE_TABLE_IN_TIMEIDX], PrepareStatementUpdateTimelineInTimeIDXPlus);
+
+	DATA_INSTANCE->ResetTimeline();
+
+	return bSuccess;
+}
+
+bool TimelineDlgModelImp::UpdateTimelineInTimeIDXMinus(int in_notSEQ, int in_timeIDX)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetTimeline(in_timeIDX, in_notSEQ, 0);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_TIME_LINE_TABLE_IN_TIMEIDX], PrepareStatementUpdateTimelineInTimeIDXMinus);
+
+	DATA_INSTANCE->ResetTimeline();
+
+	return bSuccess;
+}
+
+bool TimelineDlgModelImp::UpdateTimelineInTimeIDX(int in_notSEQ, int in_baseTimeIDX, int in_updateTimeIDX)
+{
+	bool bSuccess = false;
+	DATA_INSTANCE->SetInt(in_updateTimeIDX);
+	DATA_INSTANCE->SetTimeline(in_baseTimeIDX, in_notSEQ, 0);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_TIME_LINE_TABLE_IN_TIMEIDX], PrepareStatementUpdateTimelineInTimeIDX);
+
+	DATA_INSTANCE->ResetTimeline();
+
+	return bSuccess;
+}
+
+bool TimelineDlgModelImp::UpdateTimelineInTimeIDXMinusInSceSEQ(int in_sceSEQ, int in_timeIDX)
 {
 	bool bSuccess = false;
 	DATA_INSTANCE->SetTimeline(in_timeIDX, 0, in_sceSEQ);
-	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_TIME_LINE_TABLE_IN_TIMEIDX], plus ? PrepareStatementUpdateTimelineInTimeIDXPlus : PrepareStatementUpdateTimelineInTimeIDXMinus);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_TIME_LINE_TABLE_IN_TIMEIDX_IN_SCESEQ], PrepareStatementUpdateTimelineInTimeIDXMinusInSceSEQ);
 
 	DATA_INSTANCE->ResetTimeline();
 

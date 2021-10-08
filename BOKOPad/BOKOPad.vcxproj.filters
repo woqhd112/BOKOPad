@@ -35,6 +35,9 @@
     <Filter Include="UI\Scenario\Timeline">
       <UniqueIdentifier>{d62dce94-0cef-4e05-8227-ead3c9682af7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TransactionNameDefine">
+      <UniqueIdentifier>{c294166e-fe9d-4610-a46d-c946e94a2e6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -96,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="TimelineManager.h">
       <Filter>PerformanceManager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionNameDefine.h">
+      <Filter>TransactionNameDefine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

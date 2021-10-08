@@ -22,6 +22,7 @@ private:
 	bool DragMove();
 	bool DragDown();
 	bool DragUp();
+	bool Clear();
 
 	bool DragNothing();
 	bool DragThisAttach();
@@ -30,6 +31,8 @@ private:
 	bool DragAnotherTimelineAttach();
 
 	bool FindNoteIndex();
+
+	bool RollbackAnotherAttach();
 
 private:
 

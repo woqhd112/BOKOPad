@@ -2,23 +2,25 @@
 #include "DlgModel.h"
 #include <windows.h>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-static ComplexDatabase g_dbConnection;
-static DBDataKernel g_dataKernel;
+static std::shared_ptr<ComplexDatabase> g_dbConnection;
+static std::shared_ptr<DBDataKernel> g_dataKernel;
 
 DBDataKernel* GetDataKernelInstance()
 {
-	return &g_dataKernel;
+	if (g_dataKernel.get() == NULL)
+	{
+		g_dataKernel.reset(new DBDataKernel);
+	}
+	return g_dataKernel.get();
 }
 
 ComplexDatabase* GetDBInstance()
 {
-	return &g_dbConnection;
+	if (g_dbConnection.get() == NULL)
+	{
+		g_dbConnection.reset(new ComplexDatabase);
+	}
+	return g_dbConnection.get();
 }
 
 void PrePareStatementInsertPadOption()
@@ -31,7 +33,7 @@ DlgModel::DlgModel()
 {
 	//g_dataKernel = ComplexSingleton<DBDataKernel>::GetInstance();
 	//g_dbConnection = ComplexSingleton<ComplexDatabase>::GetInstance();
-	if (g_dbConnection.IsConnect() == false)
+	if (DB_INSTANCE->IsConnect() == false)
 	{
 		LoadDatabase();
 	}
@@ -68,27 +70,28 @@ void DlgModel::LoadDatabase()
 		bExist = true;
 	}
 
-	if (g_dbConnection.ConnectDatabase("../Workspace/Config/md.db"))
+	if (DB_INSTANCE->ConnectDatabase("../Workspace/Config/md.db"))
 	{
 		if (!bExist)
 		{
-			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[DELETE_CASCADE_ON], NULL);
-			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
-			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
-			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);
-			g_dbConnection.ExecuteQuery(DefinedDDLQuerys[CREATE_TIME_LINE_TABLE], NULL);
-			g_dbConnection.PrepareStatement_Execute(DefinedDMLQuerys[INSERT_PAD_OPTION_TABLE], PrePareStatementInsertPadOption);
+			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[DELETE_CASCADE_ON], NULL);
+			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
+			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
+			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);
+			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_TIME_LINE_TABLE], NULL);
+			DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[INSERT_PAD_OPTION_TABLE], PrePareStatementInsertPadOption);
 		}
-		g_dbConnection.SetAutoCommit(false);
+		// 트랜잭션 처리를 위해 주석
+		//g_dbConnection.SetAutoCommit(false);
 	}
 }
 
 void DlgModel::Commit()
 {
-	g_dbConnection.Commit();
+	DB_INSTANCE->Commit();
 }
 
 void DlgModel::Rollback()
 {
-	g_dbConnection.Rollback();
+	DB_INSTANCE->Rollback();
 }

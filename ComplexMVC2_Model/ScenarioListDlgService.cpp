@@ -21,10 +21,10 @@ bool ScenarioListDlgService::InsertScenarioList(ComplexString in_sceTITLE)
 	bool bSuccess = false;
 	bSuccess = m_scenarioDlgModel->InsertScenarioList(in_sceTITLE);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_scenarioDlgModel->Commit();
 	else
-		m_scenarioDlgModel->Rollback();
+		m_scenarioDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -48,10 +48,10 @@ bool ScenarioListDlgService::UpdateScenarioList(ComplexString in_sceTITLE, int i
 
 	bSuccess = m_scenarioDlgModel->UpdateScenarioList(in_sceTITLE, in_notCNT, in_sceSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_scenarioDlgModel->Commit();
 	else
-		m_scenarioDlgModel->Rollback();
+		m_scenarioDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -62,10 +62,10 @@ bool ScenarioListDlgService::DeleteScenarioList(int delete_seq)
 
 	bSuccess = m_scenarioDlgModel->DeleteScenarioList(delete_seq);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_scenarioDlgModel->Commit();
 	else
-		m_scenarioDlgModel->Rollback();
+		m_scenarioDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -76,10 +76,10 @@ bool ScenarioListDlgService::UpdateScenarioListInSceTITLE(ComplexString in_sceTI
 
 	bSuccess = m_scenarioDlgModel->UpdateScenarioListInSceTITLE(in_sceTITLE, in_sceSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_scenarioDlgModel->Commit();
 	else
-		m_scenarioDlgModel->Rollback();
+		m_scenarioDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -90,10 +90,10 @@ bool ScenarioListDlgService::UpdateScenarioListInNotCNT(int in_notCNT, int in_sc
 
 	bSuccess = m_scenarioDlgModel->UpdateScenarioListInNotCNT(in_notCNT, in_sceSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_scenarioDlgModel->Commit();
 	else
-		m_scenarioDlgModel->Rollback();
+		m_scenarioDlgModel->Rollback();*/
 
 	return bSuccess;
 }

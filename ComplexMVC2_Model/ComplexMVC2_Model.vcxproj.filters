@@ -102,6 +102,12 @@
     <ClInclude Include="TimelineDlgModelImp.h">
       <Filter>Model\DAO</Filter>
     </ClInclude>
+    <ClInclude Include="TransactionManager.h">
+      <Filter>DataScope</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionProcess.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -145,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="TimelineDlgModelImp.cpp">
       <Filter>Model\DAO</Filter>
+    </ClCompile>
+    <ClCompile Include="TransactionProcess.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

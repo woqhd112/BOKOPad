@@ -1,6 +1,7 @@
 #pragma once
 #include "QueryDefine.h"
 #include "DataScope.h"
+#include <memory>
 
 #ifdef _DEBUG 
 #define DB_MODULE_NANE "BOKOPad_dbg.exe"

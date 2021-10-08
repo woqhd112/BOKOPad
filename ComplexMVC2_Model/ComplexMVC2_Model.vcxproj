@@ -184,6 +184,8 @@
     <ClInclude Include="TimelineDlgModelImp.h" />
     <ClInclude Include="TimelineDlgService.h" />
     <ClInclude Include="TimelineVO.h" />
+    <ClInclude Include="TransactionProcess.h" />
+    <ClInclude Include="TransactionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataScope.cpp" />
@@ -205,6 +207,7 @@
     <ClCompile Include="ScenarioListDlgService.cpp" />
     <ClCompile Include="TimelineDlgModelImp.cpp" />
     <ClCompile Include="TimelineDlgService.cpp" />
+    <ClCompile Include="TransactionProcess.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

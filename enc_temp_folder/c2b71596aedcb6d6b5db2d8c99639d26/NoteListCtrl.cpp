@@ -405,7 +405,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 				m_noteManager->InputDragStruct(&m_defaultDragData);
 				if (m_noteManager->SendMessages(PM_ROLLBACK_ANOTHER_ATTACH) == false)
-					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+					throw "Data Error";
 
 				return false;
 			}
@@ -421,7 +421,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 				m_noteManager->InputDragStruct(&m_defaultDragData);
 				if (m_noteManager->SendMessages(PM_ROLLBACK_ANOTHER_ATTACH) == false)
-					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+					throw "Data Error";
 
 				return false;
 			}

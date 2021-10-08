@@ -214,6 +214,7 @@
     <ClInclude Include="Timeline.h" />
     <ClInclude Include="TimelineDetail.h" />
     <ClInclude Include="TimelineManager.h" />
+    <ClInclude Include="TransactionNameDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKODragDlg.cpp" />

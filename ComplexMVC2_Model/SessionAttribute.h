@@ -20,6 +20,16 @@ public:
 		}
 	}
 
+	void SetSessionInt(int in)
+	{
+		m_kernel->SetInt(in);
+	}
+
+	void SetSessionString(ComplexString in)
+	{
+		m_kernel->SetString(in);
+	}
+
 	void SetSession(NoteInformationVO& in)
 	{
 		m_kernel->SetNoteInformation(in);
@@ -80,6 +90,16 @@ public:
 		}
 	}
 
+	void GetSessionInt(int* out)
+	{
+		m_kernel->GetInt(out);
+	}
+
+	void GetSessionString(ComplexString* out)
+	{
+		m_kernel->GetString(out);
+	}
+
 	void GetSession(NoteInformationVO* out, int get_row_index = 0)
 	{
 		m_kernel->GetNoteInformation(out, get_row_index);
@@ -123,6 +143,8 @@ public:
 
 	void ResetSession()
 	{
+		m_kernel->ResetInt();
+		m_kernel->ResetString();
 		m_kernel->ResetNoteInformation();
 		m_kernel->ResetScenarioList();
 		m_kernel->ResetPadOption();

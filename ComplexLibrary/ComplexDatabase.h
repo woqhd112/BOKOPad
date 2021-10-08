@@ -442,12 +442,9 @@ namespace ComplexLibrary
 		*/
 		void Commit()
 		{
-			if (!m_bUseAutoCommit)
-			{
-				int result = sqlite3_exec(m_dbHandler, "COMMIT TRANSACTION;", NULL, NULL, NULL);
-				m_errorText = GetErrorCode(result);
-				m_nCommitStartCount = 0;
-			}
+			int result = sqlite3_exec(m_dbHandler, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+			m_errorText = GetErrorCode(result);
+			m_nCommitStartCount = 0;
 		}
 
 		/*
@@ -457,22 +454,19 @@ namespace ComplexLibrary
 		*/
 		void Rollback(ComplexString savepoint_name = "")
 		{
-			if (!m_bUseAutoCommit)
+			int result = -1;
+			if (savepoint_name.IsEmpty())
 			{
-				int result = -1;
-				if (savepoint_name.IsEmpty())
-				{
-					result = sqlite3_exec(m_dbHandler, "ROLLBACK TRANSACTION;", NULL, NULL, NULL);
-				}
-				else
-				{
-					ComplexString query;
-					query.Format("ROLLBACK TO %s;", savepoint_name.GetBuffer());
-					result = sqlite3_exec(m_dbHandler, query, NULL, NULL, NULL);
-				}
-				m_errorText = GetErrorCode(result);
-				m_nCommitStartCount = 0;
+				result = sqlite3_exec(m_dbHandler, "ROLLBACK TRANSACTION;", NULL, NULL, NULL);
 			}
+			else
+			{
+				ComplexString query;
+				query.Format("ROLLBACK TO %s;", savepoint_name.GetBuffer());
+				result = sqlite3_exec(m_dbHandler, query, NULL, NULL, NULL);
+			}
+			m_errorText = GetErrorCode(result);
+			m_nCommitStartCount = 0;
 		}
 
 		/*
@@ -482,13 +476,10 @@ namespace ComplexLibrary
 		*/
 		void SetSavePoint(ComplexString savepoint_name)
 		{
-			if (!m_bUseAutoCommit)
-			{
-				ComplexString query;
-				query.Format("SAVEPOINT %s;", savepoint_name.GetBuffer());
-				int result = sqlite3_exec(m_dbHandler, query.GetBuffer(), NULL, NULL, NULL);
-				m_errorText = GetErrorCode(result);
-			}
+			ComplexString query;
+			query.Format("SAVEPOINT %s;", savepoint_name.GetBuffer());
+			int result = sqlite3_exec(m_dbHandler, query.GetBuffer(), NULL, NULL, NULL);
+			m_errorText = GetErrorCode(result);
 		}
 
 		/*
@@ -498,13 +489,19 @@ namespace ComplexLibrary
 		*/
 		void ReleaseSavePoint(ComplexString savepoint_name)
 		{
-			if (!m_bUseAutoCommit)
-			{
-				ComplexString query;
-				query.Format("RELEASE %s;", savepoint_name.GetBuffer());
-				int result = sqlite3_exec(m_dbHandler, query.GetBuffer(), NULL, NULL, NULL);
-				m_errorText = GetErrorCode(result);
-			}
+			ComplexString query;
+			query.Format("RELEASE %s;", savepoint_name.GetBuffer());
+			int result = sqlite3_exec(m_dbHandler, query.GetBuffer(), NULL, NULL, NULL);
+			m_errorText = GetErrorCode(result);
+		}
+
+		/*
+		* @ brief 오토커밋설정 여부를 리턴한다.
+		* @ return : 오토커밋 설정 여부
+		*/
+		bool IsAutoCommit() const
+		{
+			return m_bUseAutoCommit;
 		}
 
 	private:

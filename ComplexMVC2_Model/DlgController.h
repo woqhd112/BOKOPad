@@ -65,8 +65,14 @@ public:
 	bool InsertTimeline();
 	// 타임라인정보 삭제
 	bool DeleteTimeline();
-	// 타임라인정보 timeIDX 수정
+	// 타임라인정보 timeIDX +1 수정
+	bool UpdateTimelineInTimeIDXPlus();
+	// 타임라인정보 timeIDX -1 수정
+	bool UpdateTimelineInTimeIDXMinus();
+	// 타임라인정보 timeIDX 변경
 	bool UpdateTimelineInTimeIDX();
+	// 노트 시퀀스로 타임라인정보 로드
+	bool SelectInTimeIDXTimelineInNotSEQ();
 
 private:
 

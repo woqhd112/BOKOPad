@@ -152,10 +152,6 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 	else
 	{
 		TransactionInstance->Rollback(TransactionNames[TND_NOTE_INSERT]);
-		ScenarioManagerStruct scenarioStruct(m_thisDataStruct.scenarioData, m_thisDataStruct.scenarioIndex);
-		Scenario_Manager->InputScenarioStruct(&scenarioStruct);
-		if (Scenario_Manager->SendMessages(PM_NOTE_RELOAD) == false)
-			MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 	}
 
 	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_INSERT]);

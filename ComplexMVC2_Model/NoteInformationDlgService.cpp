@@ -59,10 +59,10 @@ bool NoteInformationDlgService::InsertNoteInformation(ComplexString in_notCONTEN
 		bSuccess = m_noteInformationDlgModel->UpdateScenarioListInNotCNT(in_sceSEQ, scenarioList.GetNotCNT() + 1);
 	}
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -73,10 +73,10 @@ bool NoteInformationDlgService::UpdateNoteInformation(ComplexString in_notCONTEN
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformation(in_notCONTENT, in_setTIMELINE, in_notLOCK, in_notSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -96,10 +96,10 @@ bool NoteInformationDlgService::DeleteNoteInformation(int in_notSEQ)
 	if (bSuccess)
 		bSuccess = m_noteInformationDlgModel->UpdateScenarioListInNotCNT(scenarioList.GetSceSEQ(), scenarioList.GetNotCNT() - 1);	
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -110,10 +110,10 @@ bool NoteInformationDlgService::UpdateNoteInformationInNotContent(ComplexString 
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInNotContent(in_notCONTENT, in_notSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -124,10 +124,10 @@ bool NoteInformationDlgService::UpdateNoteInformationInNotLOCK(bool in_notLOCK, 
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInNotLOCK(in_notLOCK, in_notSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -138,10 +138,10 @@ bool NoteInformationDlgService::UpdateNoteInformationInSceSEQ(int in_notSEQ, int
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInSceSEQ(in_notSEQ, in_sceSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -152,10 +152,10 @@ bool NoteInformationDlgService::UpdateNoteInformationInSetTIMELINE(int in_notSEQ
 
 	bSuccess = m_noteInformationDlgModel->UpdateNoteInformationInSetTIMELINE(in_notSEQ, in_setTIMELINE);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_noteInformationDlgModel->Commit();
 	else
-		m_noteInformationDlgModel->Rollback();
+		m_noteInformationDlgModel->Rollback();*/
 
 	return bSuccess;
 }

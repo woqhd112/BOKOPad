@@ -191,9 +191,32 @@ bool DlgController::DeleteTimeline()
 	return m_timeLineDlgService->DeleteTimeline(timeline.GetNotSEQ(), timeline.GetSceSEQ());
 }
 
-bool DlgController::UpdateTimelineInTimeIDX()
+bool DlgController::UpdateTimelineInTimeIDXPlus()
 {
 	TimelineVO timeline;
 	RequestScope->GetRequestAttributes(&timeline);
-	return m_timeLineDlgService->UpdateTimelineInTimeIDX(timeline.GetSceSEQ(), timeline.GetTimeIDX());
+	return m_timeLineDlgService->UpdateTimelineInTimeIDXPlus(timeline.GetNotSEQ(), timeline.GetTimeIDX());
+}
+
+bool DlgController::UpdateTimelineInTimeIDXMinus()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->UpdateTimelineInTimeIDXMinus(timeline.GetNotSEQ(), timeline.GetTimeIDX());
+}
+
+bool DlgController::UpdateTimelineInTimeIDX()
+{
+	int updateTimeIDX;
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	RequestScope->GetRequestInt(&updateTimeIDX);
+	return m_timeLineDlgService->UpdateTimelineInTimeIDX(timeline.GetNotSEQ(), timeline.GetTimeIDX(), updateTimeIDX);
+}
+
+bool DlgController::SelectInTimeIDXTimelineInNotSEQ()
+{
+	TimelineVO timeline;
+	RequestScope->GetRequestAttributes(&timeline);
+	return m_timeLineDlgService->SelectInTimeIDXTimelineInNotSEQ(timeline.GetNotSEQ());
 }

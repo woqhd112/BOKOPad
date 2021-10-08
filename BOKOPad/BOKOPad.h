@@ -20,6 +20,7 @@
 #endif
 #include "DlgController.h"
 #include "ScenarioManager.h"
+#include "TransactionNameDefine.h"
 
 //extern COMPLEXMVC2_MODEL_DLL RequestAttribute* RequestScope;
 //extern COMPLEXMVC2_MODEL_DLL SessionAttribute* SessionScope;

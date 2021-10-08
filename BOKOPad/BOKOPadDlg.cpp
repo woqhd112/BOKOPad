@@ -342,6 +342,8 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		return;
 
 	CURSOR_WAIT;
+	TransactionInstance->RequestSavePoint(TransactionNames[TND_SCENARIO_DELETE]);
+
 	int selectedCount = m_list_scenario_list.GetSelectedCount();
 	POSITION selectPos = m_list_scenario_list.GetFirstSelectedItemPosition();
 
@@ -353,25 +355,54 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		selectVector.push_back(selectedIndex);
 	}
 
+	bool bTransaction = false;
 	for (int i = selectVector.size() - 1; i >= 0; i--)
 	{
 		ScenarioListVO selectedScenario = m_loadScenarioList.at(i);
 		RequestScope->SetRequestAttributes(selectedScenario);
 
-		if (MVC_Controller->DeleteScenarioList() == true)
+		if (MVC_Controller->DeleteScenarioList() == false)
 		{
-			m_list_scenario_list.DeleteItem(i);
-			m_loadScenarioList.erase(i);
+			bTransaction = true;
+			break;
 		}
+
+		m_list_scenario_list.DeleteItem(i);
+		m_loadScenarioList.erase(i);
 	}
 
 	m_list_scenario_list.SetRedraw(TRUE);
 	m_list_scenario_list.Invalidate();
 
-	if (m_loadScenarioList.empty())
+	if (!bTransaction)
 	{
-		MVC_Controller->UpdateScenarioListAutoIncrementSeq();
+		if (m_loadScenarioList.empty())
+		{
+			MVC_Controller->UpdateScenarioListAutoIncrementSeq();
+		}
+		TransactionInstance->Commit();
 	}
+	else
+	{
+		TransactionInstance->Rollback(TransactionNames[TND_SCENARIO_DELETE]);
+		if (MVC_Controller->SelectAllScenarioList())
+		{
+			RequestScope->GetRequestAttributes(&m_loadScenarioList);
+
+			m_list_scenario_list.DeleteAllItems();
+			ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
+
+			while (iter != m_loadScenarioList.end())
+			{
+				ComplexString index = ComplexConvert::IntToString(iter->value.GetSceSEQ());
+				ComplexString title = iter->value.GetSceTITLE();
+				InsertScenario(title, index);
+				iter++;
+			}
+		}
+	}
+
+	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_SCENARIO_DELETE]);
 
 	CURSOR_ARROW;
 }
@@ -397,7 +428,16 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 		return;
 
 	CURSOR_WAIT;
-	Scenario_Manager->SendMessages(PM_CREATE);
+	TransactionInstance->RequestSavePoint(TransactionNames[TND_SCENARIO_CREATE]);
+
+	if (Scenario_Manager->SendMessages(PM_CREATE) == false)
+	{
+		TransactionInstance->Rollback(TransactionNames[TND_SCENARIO_CREATE]);
+	}
+	else
+		TransactionInstance->Commit();
+
+	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_SCENARIO_CREATE]);
 	CURSOR_ARROW;
 	*pResult = 0;
 }

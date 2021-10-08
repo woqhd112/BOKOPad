@@ -75,7 +75,8 @@ bool TimelineManager::TimelineDragMove()
 	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
 
 	CRect rect;
-	m_mainDlg->GetWindowRect(rect);
+	Timeline* timeline = (Timeline*)m_mainDlg;
+	timeline->GetWindowRect(rect);
 	if (PtInRect(rect, pt))
 	{
 		if (m_bCursorDetach)
@@ -87,7 +88,7 @@ bool TimelineManager::TimelineDragMove()
 			m_bCursorDetach = false;
 
 		}
-		//iter1->value.value->m_timeline.ThickEventTimeline(dragDataStruct->noteSEQ, pt, false);
+		timeline->ThickEventTimeline(dragDataStruct->noteSEQ, pt, Timeline::TTA_TIMELINE_BY_TIMELINE_DRAG_EVENT_APPROCH);
 	}
 	else
 	{

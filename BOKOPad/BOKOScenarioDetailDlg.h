@@ -30,6 +30,7 @@ public:
 	bool SignalInsertNote(ComplexString& strNoteContent);
 	bool SignalDeleteNote(int notSEQ);
 	bool SignalUpdateSetTIME(int notSEQ);
+	bool SignalReloadNoteList();
 
 private:
 

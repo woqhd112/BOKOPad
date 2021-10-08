@@ -13,6 +13,7 @@ class TimelineManager;
 
 class Timeline : public CDialogEx, public NoteListInterface
 {
+	friend class TimelineManager;
 	friend class NoteManager;
 	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(Timeline)
@@ -26,6 +27,13 @@ public:
 
 public:
 
+	enum TimelineThickApproch
+	{
+		TTA_NOTHING = 0,
+		TTA_WELL_APPROCH,
+		TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH,
+		TTA_TIMELINE_BY_TIMELINE_DRAG_EVENT_APPROCH
+	};
 	
 protected:
 
@@ -40,12 +48,12 @@ private:
 	// 시그널 함수
 	bool SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertTimeline(int notSEQ, POINT currentMPoint);
-	bool ThickEventTimeline(int notSEQ, POINT pt, bool thisApproch = true);
+	bool ThickEventTimeline(int notSEQ, POINT pt, TimelineThickApproch timelineThickApprochState);
 	void HideTimelineDetail();
 
 	// 내부 함수
 	bool TimelineOneViewProcess();
-	int ValidatePointToRect(POINT pt);
+	int ValidatePointToRectIDX(POINT pt);
 	bool UpdateTimelineIDX(int startUpdateTimeIDX);
 
 	bool m_bDetailOpen;
@@ -64,6 +72,8 @@ private:
 	CPen m_drawPen;
 	// 마우스 댔을 때 타임라인 데이터를 그릴때 사용되는 펜
 	CPen m_drawHoverPen;
+
+	TimelineThickApproch m_timelineThickApprochState;
 
 	// 드래그 처리할때 사용되는 데이터
 	DragDataStruct m_defaultDragData;

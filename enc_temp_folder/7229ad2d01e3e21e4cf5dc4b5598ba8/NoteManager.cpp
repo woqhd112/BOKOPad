@@ -757,7 +757,7 @@ bool NoteManager::DragAnotherAttach()
 	}
 
 	ReleaseDragStruct();
-	return true;
+	return false;
 }
 
 bool NoteManager::DragThisTimelineAttach()

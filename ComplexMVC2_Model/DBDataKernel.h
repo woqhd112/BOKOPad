@@ -17,6 +17,9 @@ public:
 	DBDataKernel();
 	~DBDataKernel();
 
+	void SetInt(int in_int);
+	void SetString(ComplexString in_string);
+
 	void SetNoteInformation(NoteInformationVO& in);
 	void SetScenarioList(ScenarioListVO& in);
 	void SetPadOption(PadOptionVO& in);
@@ -26,6 +29,8 @@ public:
 	void SetPadOption(int test1, int test2);
 	void SetTimeline(int timeIDX, int notSEQ, int sceSEQ);
 
+	void GetInt(int* out_int);
+	void GetString(ComplexString* out_string);
 
 	void GetNoteInformation(NoteInformationVO* out, int get_row_index = 0);
 	void GetScenarioList(ScenarioListVO* out, int get_row_index = 0);
@@ -40,6 +45,9 @@ public:
 	void GetPadOptionContainer(ComplexVector<PadOptionVO>* out_padOptionVOContainer);
 	void GetTimelineContainer(ComplexVector<TimelineVO>* out_timeLineVOContainer);
 
+	void ResetInt();
+	void ResetString();
+
 	void ResetNoteInformation();
 	void ResetScenarioList();
 	void ResetPadOption();
@@ -47,7 +55,8 @@ public:
 
 private:
 
-
+	ComplexString m_string;
+	int m_int;
 	ComplexVector<NoteInformationVO> m_noteInformationVOContainer;
 	ComplexVector<ScenarioListVO> m_scenarioListVOContainer;
 	ComplexVector<PadOptionVO> m_padOptionVOContainer;

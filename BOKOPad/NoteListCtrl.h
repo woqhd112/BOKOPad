@@ -32,6 +32,7 @@ private:
 	bool UpdateSetTIME(int notSEQ);
 	bool DeleteNote(int notSEQ);
 	bool MoveNote();
+	bool DeleteAllItems();
 
 	// 내부 함수
 	void ScrollExecute(bool bAdd, bool bPosSwitch = false);
@@ -58,7 +59,7 @@ private:
 	const int EDIT_WIDTH = 80;
 	const int EDIT_HEIGHT = 60;
 
-	int m_noteSize;
+	int m_viewNoteSize;
 	ScenarioManagerStruct m_thisDataStruct;
 	DragDataStruct m_defaultDragData;
 

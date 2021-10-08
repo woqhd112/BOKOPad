@@ -3,6 +3,7 @@
 #include "ScenarioListVO.h"
 #include "NoteInformationVO.h"
 #include "TimelineVO.h"
+#include "ComplexLock.h"
 //#include <memory>
 
 using namespace ComplexLibrary;
@@ -34,7 +35,6 @@ enum PerformanceMessage
 	PM_SHOW,
 	PM_HIDE,
 	PM_EXIST,
-	PM_NOTE_RELOAD,
 	PM_DRAG_MOVE,
 	PM_DRAG_DOWN,
 	PM_DRAG_UP,
@@ -167,6 +167,7 @@ protected:
 	bool m_bAttach;
 	CWnd* m_mainDlg;
 	BOKODragDlg* m_dragDlg;
+	ComplexLock m_processLock;
 
 	static ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;
 	static ComplexMap<int, int> m_scenarioSeqMap;

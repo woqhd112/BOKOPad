@@ -21,8 +21,6 @@ private:
 	bool Hide();
 	bool Exist();
 
-	bool NoteReload();
-
 private:
 
 	/*ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;

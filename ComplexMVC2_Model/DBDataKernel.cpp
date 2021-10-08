@@ -11,6 +11,16 @@ DBDataKernel::~DBDataKernel()
 	
 }
 
+void DBDataKernel::ResetInt()
+{
+	m_int = 0;
+}
+
+void DBDataKernel::ResetString()
+{
+	m_string = "";
+}
+
 void DBDataKernel::ResetNoteInformation()
 {
 	m_noteInformationVOContainer.clear();
@@ -29,6 +39,16 @@ void DBDataKernel::ResetPadOption()
 void DBDataKernel::ResetTimeline()
 {
 	m_timeLineContainer.clear();
+}
+
+void DBDataKernel::SetInt(int in_int)
+{
+	m_int = in_int;
+}
+
+void DBDataKernel::SetString(ComplexString in_string)
+{
+	m_string = in_string;
 }
 
 void DBDataKernel::SetNoteInformation(NoteInformationVO& in)
@@ -103,6 +123,16 @@ void DBDataKernel::SetTimeline(int timeIDX, int notSEQ, int sceSEQ)
 	timeLine.SetNotSEQ(notSEQ);
 	timeLine.SetSceSEQ(sceSEQ);
 	m_timeLineContainer.push_back(timeLine);
+}
+
+void DBDataKernel::GetInt(int* out_int)
+{
+	*out_int = m_int;
+}
+
+void DBDataKernel::GetString(ComplexString* out_string)
+{
+	*out_string = m_string;
 }
 
 void DBDataKernel::GetNoteInformation(NoteInformationVO* out, int get_row_index)

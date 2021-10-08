@@ -25,6 +25,7 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	m_nDataVariableWidth = 0;
 	m_nPointingTimeIDX = -1;
 	m_bDetailOpen = false;
+	m_timelineThickApprochState = TTA_NOTHING;
 }
 
 Timeline::~Timeline()
@@ -86,7 +87,7 @@ void Timeline::HideTimelineDetail()
 	m_detailDlg.ShowWindow(SW_HIDE);
 }
 
-int Timeline::ValidatePointToRect(POINT pt)
+int Timeline::ValidatePointToRectIDX(POINT pt)
 {
 	// 현재 커서위치가 타임라인 안에 존재할 때 진행.
 	POINT point = pt;
@@ -121,12 +122,13 @@ bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 {
 	// 업데이트를 오름차순으로 처리하면 같은값이 되서 내림차순으로 처리해야한다.
 	TimelineVO time;
-	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+	//time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	for (int i = m_timeLineContainer.size() - 1; i >= startUpdateTimeIDX; i--)
 	{
 		time.SetTimeIDX(i);
+		time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
 		RequestScope->SetRequestAttributes(time);
-		if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
+		if (MVC_Controller->UpdateTimelineInTimeIDXPlus() == false)
 			return false;
 	}
 
@@ -135,7 +137,7 @@ bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 
 bool Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 {
-	int timeIDX = ValidatePointToRect(currentMPoint);
+	int timeIDX = ValidatePointToRectIDX(currentMPoint);
 	if (timeIDX == -1)
 		timeIDX = m_timeLineContainer.size();
 
@@ -251,7 +253,7 @@ bool Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 	return true;
 }
 
-bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
+bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_timelineThickApprochState)
 {
 	// thisApproch는 true일때 마우스가 아무 동작하지않을 때 접근
 	// false일땐 드래그 이벤트 중에 접근했을 경우
@@ -279,11 +281,11 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 			m_nPointingTimeIDX = iter->value.key;
 			// 우선 마우스를 핸드로 변경
 			CURSOR_HAND;
-
 			m_detailDlg.SetWindowPos(NULL, pts.x - 400 - 5, pts.y - 200 - 5, 0, 0, SWP_NOSIZE);
 			m_detailDlg.ShowWindow(SW_SHOW);
 			m_bDetailOpen = true;
-			if (thisApproch)
+			
+			if (m_timelineThickApprochState == TTA_WELL_APPROCH)
 			{
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
 					return false;
@@ -299,7 +301,7 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 				// this쪽에만 입력
 				m_detailDlg.SetText(note.GetNotCONTENT(), "");
 			}
-			else
+			else if (m_timelineThickApprochState == TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH)
 			{
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
 					return false;
@@ -324,7 +326,45 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 				RequestScope->GetRequestAttributes(&note2);
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
 				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
+			}
+			else if (m_timelineThickApprochState == TTA_TIMELINE_BY_TIMELINE_DRAG_EVENT_APPROCH)
+			{
+				// 마우스 다운이벤트때 timeIDX 정렬을 안하고 컨테이너 삭제만 했기때문에 
+				// m_nPointingTimeIDX값이 정렬안된 상태의 인덱스임. 그래서 따로 구분함..
 
+				if (notSEQ < 0)
+					return false;
+
+				// 해당 timeIDX값 뽑아오는데 db 조회를 해야하는건가? 일단 생각해두자
+				TimelineVO time;
+				time.SetNotSEQ(notSEQ);
+				RequestScope->SetRequestAttributes(time);
+				if (MVC_Controller->SelectInTimeIDXTimelineInNotSEQ() == false)
+					return false;
+
+				RequestScope->GetRequestAttributes(&time);
+
+				// 현재 잡고있는 타임라인 idx값보다 마우스로 댄 타임라인 idx값이 더 클경우는 -1 처리 
+				if (time.GetTimeIDX() < m_nPointingTimeIDX)
+					m_nPointingTimeIDX -= 1;
+
+				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
+				NoteInformationVO note1, note2;
+				note1.SetNotSEQ(thisNoteSEQ);
+				note2.SetNotSEQ(notSEQ);
+				RequestScope->SetRequestAttributes(note1);
+				if (MVC_Controller->SelectOneNoteInformation() == false)
+					return false;
+
+				RequestScope->GetRequestAttributes(&note1);
+
+				RequestScope->SetRequestAttributes(note2);
+				if (MVC_Controller->SelectOneNoteInformation() == false)
+					return false;
+
+				RequestScope->GetRequestAttributes(&note2);
+				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
+				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
 			}
 		}
 		// 발견하지 못했을 땐
@@ -334,7 +374,7 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, bool thisApproch)
 
 			m_bDetailOpen = false;
 			m_detailDlg.ShowWindow(SW_HIDE);
-			if (thisApproch)
+			if (m_timelineThickApprochState == TTA_WELL_APPROCH)
 				CURSOR_ARROW;	// 드래그이벤트로 접근하지 않았을 경우 화살표로 변경
 			else
 				CURSOR_CROSS;	// 드래그이벤트로 접근했을 땐 마우스가 크로스로 접근했기 때문에 크로스로 되돌림
@@ -389,7 +429,7 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
 		if (!m_bDragProcessing)
-			ThickEventTimeline(-1, pMsg->pt);
+			ThickEventTimeline(-1, pMsg->pt, TTA_WELL_APPROCH);
 
 		if (DragMove(pMsg))
 			return FALSE;
@@ -608,10 +648,91 @@ bool Timeline::DragUp(MSG* pMsg)
 		}
 		else if (dus == DUS_THIS_TIMELINE)
 		{
-			int a = 0;
+			// 마우스 다운이벤트때 m_timeLineContainer에서만 해당 타임라인을 삭제시켜서 
+			// ValidatePointToRect() 함수로 가져온 timeIDX값을 가지고 모두 업데이트 시킨다.
+			// 매니저 호출 필요없이 db에서 timeIDX값 갱신시키고 select 갱신 시킨 후 invalidate 하면 된다.
+			int timeIDX = ValidatePointToRectIDX(pMsg->pt);	// 마우스 포인트가 가르킨 timeIDX 이거나 사잇값일떈 뒤쪽 timeIDX
+			if (timeIDX == -1)
+				timeIDX = m_timeLineContainer.size() + 1;	// 다운이벤트때 타임라인 컨테이너에서 삭제가되어서 임시로 +1 시킨것
+			
+			TimelineVO time;
+			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+			time.SetNotSEQ(m_defaultDragData.noteSEQ);
+
+			// 집어든 notSEQ값으로 timeIDX값을 가져온다.
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->SelectInTimeIDXTimelineInNotSEQ() == false)
+				return false;
+
+			RequestScope->GetRequestAttributes(&time);
+			int dragEventingTimeIDX = time.GetTimeIDX();
+
+			// 집어든 idx가 발견한 idx보다 클때 
+			if (dragEventingTimeIDX + 1 < timeIDX)
+			{
+				// 집어든 timeIDX값을 발견한 timeIDX - 1값으로 갱신
+				time.SetNotSEQ(m_defaultDragData.noteSEQ);
+				time.SetTimeIDX(dragEventingTimeIDX);
+				RequestScope->SetRequestInt(timeIDX - 1);
+				RequestScope->SetRequestAttributes(time);
+				if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
+					return false;
+
+				// 발견한 timeIDX값보다 낮고 집어든 timeIDX값보다 높은 timeIDX는 전부 -1 처리 (이미 타임라인 컨테이너는 삭제가되있어서 잡고있는 타임라인 idx부터 처리해야함)
+				for (int i = dragEventingTimeIDX; i < timeIDX - 1; i++)
+				{
+					time.SetTimeIDX(i + 1);	// time idx는 다음꺼임..
+					time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
+					RequestScope->SetRequestAttributes(time);
+					if (MVC_Controller->UpdateTimelineInTimeIDXMinus() == false)
+						return false;
+				}
+			}
+			// 집어든 idx가 그대로일때
+			else if (dragEventingTimeIDX + 1 == timeIDX)
+			{
+				// do nothing
+			}
+			// 집어든 idx가 발견한 idx보다 작을때
+			else if (dragEventingTimeIDX > timeIDX)
+			{
+				// 집어든 timeIDX값을 발견한 timeIDX값으로 갱신
+				time.SetNotSEQ(m_defaultDragData.noteSEQ);
+				time.SetTimeIDX(dragEventingTimeIDX);
+				RequestScope->SetRequestInt(timeIDX);
+				RequestScope->SetRequestAttributes(time);
+				if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
+					return false;
+
+				// 발견한 timeIDX값보다 높거나 같고 집어든 timeIDX값보다 낮은 timeIDX는 전부 +1 처리
+				for (int i = timeIDX; i < dragEventingTimeIDX; i++)
+				{
+					time.SetTimeIDX(i);
+					time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
+					RequestScope->SetRequestAttributes(time);
+					if (MVC_Controller->UpdateTimelineInTimeIDXPlus() == false)
+						return false;
+				}
+			}
+			// 같을때는 존재할수 없음
+			else
+				return false;
+
+			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
+			RequestScope->SetRequestAttributes(time);
+			if (MVC_Controller->SelectInSceSEQTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				return false;
+			}
+			m_timeLineContainer.clear();
+			RequestScope->GetRequestAttributes(&m_timeLineContainer);
+
+			Invalidate();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
+			// 우선 여긴 another로 처리가됨
 			int a = 0;
 		}
 

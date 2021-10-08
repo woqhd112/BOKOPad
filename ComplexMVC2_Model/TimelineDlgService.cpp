@@ -37,10 +37,10 @@ bool TimelineDlgService::InsertTimeline(int timeIDX, int notSEQ, int sceSEQ)
 
 	bSuccess = m_timelineDlgModel->InsertTimeline(timeIDX, notSEQ, sceSEQ);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_timelineDlgModel->Commit();
 	else
-		m_timelineDlgModel->Rollback();
+		m_timelineDlgModel->Rollback();*/
 
 	return bSuccess;
 }
@@ -69,7 +69,7 @@ bool TimelineDlgService::DeleteTimeline(int notSEQ, int sceSEQ)
 	{
 		for (int i = deleteTimeIDX + 1; i <= recordCount; i++)
 		{
-			bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(sceSEQ, i, false);
+			bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDXMinusInSceSEQ(sceSEQ, i);
 			if (!bSuccess)
 				break;
 		}
@@ -77,24 +77,67 @@ bool TimelineDlgService::DeleteTimeline(int notSEQ, int sceSEQ)
 	else
 		bSuccess = false;
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_timelineDlgModel->Commit();
 	else
-		m_timelineDlgModel->Rollback();
+		m_timelineDlgModel->Rollback();*/
 
 	return bSuccess;
 }
 
-bool TimelineDlgService::UpdateTimelineInTimeIDX(int sceSEQ, int timeIDX)
+bool TimelineDlgService::UpdateTimelineInTimeIDXPlus(int notSEQ, int timeIDX)
 {
 	bool bSuccess = false;
 
-	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(sceSEQ, timeIDX, true);
+	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDXPlus(notSEQ, timeIDX);
 
-	if (bSuccess)
+	/*if (bSuccess)
 		m_timelineDlgModel->Commit();
 	else
-		m_timelineDlgModel->Rollback();
+		m_timelineDlgModel->Rollback();*/
+
+	return bSuccess;
+}
+
+bool TimelineDlgService::UpdateTimelineInTimeIDXMinus(int notSEQ, int timeIDX)
+{
+	bool bSuccess = false;
+
+	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDXMinus(notSEQ, timeIDX);
+
+	/*if (bSuccess)
+		m_timelineDlgModel->Commit();
+	else
+		m_timelineDlgModel->Rollback();*/
+
+	return bSuccess;
+}
+
+bool TimelineDlgService::UpdateTimelineInTimeIDX(int notSEQ, int baseTimeIDX, int updateTimeIDX)
+{
+	bool bSuccess = false;
+
+	bSuccess = m_timelineDlgModel->UpdateTimelineInTimeIDX(notSEQ, baseTimeIDX, updateTimeIDX);
+
+	/*if (bSuccess)
+		m_timelineDlgModel->Commit();
+	else
+		m_timelineDlgModel->Rollback();*/
+
+	return bSuccess;
+}
+
+bool TimelineDlgService::SelectInTimeIDXTimelineInNotSEQ(int notSEQ)
+{
+	bool bSuccess = false;
+
+	TimelineVO time;
+	bSuccess = m_timelineDlgModel->SelectInTimeIDXTimelineInNotSEQ(notSEQ, &time);
+
+	if (bSuccess)
+	{
+		RequestScope->SetRequestAttributes(time);
+	}
 
 	return bSuccess;
 }
