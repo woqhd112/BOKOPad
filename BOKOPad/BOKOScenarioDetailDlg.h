@@ -12,6 +12,8 @@ class BOKOScenarioDetailDlg : public CDialogEx
 {
 	// 타임라인 접근권한
 	friend class NoteManager;
+	// 드래그모드 접근권한
+	friend class ScenarioManager;
 
 	DECLARE_DYNAMIC(BOKOScenarioDetailDlg)
 
@@ -31,6 +33,7 @@ public:
 	bool SignalDeleteNote(int notSEQ);
 	bool SignalUpdateSetTIME(int notSEQ);
 	bool SignalReloadNoteList();
+	bool SignalReloadTimeline();
 
 private:
 
@@ -40,11 +43,13 @@ private:
 
 	CEdit m_edit_note_input;
 	CButton m_btn_note_input;
+	CButton m_btn_drag_mode;
+	CButton m_btn_note_delete;
 	CStatic m_stt_note_limit_size;
 	NoteListCtrl m_list_notePad;
 	Timeline m_timeline;
 
-	bool m_bAddOnButton;
+	bool m_bDragModeCheck;
 
 	ScenarioManagerStruct m_thisDataStruct;
 
@@ -60,4 +65,6 @@ public:
 	afx_msg void OnBnClickedButtonNoteInput();
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedCheckDragMode();
+	afx_msg void OnBnClickedButtonNoteDelete();
 };

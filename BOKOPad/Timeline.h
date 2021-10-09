@@ -49,6 +49,7 @@ private:
 	bool SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 	bool InsertTimeline(int notSEQ, POINT currentMPoint);
 	bool ThickEventTimeline(int notSEQ, POINT pt, TimelineThickApproch timelineThickApprochState);
+	bool ReloadTimeline();
 	void HideTimelineDetail();
 
 	// 내부 함수

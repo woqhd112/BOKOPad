@@ -19,10 +19,16 @@ private:
 	bool Show();
 	bool Hide();
 	bool Move();
+	bool NoteClick();
+	bool NoteCheckDelete();
 	bool DragMove();
 	bool DragDown();
 	bool DragUp();
+	bool DragOff();
 	bool Clear();
+
+	bool LoadDraggingMode();
+	bool UnloadDraggingMode();
 
 	bool DragNothing();
 	bool DragThisAttach();
@@ -33,6 +39,8 @@ private:
 	bool FindNoteIndex();
 
 	bool RollbackAnotherAttach();
+	bool RollbackThisTimelineAttach();
+	bool RollbackTimelineAnotherAttach();
 
 private:
 

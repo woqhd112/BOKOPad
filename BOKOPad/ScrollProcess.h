@@ -26,6 +26,8 @@ public:
 	int GetScrollCount() const;
 	int GetScrollSize() const;
 
+	void ResetScroll();
+
 private:
 
 	void ProcessScrollCount(int nSBCode);

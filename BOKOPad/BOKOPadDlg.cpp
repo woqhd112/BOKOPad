@@ -273,6 +273,7 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
 		InsertScenario(inputScenarioTitle, index);
 		m_edit_input_scenario.SetWindowTextA("");
+		m_edit_input_scenario.SetFocus();
 
 		if (MVC_Controller->SelectAllScenarioList())
 		{
@@ -358,7 +359,8 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	bool bTransaction = false;
 	for (int i = selectVector.size() - 1; i >= 0; i--)
 	{
-		ScenarioListVO selectedScenario = m_loadScenarioList.at(i);
+		int deleteIndex = selectVector.at(i);
+		ScenarioListVO selectedScenario = m_loadScenarioList.at(deleteIndex);
 		RequestScope->SetRequestAttributes(selectedScenario);
 
 		if (MVC_Controller->DeleteScenarioList() == false)
@@ -367,8 +369,8 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 			break;
 		}
 
-		m_list_scenario_list.DeleteItem(i);
-		m_loadScenarioList.erase(i);
+		m_list_scenario_list.DeleteItem(deleteIndex);
+		m_loadScenarioList.erase(deleteIndex);
 	}
 
 	m_list_scenario_list.SetRedraw(TRUE);
@@ -430,6 +432,7 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 	CURSOR_WAIT;
 	TransactionInstance->RequestSavePoint(TransactionNames[TND_SCENARIO_CREATE]);
 
+	Scenario_Manager->InputScenarioStruct(&scenarioStruct);
 	if (Scenario_Manager->SendMessages(PM_CREATE) == false)
 	{
 		TransactionInstance->Rollback(TransactionNames[TND_SCENARIO_CREATE]);

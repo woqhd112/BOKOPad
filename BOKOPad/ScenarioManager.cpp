@@ -60,7 +60,10 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = NoteReload();
 	}
-
+	else if (message == PM_IS_DRAGGING_MODE)
+	{
+		bHelpSuccess = IsDraggingMode();
+	}
 
 	return bHelpSuccess;
 }
@@ -282,4 +285,31 @@ bool ScenarioManager::NoteReload()
 	ReleaseScenarioStruct();
 
 	return true;
+}
+
+bool ScenarioManager::IsDraggingMode()
+{
+	if (m_scenarioDlgManager.empty())
+		return false;
+
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
+	if (iter == m_scenarioDlgManager.end())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ReleaseScenarioStruct();
+	return iter->value.value->m_bDragModeCheck;
 }

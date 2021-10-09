@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "BOKOScenarioDetailDlg.h"
+#include "NoteManager.h"
 #include "afxdialogex.h"
 
 
@@ -15,7 +16,7 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 	: CDialogEx(IDD_DIALOG_SCENARIO_TIMELINE, pParent)
 {
 	m_thisDataStruct = thisDataStruct;
-	m_bAddOnButton = true;
+	m_bDragModeCheck = false;
 }
 
 BOKOScenarioDetailDlg::~BOKOScenarioDetailDlg()
@@ -29,6 +30,8 @@ void BOKOScenarioDetailDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_NOTE_INPUT, m_edit_note_input);
 	DDX_Control(pDX, IDC_BUTTON_NOTE_INPUT, m_btn_note_input);
 	DDX_Control(pDX, IDC_STATIC_NOTE_LIMIT_SIZE, m_stt_note_limit_size);
+	DDX_Control(pDX, IDC_CHECK_DRAG_MODE, m_btn_drag_mode);
+	DDX_Control(pDX, IDC_BUTTON_NOTE_DELETE, m_btn_note_delete);
 }
 
 
@@ -37,6 +40,8 @@ BEGIN_MESSAGE_MAP(BOKOScenarioDetailDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_NOTE_INPUT, &BOKOScenarioDetailDlg::OnEnChangeEditNoteInput)
 	ON_BN_CLICKED(IDC_BUTTON_NOTE_INPUT, &BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput)
 	ON_WM_MOUSEMOVE()
+	ON_BN_CLICKED(IDC_CHECK_DRAG_MODE, &BOKOScenarioDetailDlg::OnBnClickedCheckDragMode)
+	ON_BN_CLICKED(IDC_BUTTON_NOTE_DELETE, &BOKOScenarioDetailDlg::OnBnClickedButtonNoteDelete)
 END_MESSAGE_MAP()
 
 
@@ -106,8 +111,11 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_edit_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.65), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.15));
 	m_stt_note_limit_size.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.8), 100, 30);
 	m_btn_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.9 - 80), CAST_INT(thisRect.Height() * 0.8), 80, 25);
+	m_btn_note_delete.MoveWindow(CAST_INT(thisRect.Width() * 0.9 - 80), CAST_INT(thisRect.Height() * 0.85), 80, 25);
+	m_btn_drag_mode.SetWindowPos(NULL, CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.01), 0, 0, SWP_NOSIZE);
 	m_list_notePad.ShowWindow(SW_SHOW);
 	m_timeline.ShowWindow(SW_SHOW);
+	m_btn_drag_mode.SetCheck(FALSE);
 }
 
 
@@ -213,6 +221,11 @@ bool BOKOScenarioDetailDlg::SignalReloadNoteList()
 	return true;
 }
 
+bool BOKOScenarioDetailDlg::SignalReloadTimeline()
+{
+	return m_timeline.ReloadTimeline();
+}
+
 void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -224,3 +237,57 @@ void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
 	CDialogEx::OnMouseMove(nFlags, point);
 }
 
+
+void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_bDragModeCheck)
+	{
+		m_btn_drag_mode.SetCheck(FALSE);
+		m_bDragModeCheck = false;
+		m_btn_note_delete.EnableWindow(TRUE);
+		if (m_list_notePad.UnloadDraggingNote() == false)
+		{
+			m_btn_drag_mode.SetCheck(TRUE);
+			m_btn_note_delete.EnableWindow(FALSE);
+			m_bDragModeCheck = true;
+			SignalReloadNoteList();
+		}
+	}
+	else
+	{
+		m_btn_drag_mode.SetCheck(TRUE);
+		m_bDragModeCheck = true;
+		m_btn_note_delete.EnableWindow(FALSE);
+		if (m_list_notePad.LoadDraggingNote() == false)
+		{
+			m_btn_drag_mode.SetCheck(FALSE);
+			m_btn_note_delete.EnableWindow(TRUE);
+			m_bDragModeCheck = false;
+			SignalReloadNoteList();
+		}
+	}
+}
+
+
+void BOKOScenarioDetailDlg::OnBnClickedButtonNoteDelete()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CURSOR_WAIT;
+	TransactionInstance->RequestSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
+	if (m_list_notePad.CheckDeleteNote() == false)
+	{
+		CURSOR_ARROW;
+		TransactionInstance->Rollback(TransactionNames[TND_NOTE_CHECK_DELETE]);
+		TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
+
+		if (SignalReloadNoteList() == false)
+			MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+		return;
+	}
+
+	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
+	TransactionInstance->Commit();
+	CURSOR_ARROW;
+}

@@ -25,12 +25,16 @@ NoteManager::~NoteManager()
 		NotePadStruct noteStruct = iter->value.value;
 		CEdit* noteEdit = noteStruct.noteEdit;
 		CButton* noteButton = noteStruct.noteButton;
+		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
 		delete noteEdit;
 		noteEdit = nullptr;
 		noteButton->DestroyWindow();
 		delete noteButton;
 		noteButton = nullptr;
+		noteCheckBox->DestroyWindow();
+		delete noteCheckBox;
+		noteCheckBox = nullptr;
 
 		iter++;
 	}
@@ -72,9 +76,25 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = Move();
 	}
+	else if (message == PM_NOTE_CHECK_DELETE)
+	{
+		bHelpSuccess = NoteCheckDelete();
+	}
+	else if (message == PM_NOTE_CLICK)
+	{
+		bHelpSuccess = NoteClick();
+	}
 	else if (message == PM_DRAG_MOVE)
 	{
 		bHelpSuccess = DragMove();
+	}
+	else if (message == PM_LOAD_DRAGGING_MODE)
+	{
+		bHelpSuccess = LoadDraggingMode();
+	}
+	else if (message == PM_UNLOAD_DRAGGING_MODE)
+	{
+		bHelpSuccess = UnloadDraggingMode();
 	}
 	else if (message == PM_DRAG_DOWN)
 	{
@@ -83,6 +103,10 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	else if (message == PM_DRAG_UP)
 	{
 		bHelpSuccess = DragUp();
+	}
+	else if (message == PM_DRAG_OFF)
+	{
+		bHelpSuccess = DragOff();
 	}
 	else if (message == PM_DRAG_NOTHING)
 	{
@@ -116,6 +140,10 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = Clear();
 	}
+	else if (message == PM_ROLLBACK_THIS_TIMELINE_ATTACH)
+	{
+		bHelpSuccess = RollbackThisTimelineAttach();
+	}
 
 	return bHelpSuccess;
 }
@@ -137,10 +165,12 @@ bool NoteManager::Insert()
 
 	CEdit* noteInputEdit = new CEdit;
 	CButton* noteInputButton = new CButton;
-
-	bool bCreate1 = false, bCreate2 = false;
+	CButton* noteInputCheckBox = new CButton;
+	
+	bool bCreate1 = false, bCreate2 = false, bCreate3 = false;
 	bCreate1 = (bool)noteInputEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
-	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE  | BS_CENTER, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
+	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE | BS_CENTER | BS_PUSHBUTTON, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
+	bCreate3 = (bool)noteInputCheckBox->Create("", WS_VISIBLE | BS_AUTOCHECKBOX, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 
 	if (bCreate1 && bCreate2)
 	{
@@ -149,6 +179,7 @@ bool NoteManager::Insert()
 			NotePadStruct padStruct;
 			padStruct.noteButton = noteInputButton;
 			padStruct.noteEdit = noteInputEdit;
+			padStruct.noteCheckBox = noteInputCheckBox;
 			m_notePadManager.insert(noteManagerStruct.noteIndex, padStruct);
 			m_noteSeqMap.insert(noteManagerStruct.noteIndex, noteDataStruct->noteData->GetNotSEQ());
 		}
@@ -161,18 +192,23 @@ bool NoteManager::Insert()
 			noteInputButton->DestroyWindow();
 			delete noteInputButton;
 			noteInputButton = nullptr;
+			noteInputCheckBox->DestroyWindow();
+			delete noteInputCheckBox;
+			noteInputCheckBox = nullptr;
 			ReleaseNoteStruct();
 			return false;
 		}
 
-		noteInputButton->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top, noteManagerStruct.noteRect->Width(), 10);
+		noteInputCheckBox->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top, 10, 10);
+		noteInputCheckBox->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
+
+		noteInputButton->MoveWindow(noteManagerStruct.noteRect->left + 11, noteManagerStruct.noteRect->top, noteManagerStruct.noteRect->Width() - 11, 10);
 		noteInputButton->SetWindowTextA("...");
 		noteInputButton->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 
 		noteInputEdit->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top + 10, noteManagerStruct.noteRect->Width(), noteManagerStruct.noteRect->Height());
 		noteInputEdit->SetWindowTextA(noteManagerStruct.noteData->GetNotCONTENT().GetBuffer());
 		noteInputEdit->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
-
 	}
 	else if (!bCreate1 && bCreate2)
 	{
@@ -257,11 +293,14 @@ bool NoteManager::Delete()
 	}
 
 	CButton* deleteButton = iter2->value.value.noteButton;
+	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
 	CEdit* deleteEdit = iter2->value.value.noteEdit;
 	
 	delete deleteButton;
+	delete deleteCheckBox;
 	delete deleteEdit;
 	deleteButton = nullptr;
+	deleteCheckBox = nullptr;
 	deleteEdit = nullptr;
 
 	int findKey = iter2->value.key;
@@ -282,12 +321,16 @@ bool NoteManager::Clear()
 		NotePadStruct noteStruct = iter->value.value;
 		CEdit* noteEdit = noteStruct.noteEdit;
 		CButton* noteButton = noteStruct.noteButton;
+		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
 		delete noteEdit;
 		noteEdit = nullptr;
 		noteButton->DestroyWindow();
 		delete noteButton;
 		noteButton = nullptr;
+		noteCheckBox->DestroyWindow();
+		delete noteCheckBox;
+		noteCheckBox = nullptr;
 
 		iter++;
 	}
@@ -325,6 +368,8 @@ bool NoteManager::Show()
 	}
 
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
+	// 드래그상태에서만 처리되는 함수이니 주석
+	//iter->value.value.noteCheckBox->ShowWindow(SW_SHOW);
 	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
 
 	ReleaseNoteStruct();
@@ -359,6 +404,8 @@ bool NoteManager::Hide()
 	}
 
 	iter->value.value.noteButton->ShowWindow(SW_HIDE);
+	// 드래그 상태에서만 처리되는 함수이니 주석
+	//iter->value.value.noteCheckBox->ShowWindow(SW_HIDE);
 	iter->value.value.noteEdit->ShowWindow(SW_HIDE);
 
 	ReleaseNoteStruct();
@@ -392,10 +439,162 @@ bool NoteManager::Move()
 		return false;
 	}
 
-	iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width(), 10);
-	iter->value.value.noteEdit->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top + 10, noteDataStruct->noteRect->Width(), noteDataStruct->noteRect->Height());
+	int sceSEQ = noteDataStruct->noteData->GetSceSEQ();
+	ComplexMap<int, int>::iterator iter1 = m_scenarioSeqMap.begin();
+	bool bFind = false;
+	while (iter1 != m_scenarioSeqMap.end())
+	{
+		if (iter1->value.value == sceSEQ)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(iter1->value.key);
+	if (iter2 == m_scenarioDlgManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (iter2->value.value->m_bDragModeCheck)
+	{
+		iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width(), 10);
+		iter->value.value.noteEdit->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top + 10, noteDataStruct->noteRect->Width(), noteDataStruct->noteRect->Height());
+	}
+	else
+	{
+		iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left + 11, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width() - 11, 10);
+		iter->value.value.noteCheckBox->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, 10, 10);
+		iter->value.value.noteEdit->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top + 10, noteDataStruct->noteRect->Width(), noteDataStruct->noteRect->Height());
+	}
 
 	ReleaseNoteStruct();
+
+	return true;
+}
+
+bool NoteManager::NoteCheckDelete()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	int notSEQ = noteDataStruct->noteData->GetNotSEQ();
+
+	ComplexMap<int, int>::iterator iter1 = m_noteSeqMap.begin();
+
+	bool bFind = false;
+	while (iter1 != m_noteSeqMap.end())
+	{
+		if (iter1->value.value == notSEQ)
+		{
+			bFind = true;
+			break;
+		}
+
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.find(iter1->value.key);
+	if (iter2 == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (iter2->value.value.noteCheckBox->GetCheck() == FALSE)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	CButton* deleteButton = iter2->value.value.noteButton;
+	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
+	CEdit* deleteEdit = iter2->value.value.noteEdit;
+
+	delete deleteButton;
+	delete deleteCheckBox;
+	delete deleteEdit;
+	deleteButton = nullptr;
+	deleteCheckBox = nullptr;
+	deleteEdit = nullptr;
+
+	int findKey = iter2->value.key;
+	m_notePadManager.erase(findKey);
+	m_noteSeqMap.erase(findKey);
+
+	ReleaseNoteStruct();
+
+	return true;
+}
+
+bool NoteManager::NoteClick()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (m_noteSeqMap.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 버튼 아이디로 노트정보 찾기
+	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
+
+	bool bFind = false;
+	while (iter1 != m_notePadManager.end())
+	{
+		if (iter1->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (iter1 == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (iter1->value.value.noteCheckBox->GetCheck() == TRUE)
+		iter1->value.value.noteCheckBox->SetCheck(FALSE);
+	else
+		iter1->value.value.noteCheckBox->SetCheck(TRUE);
+
+	ReleaseDragStruct();
 
 	return true;
 }
@@ -408,10 +607,16 @@ bool NoteManager::DragDown()
 		return false;
 
 	if (m_notePadManager.empty())
+	{
+		ReleaseDragStruct();
 		return false;
+	}
 
 	if (m_noteSeqMap.empty())
+	{
+		ReleaseDragStruct();
 		return false;
+	}
 
 	// 버튼 아이디로 노트정보 찾기
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
@@ -431,7 +636,10 @@ bool NoteManager::DragDown()
 	{
 		ComplexMap<int, int>::iterator iter2 = m_noteSeqMap.find(iter->value.key);
 		if (iter2 == m_noteSeqMap.end())
+		{
+			ReleaseDragStruct();
 			return false;
+		}
 
 		CString strEditContent;
 		iter->value.value.noteEdit->GetWindowTextA(strEditContent);
@@ -602,6 +810,44 @@ bool NoteManager::DragUp()
 
 	m_dragDlg->ShowWindow(SW_HIDE);
 	ReleaseDragStruct();
+	CursorCountRestore(0);
+	CURSOR_ARROW;
+	ReleaseCapture();
+	return true;
+}
+
+bool NoteManager::DragOff()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_dragDlg == nullptr)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (dragDataStruct->noteIndex < 0)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(dragDataStruct->noteIndex);
+	if (iter == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	iter->value.value.noteButton->ShowWindow(SW_SHOW);
+	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+	m_dragDlg->ShowWindow(SW_HIDE);
+
+	ReleaseNoteStruct();
+
 	CursorCountRestore(0);
 	CURSOR_ARROW;
 	ReleaseCapture();
@@ -900,5 +1146,167 @@ bool NoteManager::RollbackAnotherAttach()
 	}
 
 	ReleaseDragStruct();
+	return true;
+}
+
+bool NoteManager::RollbackThisTimelineAttach()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_dragDlg == nullptr)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+
+	if (iter == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 시나리오 리로드
+	if (iter->value.value->SignalReloadNoteList() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 타임라인 리로드
+	if (iter->value.value->SignalReloadTimeline() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ReleaseDragStruct();
+	return true;
+}
+
+bool NoteManager::RollbackTimelineAnotherAttach()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_dragDlg == nullptr)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 시나리오 시퀀스맵에서 해당 시나리오 시퀀스번호 찾고 신호 보내서 시나리오 리스트 갱신.
+	ComplexMap<int, int>::iterator iter1 = m_scenarioSeqMap.begin();
+	bool bFind = false;
+	while (iter1 != m_scenarioSeqMap.end())
+	{
+		if (iter1->value.value == dragDataStruct->target_sceSEQ)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
+
+	if (iter2 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (iter3 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 타임라인 리로드
+	if (iter2->value.value->SignalReloadTimeline() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 시나리오 리로드
+	if (iter3->value.value->SignalReloadNoteList() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ReleaseDragStruct();
+	return true;
+}
+
+bool NoteManager::LoadDraggingMode()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (noteDataStruct->noteIndex < 0)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
+
+	iter->value.value.noteCheckBox->ShowWindow(SW_HIDE);
+	iter->value.value.noteCheckBox->SetCheck(FALSE);	// 드래그모드 설정하면 체크했던 체크박스들 전부 해제
+	iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width(), 10);
+
+	ReleaseNoteStruct();
+	return true;
+}
+
+bool NoteManager::UnloadDraggingMode()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (noteDataStruct->noteIndex < 0)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
+
+	iter->value.value.noteCheckBox->ShowWindow(SW_SHOW);
+	iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left + 11, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width() - 11, 10);
+	iter->value.value.noteCheckBox->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, 10, 10);
+
+	ReleaseNoteStruct();
 	return true;
 }

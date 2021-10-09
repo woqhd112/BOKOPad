@@ -168,3 +168,11 @@ int ScrollProcess::GetScrollSize() const
 {
 	return m_nScrollPos;
 }
+
+void ScrollProcess::ResetScroll()
+{
+	m_nAllPageSize = 0;
+	m_nScrollPos = 0;
+	m_nPageCount = 0;
+	m_nScrollProcessCount = 0;
+}

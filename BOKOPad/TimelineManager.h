@@ -18,6 +18,7 @@ private:
 	bool TimelineDragMove();
 	bool TimelineDragUp();
 	bool NoteInsert();
+	
 
 	bool m_bCursorAttach;
 	bool m_bCursorDetach;

@@ -33,6 +33,9 @@ private:
 	bool DeleteNote(int notSEQ);
 	bool MoveNote();
 	bool DeleteAllItems();
+	bool LoadDraggingNote();
+	bool UnloadDraggingNote();
+	bool CheckDeleteNote();
 
 	// 내부 함수
 	void ScrollExecute(bool bAdd, bool bPosSwitch = false);

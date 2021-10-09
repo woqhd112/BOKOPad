@@ -22,6 +22,7 @@ private:
 	bool Exist();
 
 	bool NoteReload();
+	bool IsDraggingMode();
 
 private:
 

@@ -77,10 +77,63 @@ BOOL NoteListCtrl::OnInitDialog()
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
+bool NoteListCtrl::LoadDraggingNote()
+{
+	ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
+
+	int i = 0;
+	int bDetectedTimelineCnt = 0;
+	while (iter != m_noteInformationContainer->end())
+	{
+		if (iter->value.IsSetTIMELINE() == false)
+		{
+			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
+			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			if (m_noteManager->SendMessages(PM_LOAD_DRAGGING_MODE) == false)
+				return false;
+			bDetectedTimelineCnt++;
+		}
+
+		i++;
+		iter++;
+	}
+
+	return true;
+}
+
+bool NoteListCtrl::UnloadDraggingNote()
+{
+	ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
+
+	int i = 0;
+	int bDetectedTimelineCnt = 0;
+	while (iter != m_noteInformationContainer->end())
+	{
+		if (iter->value.IsSetTIMELINE() == false)
+		{
+			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
+			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			if (m_noteManager->SendMessages(PM_UNLOAD_DRAGGING_MODE) == false)
+				return false;
+			bDetectedTimelineCnt++;
+		}
+
+		i++;
+		iter++;
+	}
+
+	return true;
+}
+
 bool NoteListCtrl::DeleteAllItems()
 {
 	if (m_noteManager->SendMessages(PM_NOTE_CLEAR) == false)
 		return false;
+
+	m_viewNoteSize = 0;
+	scroll.ResetScroll();
 
 	return true;
 }
@@ -178,6 +231,45 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 		return false;
 
 	ScrollExecute(true, true);
+
+	return true;
+}
+
+bool NoteListCtrl::CheckDeleteNote()
+{
+	ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
+
+	NoteManagerStruct noteManagerStruct(NULL, NULL, -1);
+	int deleteCount = 0;
+	while (iter != m_noteInformationContainer->end())
+	{
+		if (iter->value.IsSetTIMELINE() == false)
+		{
+			noteManagerStruct.noteData = &iter->value;
+			m_noteManager->InputNoteStruct(&noteManagerStruct);
+			// ui삭제안된건 냅두고 된거만 db삭제한다.
+			if (m_noteManager->SendMessages(PM_NOTE_CHECK_DELETE))
+			{
+				RequestScope->SetRequestAttributes(*noteManagerStruct.noteData);
+				if (MVC_Controller->DeleteNoteInformation() == false)
+					return false;
+
+				deleteCount++;
+			}
+		}
+		iter++;
+	}
+
+	if (deleteCount > 0)
+	{
+		if (DeleteAllItems() == false)
+			return false;
+
+		if (LoadNoteInformation() == false)
+			return false;
+
+	}
+
 
 	return true;
 }
@@ -321,6 +413,10 @@ CRect* NoteListCtrl::CalcNotePosition(int itemIndex)
 
 bool NoteListCtrl::DragDown(MSG* pMsg)
 {
+	Scenario_Manager->InputScenarioStruct(&m_thisDataStruct);
+	if (Scenario_Manager->SendMessages(PM_IS_DRAGGING_MODE) == false)
+		return false;
+
 	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
 	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
 	{
@@ -331,7 +427,13 @@ bool NoteListCtrl::DragDown(MSG* pMsg)
 		m_noteManager->InputDragStruct(&m_defaultDragData);
 		m_bDragProcessing = m_noteManager->SendMessages(PM_DRAG_DOWN);
 		if (!m_bDragProcessing)
+		{
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteManager->SendMessages(PM_DRAG_OFF) == false)
+				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 			return false;
+		}
 
 		return true;
 	}
@@ -369,6 +471,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		DragUpState dus = m_noteManager->GetDragState();
 		if (dus == DUS_NOTHING)
 		{
+			// 버그날일이 없을듯하다..
 			m_noteManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteManager->SendMessages(PM_DRAG_NOTHING) == false)
 			{
@@ -379,6 +482,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		}
 		else if (dus == DUS_THIS)
 		{
+			// 버그날일이 없을듯하다..
 			m_noteManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteManager->SendMessages(PM_DRAG_THIS_ATTACH) == false)
 			{
@@ -402,6 +506,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 				m_downButton = nullptr;
 				CURSOR_ARROW;
 
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 				m_noteManager->InputDragStruct(&m_defaultDragData);
 				if (m_noteManager->SendMessages(PM_ROLLBACK_ANOTHER_ATTACH) == false)
@@ -425,15 +530,25 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 				return false;
 			}
+			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 			TransactionInstance->Commit();
 		}
 		else if (dus == DUS_THIS_TIMELINE)
 		{
+			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
 			m_noteManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH) == false)
 			{
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 				return false;
 			}
 
@@ -444,6 +559,14 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			{
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 				return false;
 			}
 
@@ -453,6 +576,14 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			{
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 				return false;
 			}
 
@@ -460,6 +591,14 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			{
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 				return false;
 			}
 
@@ -470,8 +609,18 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			{
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
 				return false;
 			}
+			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL]);
+			TransactionInstance->Commit();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
@@ -533,7 +682,13 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (HIWORD(wParam) == BN_CLICKED)
+	{
+		// 노트매니저에 체크박스 클릭 이벤트 날리기
+		m_defaultDragData.buttonID = LOWORD(wParam);
+		m_noteManager->InputDragStruct(&m_defaultDragData);
+		m_noteManager->SendMessages(PM_NOTE_CLICK);
+	}
 
 	return CDialogEx::OnCommand(wParam, lParam);
 }
-
