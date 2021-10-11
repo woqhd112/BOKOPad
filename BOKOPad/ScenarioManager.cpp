@@ -5,7 +5,7 @@
 
 ScenarioManager::ScenarioManager()
 {
-	
+	m_bIsDragging = true;
 }
 
 ScenarioManager::~ScenarioManager()
@@ -63,6 +63,10 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	else if (message == PM_IS_DRAGGING_MODE)
 	{
 		bHelpSuccess = IsDraggingMode();
+	}
+	else if (message == PM_DRAG_PROCESS_LOCK)
+	{
+		bHelpSuccess = DragProcessLock();
 	}
 
 	return bHelpSuccess;
@@ -312,4 +316,9 @@ bool ScenarioManager::IsDraggingMode()
 
 	ReleaseScenarioStruct();
 	return iter->value.value->m_bDragModeCheck;
+}
+
+bool ScenarioManager::DragProcessLock()
+{
+	return m_bIsDragging;
 }

@@ -261,6 +261,12 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 	// thisApproch는 true일때 마우스가 아무 동작하지않을 때 접근
 	// false일땐 드래그 이벤트 중에 접근했을 경우
 
+	//// 현재 드래그가 다른시나리오쪽에서 작동중일경우 처리x
+	//if (Scenario_Manager->SendMessages(PM_DRAG_PROCESS_LOCK) == true)
+	//	return false;
+
+	// 
+
 	if (m_timeLineContainer.empty())
 		return false;
 
@@ -353,6 +359,8 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 				// 현재 잡고있는 타임라인 idx값보다 마우스로 댄 타임라인 idx값이 더 클경우는 -1 처리 
 				if (time.GetTimeIDX() < m_nPointingTimeIDX)
 					m_nPointingTimeIDX -= 1;
+				else if (time.GetTimeIDX() == m_nPointingTimeIDX)
+					return false;
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note1, note2;
@@ -828,13 +836,45 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				return false;
 			}
-
+			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
 			TransactionInstance->Commit();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
-			// 우선 여긴 another로 처리가됨
-			int a = 0;
+			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+
+			// 클릭한 타임라인의 notSEQ값으로 내용을 가져온다.
+			NoteInformationVO note;
+			note.SetNotSEQ(m_defaultDragData.noteSEQ);
+			RequestScope->SetRequestAttributes(note);
+			if(MVC_Controller->SelectOneNoteInformation() == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+				return false;
+			}
+
+			RequestScope->GetRequestAttributes(&note);
+			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+
+			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+			TransactionInstance->Commit();
 		}
 
 		CURSOR_ARROW;

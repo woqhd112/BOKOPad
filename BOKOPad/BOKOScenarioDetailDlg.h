@@ -11,6 +11,8 @@
 class BOKOScenarioDetailDlg : public CDialogEx
 {
 	// 타임라인 접근권한
+	friend class TimelineManager;
+	// 타임라인 접근권한
 	friend class NoteManager;
 	// 드래그모드 접근권한
 	friend class ScenarioManager;
@@ -29,7 +31,7 @@ public:
 	bool SignalLoadScenarioList();
 
 	bool SignalInsertTimeline(int notSEQ, POINT currentMPoint);
-	bool SignalInsertNote(ComplexString& strNoteContent);
+	bool SignalInsertNote(ComplexString& strNoteContent, bool bNoteShow);
 	bool SignalDeleteNote(int notSEQ);
 	bool SignalUpdateSetTIME(int notSEQ);
 	bool SignalReloadNoteList();
@@ -50,6 +52,7 @@ private:
 	Timeline m_timeline;
 
 	bool m_bDragModeCheck;
+	bool m_bKeyDownEvent;
 
 	ScenarioManagerStruct m_thisDataStruct;
 

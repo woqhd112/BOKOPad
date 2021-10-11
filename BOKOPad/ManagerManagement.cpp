@@ -8,6 +8,7 @@ ComplexMap<int, BOKOScenarioDetailDlg*> ManagerManagement::m_scenarioDlgManager;
 ComplexMap<int, int> ManagerManagement::m_scenarioSeqMap;
 DragUpState ManagerManagement::m_dragState;
 int ManagerManagement::m_cursorEventCnt;
+bool ManagerManagement::m_bIsDragging;
 
 ManagerManagement::ManagerManagement()
 	: m_bAttach(false)

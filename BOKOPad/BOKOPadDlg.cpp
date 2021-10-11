@@ -129,7 +129,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
 	Initialize();
-
+	
 	CURSOR_WAIT;
 	// 옵션 로드
 	if (MVC_Controller->SelectAllPadOption())

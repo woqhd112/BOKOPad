@@ -41,6 +41,7 @@ private:
 	bool RollbackAnotherAttach();
 	bool RollbackThisTimelineAttach();
 	bool RollbackTimelineAnotherAttach();
+	bool RollbackThisAnotherTimelineAttach();
 
 private:
 

@@ -16,7 +16,8 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 	: CDialogEx(IDD_DIALOG_SCENARIO_TIMELINE, pParent)
 {
 	m_thisDataStruct = thisDataStruct;
-	m_bDragModeCheck = false;
+	m_bDragModeCheck = true;
+	m_bKeyDownEvent = false;
 }
 
 BOKOScenarioDetailDlg::~BOKOScenarioDetailDlg()
@@ -75,6 +76,27 @@ BOOL BOKOScenarioDetailDlg::PreTranslateMessage(MSG* pMsg)
 			OnBnClickedButtonNoteInput();
 			return TRUE;
 		}
+		else if (pMsg->wParam == VK_CONTROL)
+		{
+			if (!m_bKeyDownEvent)
+			{
+				m_bKeyDownEvent = true;
+				OnBnClickedCheckDragMode();
+				return TRUE;
+			}
+		}
+	}
+	else if (WM_KEYUP == pMsg->message)
+	{
+		if (pMsg->wParam == VK_CONTROL)
+		{
+			if (m_bKeyDownEvent)
+			{
+				m_bKeyDownEvent = false;
+				OnBnClickedCheckDragMode();
+				return TRUE;
+			}
+		}
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -115,7 +137,8 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_btn_drag_mode.SetWindowPos(NULL, CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.01), 0, 0, SWP_NOSIZE);
 	m_list_notePad.ShowWindow(SW_SHOW);
 	m_timeline.ShowWindow(SW_SHOW);
-	m_btn_drag_mode.SetCheck(FALSE);
+	m_btn_drag_mode.ShowWindow(SW_HIDE);
+	m_btn_drag_mode.SetCheck(TRUE);
 }
 
 
@@ -141,6 +164,10 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
+	// 선택모드일때 등록안되게
+	if (m_bDragModeCheck == false)
+		return;
+
 	CString strInputText;
 	m_edit_note_input.GetWindowTextA(strInputText);
 
@@ -149,8 +176,8 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 
 	CURSOR_WAIT;
 	TransactionInstance->RequestSavePoint(TransactionNames[TND_NOTE_INSERT]);
-
-	if (m_list_notePad.InsertNote(strInputText.GetBuffer()))
+	
+	if (m_list_notePad.InsertNote(strInputText.GetBuffer(), true))
 	{
 		m_edit_note_input.SetWindowTextA("");
 		m_stt_note_limit_size.SetWindowTextA("0 / 500");
@@ -187,12 +214,15 @@ bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 	if (m_list_notePad.LoadNoteInformation() == false)
 		return false;
 
+	if (m_list_notePad.LoadDraggingNote() == false)
+		return false;
+
 	return true;
 }
 
-bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent)
+bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent, bool bNoteShow)
 {
-	return m_list_notePad.InsertNote(strNoteContent);
+	return m_list_notePad.InsertNote(strNoteContent, bNoteShow);
 }
 
 bool BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
@@ -245,11 +275,13 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 	{
 		m_btn_drag_mode.SetCheck(FALSE);
 		m_bDragModeCheck = false;
-		m_btn_note_delete.EnableWindow(TRUE);
+		m_btn_note_delete.EnableWindow(FALSE);
+		m_btn_note_input.EnableWindow(FALSE);
 		if (m_list_notePad.UnloadDraggingNote() == false)
 		{
 			m_btn_drag_mode.SetCheck(TRUE);
-			m_btn_note_delete.EnableWindow(FALSE);
+			m_btn_note_delete.EnableWindow(TRUE);
+			m_btn_note_input.EnableWindow(TRUE);
 			m_bDragModeCheck = true;
 			SignalReloadNoteList();
 		}
@@ -258,11 +290,13 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 	{
 		m_btn_drag_mode.SetCheck(TRUE);
 		m_bDragModeCheck = true;
-		m_btn_note_delete.EnableWindow(FALSE);
+		m_btn_note_delete.EnableWindow(TRUE);
+		m_btn_note_input.EnableWindow(TRUE);
 		if (m_list_notePad.LoadDraggingNote() == false)
 		{
 			m_btn_drag_mode.SetCheck(FALSE);
-			m_btn_note_delete.EnableWindow(TRUE);
+			m_btn_note_delete.EnableWindow(FALSE);
+			m_btn_note_input.EnableWindow(FALSE);
 			m_bDragModeCheck = false;
 			SignalReloadNoteList();
 		}

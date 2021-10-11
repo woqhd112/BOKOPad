@@ -213,9 +213,9 @@ bool NoteListCtrl::UpdateSetTIME(int notSEQ)
 	return true;
 }
 
-bool NoteListCtrl::InsertNote(ComplexString inpusString)
+bool NoteListCtrl::InsertNote(ComplexString inpusString, bool bNoteShow)
 {
-	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), false, false, inpusString);
+	NoteInformationVO inNote(0, m_thisDataStruct.scenarioData.GetSceSEQ(), !bNoteShow, false, inpusString);
 	RequestScope->SetRequestAttributes(inNote);
 	if (MVC_Controller->InsertNoteInformation() == false)
 		return false;
@@ -230,7 +230,8 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString)
 	if (m_noteManager->SendMessages(PM_NOTE_INSERT) == false)
 		return false;
 
-	ScrollExecute(true, true);
+	if (bNoteShow)
+		ScrollExecute(true, true);
 
 	return true;
 }
@@ -495,26 +496,22 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		{
 			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 			// db처리는 다이얼로그에서.. 매니저는 ui처리만 할것
-
-			// 현재 다이얼로그에서 노트정보 삭제
-			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, false, "");
-			RequestScope->SetRequestAttributes(inNote);
-			if (MVC_Controller->DeleteNoteInformation() == false)
+			
+			NoteInformationVO note;
+			note.SetNotSEQ(m_defaultDragData.noteSEQ);
+			RequestScope->SetRequestAttributes(note);
+			if (MVC_Controller->SelectOneNoteInformation() == false)
 			{
-				// 이쪽은 첫 db처리라서 실패하면 내부적으로 롤백됨
 				m_bDragProcessing = false;
 				m_downButton = nullptr;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
 				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL]);
-				m_noteManager->InputDragStruct(&m_defaultDragData);
-				if (m_noteManager->SendMessages(PM_ROLLBACK_ANOTHER_ATTACH) == false)
-					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
-
 				return false;
 			}
 
+			RequestScope->GetRequestAttributes(&note);
+			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
 			m_noteManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
 			{
@@ -624,8 +621,26 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
-			// 우선 여긴 another로 처리가됨
-			int a = 0;
+			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL]);
+
+			m_noteManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
+			{
+				m_bDragProcessing = false;
+				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL]);
+				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL]);
+				m_noteManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+
+			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL]);
+			TransactionInstance->Commit();
 		}
 		CURSOR_ARROW;
 	}
@@ -684,10 +699,12 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
+		// 음.. 시나리오디테일에서 컨트롤 누른상태에서 클릭이벤트 처리되면 다시 키업으로 안돌아감..
 		// 노트매니저에 체크박스 클릭 이벤트 날리기
 		m_defaultDragData.buttonID = LOWORD(wParam);
 		m_noteManager->InputDragStruct(&m_defaultDragData);
 		m_noteManager->SendMessages(PM_NOTE_CLICK);
+		return 1;
 	}
 
 	return CDialogEx::OnCommand(wParam, lParam);

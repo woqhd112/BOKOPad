@@ -1,16 +1,29 @@
 #include "pch.h"
 #include "FileProcess.h"
-
+#include "ComplexStringTokenizer.h"
 
 namespace ComplexUtilProcess
 {
 	COMPLEXUTILPROCESS_DLL void ExportFile(ComplexString writeContent, ComplexString writePath)
 	{
-		const char* fileContentBuf = writeContent.GetBuffer();
+		ComplexString fileContent;
+		fileContent = writeContent;
 		int bufSize = writeContent.GetLength();
+
+		fileContent.ReplaceAll("\r\n", "+");
+		ComplexStringTokenizer tokens;
+		tokens.ApplyStringTokenize(fileContent, '+', false);
+
+		if (tokens.HasNextToken() == true)
+		{
+			fileContent = tokens.NextToken();
+			bufSize = fileContent.GetLength();
+		}
+
+		const char* fileContentBuf = fileContent.GetBuffer();
 		
-		int fixTitleSize = 5;
-		if (bufSize < 5)
+		int fixTitleSize = 10;
+		if (bufSize < 10)
 			fixTitleSize = bufSize;
 
 		char* titleBuf = new char[fixTitleSize + 1];	// include '\0'

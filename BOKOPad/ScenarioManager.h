@@ -24,6 +24,8 @@ private:
 	bool NoteReload();
 	bool IsDraggingMode();
 
+	bool DragProcessLock();
+
 private:
 
 	/*ComplexMap<int, BOKOScenarioDetailDlg*> m_scenarioDlgManager;

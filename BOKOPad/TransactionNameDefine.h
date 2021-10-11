@@ -8,9 +8,11 @@ enum TRANSACTION_NAME_DEFINE
 	TND_NOTE_INSERT,
 	TND_DRAG_EVENT_NOTE_ANOTHER_SIGNAL,
 	TND_DRAG_EVENT_NOTE_THIS_TIMELINE_SIGNAL,
+	TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL,
 	TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL,
 	TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL,
 	TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL,
+	TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL,
 	TND_NOTE_CHECK_DELETE,
 };
 
@@ -22,8 +24,10 @@ static const char* TransactionNames[] = {
 										"Note_Insert",
 										"Drag_Event_Note_Another_Signal",
 										"Drag_Event_Note_This_Timeline_Signal",
+										"Drag_Event_Note_Another_Timeline_Signal",
 										"Drag_Event_Timeline_This_Signal",
 										"Drag_Event_Timeline_Another_Signal",
 										"Drag_Event_Timeline_This_Timeline_Signal",
+										"Drag_Event_Timeline_Another_Timeline_Signal",
 										"Note_Check_Delete",
 										};

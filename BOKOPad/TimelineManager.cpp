@@ -71,6 +71,46 @@ bool TimelineManager::TimelineDragMove()
 		return false;
 	}
 
+	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter1 = m_scenarioDlgManager.begin();
+
+	bool bFind = false;
+	while (iter1 != m_scenarioDlgManager.end())
+	{
+		CRect rect;
+		iter1->value.value->m_timeline.GetWindowRect(rect);
+		if (PtInRect(rect, pt))
+		{
+			//TRACE("%d번째 시나리오 접근\n", iter1->value.key);
+			if (m_bCursorDetach)
+			{
+				m_bCursorAttach = true;
+				CursorCountRestore(0);
+				m_dragDlg->ShowWindow(SW_HIDE);
+				CURSOR_CROSS;
+				m_bCursorDetach = false;
+
+			}
+			iter1->value.value->m_timeline.ThickEventTimeline(dragDataStruct->noteSEQ, pt, Timeline::TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH);
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		if (m_bCursorAttach)
+		{
+			//TRACE("!!\n");
+			m_bCursorDetach = true;
+			CursorCountRestore(-1);
+			m_dragDlg->ShowWindow(SW_SHOW);
+			m_bCursorAttach = false;
+		}
+	}
+
+	/*
 	// 마우스 커서 이벤트처리 타임라인일 때
 	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
 
@@ -99,7 +139,7 @@ bool TimelineManager::TimelineDragMove()
 			m_dragDlg->ShowWindow(SW_SHOW);
 			m_bCursorAttach = false;
 		}
-	}
+	}*/
 
 	m_dragDlg->MoveWindow(int(dragDataStruct->mousePos_X - (DRAG_DLG_WIDTH / 2)), int(dragDataStruct->mousePos_Y - (DRAG_DLG_HEIGHT / 2)), DRAG_DLG_WIDTH, DRAG_DLG_HEIGHT);
 
@@ -164,13 +204,12 @@ bool TimelineManager::TimelineDragUp()
 		if (iter2 != m_scenarioSeqMap.end())
 			dragDataStruct->target_sceSEQ = iter2->value.value;
 
-		// 타임라인인지 구분 (이걸 처리할까..)
-		/*CRect rect;
+		CRect rect;
 		iter1->value.value->m_timeline.GetWindowRect(rect);
 		if (PtInRect(rect, pt))
 		{
 			m_dragState = DUS_ANOTHER_TIMELINE;
-		}*/
+		}
 	}
 
 	m_dragDlg->ShowWindow(SW_HIDE);

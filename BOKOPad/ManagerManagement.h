@@ -34,6 +34,7 @@ enum PerformanceMessage
 	PM_SHOW,
 	PM_HIDE,
 	PM_EXIST,
+	PM_DRAG_PROCESS_LOCK,
 	PM_IS_DRAGGING_MODE,
 	PM_LOAD_DRAGGING_MODE,
 	PM_UNLOAD_DRAGGING_MODE,
@@ -62,6 +63,7 @@ enum PerformanceMessage
 	PM_ROLLBACK_ANOTHER_ATTACH,
 	PM_ROLLBACK_THIS_TIMELINE_ATTACH,
 	PM_ROLLBACK_TIMELINE_ANOTHER_ATTACH,
+	PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH,
 };
 
 struct ScenarioManagerStruct
@@ -181,6 +183,7 @@ protected:
 	static ComplexMap<int, int> m_scenarioSeqMap;
 	static DragUpState m_dragState;
 	static int m_cursorEventCnt;
+	static bool m_bIsDragging;
 
 	ComplexMap<int, NotePadStruct> m_notePadManager;
 	ComplexMap<int, int> m_noteSeqMap;

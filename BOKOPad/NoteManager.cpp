@@ -144,6 +144,10 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = RollbackThisTimelineAttach();
 	}
+	else if (message == PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH)
+	{
+		bHelpSuccess = RollbackThisAnotherTimelineAttach();
+	}
 
 	return bHelpSuccess;
 }
@@ -641,12 +645,12 @@ bool NoteManager::DragDown()
 			return false;
 		}
 
-		CString strEditContent;
-		iter->value.value.noteEdit->GetWindowTextA(strEditContent);
+		/*CString strEditContent;
+		iter->value.value.noteEdit->GetWindowTextA(strEditContent);*/
 
 		dragDataStruct->noteIndex = iter2->value.key;
 		dragDataStruct->noteSEQ = iter2->value.value;
-		dragDataStruct->noteCONTENT = strEditContent.GetBuffer();
+		//dragDataStruct->noteCONTENT = strEditContent.GetBuffer();
 	}
 	else
 	{
@@ -655,7 +659,7 @@ bool NoteManager::DragDown()
 	}
 
 	m_dragState = DUS_NOTHING;
-	m_dragDlg->SetDragData(dragDataStruct->noteSEQ, dragDataStruct->noteIndex, dragDataStruct->noteCONTENT);
+	//m_dragDlg->SetDragData(dragDataStruct->noteSEQ, dragDataStruct->noteIndex, dragDataStruct->noteCONTENT);
 	m_dragDlg->MoveWindow(int(dragDataStruct->mousePos_X - (DRAG_DLG_WIDTH / 2)), int(dragDataStruct->mousePos_Y - (DRAG_DLG_HEIGHT / 2)), DRAG_DLG_WIDTH, DRAG_DLG_HEIGHT);
 	m_dragDlg->ShowWindow(SW_SHOW);
 
@@ -666,6 +670,8 @@ bool NoteManager::DragDown()
 	CursorCountRestore(-1);
 	m_mainDlg->SetCapture();
 	ReleaseDragStruct();
+
+	m_bIsDragging = true;
 
 	return true;
 }
@@ -683,8 +689,48 @@ bool NoteManager::DragMove()
 		return false;
 	}
 
-	// 마우스 커서 이벤트처리 타임라인일 때
+
 	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter1 = m_scenarioDlgManager.begin();
+
+	bool bFind = false;
+	while (iter1 != m_scenarioDlgManager.end())
+	{
+		CRect rect;
+		iter1->value.value->m_timeline.GetWindowRect(rect);
+		if (PtInRect(rect, pt))
+		{
+			//TRACE("%d번째 시나리오 접근\n", iter1->value.key);
+			if (m_bCursorDetach)
+			{
+				m_bCursorAttach = true;
+				CursorCountRestore(0);
+				m_dragDlg->ShowWindow(SW_HIDE);
+				CURSOR_CROSS;
+				m_bCursorDetach = false;
+
+			}
+			iter1->value.value->m_timeline.ThickEventTimeline(dragDataStruct->noteSEQ, pt, Timeline::TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH);
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		if (m_bCursorAttach)
+		{
+			//TRACE("!!\n");
+			m_bCursorDetach = true;
+			CursorCountRestore(-1);
+			m_dragDlg->ShowWindow(SW_SHOW);
+			m_bCursorAttach = false;
+		}
+	}
+
+	// 마우스 커서 이벤트처리 타임라인일 때
+	/*CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
 	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter1 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
 	if (iter1 != m_scenarioDlgManager.end())
 	{
@@ -713,7 +759,7 @@ bool NoteManager::DragMove()
 				m_bCursorAttach = false;
 			}
 		}
-	}
+	}*/
 
 
 	m_dragDlg->MoveWindow(int(dragDataStruct->mousePos_X - (DRAG_DLG_WIDTH / 2)), int(dragDataStruct->mousePos_Y - (DRAG_DLG_HEIGHT / 2)), DRAG_DLG_WIDTH, DRAG_DLG_HEIGHT);
@@ -799,13 +845,12 @@ bool NoteManager::DragUp()
 		if (iter2 != m_scenarioSeqMap.end())
 			dragDataStruct->target_sceSEQ = iter2->value.value;
 
-		// 타임라인인지 구분 (이걸 처리할까..)
-		/*CRect rect;
+		CRect rect;
 		iter1->value.value->m_timeline.GetWindowRect(rect);
 		if (PtInRect(rect, pt))
 		{
 			m_dragState = DUS_ANOTHER_TIMELINE;
-		}*/
+		}
 	}
 
 	m_dragDlg->ShowWindow(SW_HIDE);
@@ -813,6 +858,8 @@ bool NoteManager::DragUp()
 	CursorCountRestore(0);
 	CURSOR_ARROW;
 	ReleaseCapture();
+	m_bIsDragging = false;
+
 	return true;
 }
 
@@ -851,6 +898,7 @@ bool NoteManager::DragOff()
 	CursorCountRestore(0);
 	CURSOR_ARROW;
 	ReleaseCapture();
+	m_bIsDragging = false;
 	return true;
 }
 
@@ -996,7 +1044,7 @@ bool NoteManager::DragAnotherAttach()
 	}
 
 	// 타겟 시나리오에서 노트추가
-	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT) == false)
+	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, true) == false)
 	{
 		ReleaseDragStruct();
 		return false;
@@ -1047,9 +1095,89 @@ bool NoteManager::DragThisTimelineAttach()
 
 bool NoteManager::DragAnotherTimelineAttach()
 {
-	bool bSuccess = false;
+	DragDataStruct* dragDataStruct = BringDragStruct();
 
-	return bSuccess;
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_dragDlg == nullptr)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (m_scenarioSeqMap.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 시나리오 시퀀스맵에서 해당 시나리오 시퀀스번호 찾고 신호 보내서 시나리오 리스트 갱신.
+	ComplexMap<int, int>::iterator iter1 = m_scenarioSeqMap.begin();
+	bool bFind = false;
+	while (iter1 != m_scenarioSeqMap.end())
+	{
+		if (iter1->value.value == dragDataStruct->target_sceSEQ)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
+
+	if (iter2 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (iter3 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 시나리오에서 노트삭제
+	if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 시나리오에서 노트추가
+	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, false) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+	int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
+
+	if (targetNoteContainerSize <= 0)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
+	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+	// 타겟 타임라인 추가
+	if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ReleaseDragStruct();
+	return true;
 }
 
 bool NoteManager::FindNoteIndex()
@@ -1253,6 +1381,85 @@ bool NoteManager::RollbackTimelineAnotherAttach()
 	return true;
 }
 
+bool NoteManager::RollbackThisAnotherTimelineAttach()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_dragDlg == nullptr)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 시나리오 시퀀스맵에서 해당 시나리오 시퀀스번호 찾고 신호 보내서 시나리오 리스트 갱신.
+	ComplexMap<int, int>::iterator iter1 = m_scenarioSeqMap.begin();
+	bool bFind = false;
+	while (iter1 != m_scenarioSeqMap.end())
+	{
+		if (iter1->value.value == dragDataStruct->target_sceSEQ)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter2 = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
+
+	if (iter2 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (iter3 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 시나리오 리로드
+	if (iter2->value.value->SignalReloadNoteList() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 타임라인 리로드
+	if (iter2->value.value->SignalReloadTimeline() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 시나리오 리로드
+	if (iter3->value.value->SignalReloadNoteList() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 타임라인 리로드
+	if (iter3->value.value->SignalReloadTimeline() == false)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ReleaseDragStruct();
+	return true;
+}
+
 bool NoteManager::LoadDraggingMode()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
@@ -1275,7 +1482,7 @@ bool NoteManager::LoadDraggingMode()
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
 
 	iter->value.value.noteCheckBox->ShowWindow(SW_HIDE);
-	iter->value.value.noteCheckBox->SetCheck(FALSE);	// 드래그모드 설정하면 체크했던 체크박스들 전부 해제
+	//iter->value.value.noteCheckBox->SetCheck(FALSE);	// 드래그모드 설정하면 체크했던 체크박스들 전부 해제
 	iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width(), 10);
 
 	ReleaseNoteStruct();
