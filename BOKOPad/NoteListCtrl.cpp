@@ -689,6 +689,18 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 		if (DragMove(pMsg))
 			return FALSE;
 	}
+	else if (WM_KEYUP == pMsg->message)
+	{
+		if (pMsg->wParam == VK_CONTROL)
+		{
+			MSG msg;
+			msg.message = WM_KEYUP;
+			msg.wParam = VK_CONTROL;
+			GetParent()->PreTranslateMessage(&msg);
+			GetParent()->SetFocus();
+			return TRUE;
+		}
+	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 }

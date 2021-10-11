@@ -204,9 +204,9 @@ bool NoteManager::Insert()
 		}
 
 		noteInputCheckBox->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top, 10, 10);
-		noteInputCheckBox->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
+		noteInputCheckBox->ShowWindow(SW_HIDE);
 
-		noteInputButton->MoveWindow(noteManagerStruct.noteRect->left + 11, noteManagerStruct.noteRect->top, noteManagerStruct.noteRect->Width() - 11, 10);
+		noteInputButton->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top, noteManagerStruct.noteRect->Width(), 10);
 		noteInputButton->SetWindowTextA("...");
 		noteInputButton->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 
@@ -1482,7 +1482,7 @@ bool NoteManager::LoadDraggingMode()
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.find(noteDataStruct->noteIndex);
 
 	iter->value.value.noteCheckBox->ShowWindow(SW_HIDE);
-	//iter->value.value.noteCheckBox->SetCheck(FALSE);	// 드래그모드 설정하면 체크했던 체크박스들 전부 해제
+	iter->value.value.noteCheckBox->SetCheck(FALSE);	// 드래그모드 설정하면 체크했던 체크박스들 전부 해제
 	iter->value.value.noteButton->MoveWindow(noteDataStruct->noteRect->left, noteDataStruct->noteRect->top, noteDataStruct->noteRect->Width(), 10);
 
 	ReleaseNoteStruct();

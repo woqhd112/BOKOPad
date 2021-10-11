@@ -139,6 +139,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_timeline.ShowWindow(SW_SHOW);
 	m_btn_drag_mode.ShowWindow(SW_HIDE);
 	m_btn_drag_mode.SetCheck(TRUE);
+	m_btn_note_delete.EnableWindow(FALSE);
 }
 
 
@@ -275,12 +276,12 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 	{
 		m_btn_drag_mode.SetCheck(FALSE);
 		m_bDragModeCheck = false;
-		m_btn_note_delete.EnableWindow(FALSE);
+		m_btn_note_delete.EnableWindow(TRUE);
 		m_btn_note_input.EnableWindow(FALSE);
 		if (m_list_notePad.UnloadDraggingNote() == false)
 		{
 			m_btn_drag_mode.SetCheck(TRUE);
-			m_btn_note_delete.EnableWindow(TRUE);
+			m_btn_note_delete.EnableWindow(FALSE);
 			m_btn_note_input.EnableWindow(TRUE);
 			m_bDragModeCheck = true;
 			SignalReloadNoteList();
@@ -290,12 +291,12 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 	{
 		m_btn_drag_mode.SetCheck(TRUE);
 		m_bDragModeCheck = true;
-		m_btn_note_delete.EnableWindow(TRUE);
+		m_btn_note_delete.EnableWindow(FALSE);
 		m_btn_note_input.EnableWindow(TRUE);
 		if (m_list_notePad.LoadDraggingNote() == false)
 		{
 			m_btn_drag_mode.SetCheck(FALSE);
-			m_btn_note_delete.EnableWindow(FALSE);
+			m_btn_note_delete.EnableWindow(TRUE);
 			m_btn_note_input.EnableWindow(FALSE);
 			m_bDragModeCheck = false;
 			SignalReloadNoteList();
