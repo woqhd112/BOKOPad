@@ -4,14 +4,14 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "BOKOScenarioDetailDlg.h"
-#include "NoteManager.h"
+#include "NoteUIManager.h"
 #include "afxdialogex.h"
 
 
 // BOKOScenarioDetailDlg 대화 상자
 
 IMPLEMENT_DYNAMIC(BOKOScenarioDetailDlg, CDialogEx)
-
+ 
 BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruct, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_SCENARIO_TIMELINE, pParent)
 {
@@ -53,8 +53,8 @@ void BOKOScenarioDetailDlg::OnClose()
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	ScenarioManagerStruct scenarioStruct(m_thisDataStruct.scenarioData, m_thisDataStruct.scenarioIndex);
-	Scenario_Manager->InputScenarioStruct(&scenarioStruct);
-	Scenario_Manager->SendMessages(PM_DESTROY);
+	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
+	Scenario_UI_Manager->SendMessages(PM_DESTROY);
 
 	//CDialogEx::OnClose();
 }
@@ -124,7 +124,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
 	m_timeline.Create(Timeline::IDD, this);
-	m_timeline.AttachNoteManager(m_list_notePad.m_noteManager);
+	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
@@ -176,25 +176,24 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 		return;
 
 	CURSOR_WAIT;
-	TransactionInstance->RequestSavePoint(TransactionNames[TND_NOTE_INSERT]);
+	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_NOTE_INSERT]);
 	
 	if (m_list_notePad.InsertNote(strInputText.GetBuffer(), true))
 	{
 		m_edit_note_input.SetWindowTextA("");
 		m_stt_note_limit_size.SetWindowTextA("0 / 500");
 		m_edit_note_input.SetFocus();
-		TransactionInstance->Commit();
+		Scenario_DB_Manager->CommitTransaction();
 	}
 	else
 	{
-		TransactionInstance->Rollback(TransactionNames[TND_NOTE_INSERT]);
+		Scenario_DB_Manager->RollbackTransaction();
 		ScenarioManagerStruct scenarioStruct(m_thisDataStruct.scenarioData, m_thisDataStruct.scenarioIndex);
-		Scenario_Manager->InputScenarioStruct(&scenarioStruct);
-		if (Scenario_Manager->SendMessages(PM_NOTE_RELOAD) == false)
+		Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
+		if (Scenario_UI_Manager->SendMessages(PM_NOTE_RELOAD) == false)
 			MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 	}
 
-	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_INSERT]);
 	CURSOR_ARROW;
 }
 
@@ -309,12 +308,11 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteDelete()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	CURSOR_WAIT;
-	TransactionInstance->RequestSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
+	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_NOTE_CHECK_DELETE]);
 	if (m_list_notePad.CheckDeleteNote() == false)
 	{
 		CURSOR_ARROW;
-		TransactionInstance->Rollback(TransactionNames[TND_NOTE_CHECK_DELETE]);
-		TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
+		Scenario_DB_Manager->RollbackTransaction();
 
 		if (SignalReloadNoteList() == false)
 			MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
@@ -322,7 +320,6 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteDelete()
 		return;
 	}
 
-	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_NOTE_CHECK_DELETE]);
-	TransactionInstance->Commit();
+	Scenario_DB_Manager->CommitTransaction();
 	CURSOR_ARROW;
 }

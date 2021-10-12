@@ -1,7 +1,8 @@
 ﻿#pragma once
-
+#include "OneViewList.h"
 
 // BOKOTimelineOneViewDlg 대화 상자
+class TimelineUIManager;
 
 class BOKOTimelineOneViewDlg : public CDialogEx
 {
@@ -14,6 +15,10 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_TIMELINE_ONE_VIEW };
 
+	void AttachManager(TimelineUIManager* manager, TimelineDBManager* dbmanager);
+	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
+
+	void Clear();
 	void SetTimelineText(ComplexString& strText);
 
 public:
@@ -23,6 +28,12 @@ private:
 	CFont m_editFont;
 	CEdit m_edit_one_view;
 	CButton m_btn_timeline_export;
+	CButton m_btn_expand_all;
+	CButton m_btn_preview;
+
+	OneViewList m_list_one_view;
+
+	bool m_bExpandedProcess;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -31,4 +42,6 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonTimelineExport();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedButtonExpandAll();
+	afx_msg void OnBnClickedButtonOneView();
 };

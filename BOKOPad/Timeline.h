@@ -5,16 +5,17 @@
 #include "BOKOTimelineOneViewDlg.h"
 #include "NoteListInterface.h"
 
-class NoteManager;
-class TimelineManager;
+class NoteUIManager;
+class TimelineDBManager;
+class TimelineUIManager;
 // Timeline 대화 상자
 
 #define LINE_COLOR RGB(0, 0, 0)
 
 class Timeline : public CDialogEx, public NoteListInterface
 {
-	friend class TimelineManager;
-	friend class NoteManager;
+	friend class TimelineUIManager;
+	friend class NoteUIManager;
 	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(Timeline)
 
@@ -43,7 +44,7 @@ protected:
 
 private:
 
-	void AttachNoteManager(NoteManager* manager);
+	void AttachNoteManager(NoteUIManager* manager);
 
 	// 시그널 함수
 	bool SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
@@ -83,10 +84,12 @@ private:
 	TimelineDetail m_detailDlg;
 	// 한눈에보기 다이얼로그
 	BOKOTimelineOneViewDlg m_oneViewDlg;
-	// 타임라인 매니저
-	TimelineManager* m_timeManager;
-	// 노트 매니저
-	NoteManager* m_noteManager;
+	// 타임라인 UI매니저
+	TimelineUIManager* m_timeUIManager;
+	// 노트 UI매니저
+	NoteUIManager* m_noteUIManager;
+	// 타임라인 DB매니저
+	TimelineDBManager* m_timeDBManager;
 
 	// 타임라인 x축 선의 시작지점
 	int m_nLineStartPoint_X;

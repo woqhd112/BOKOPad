@@ -1,14 +1,14 @@
 #include "pch.h"
-#include "ScenarioManager.h"
+#include "ScenarioUIManager.h"
 #include "BOKOScenarioDetailDlg.h"
 #include "BOKODragDlg.h"
 
-ScenarioManager::ScenarioManager()
+ScenarioUIManager::ScenarioUIManager()
 {
 	m_bIsDragging = true;
 }
 
-ScenarioManager::~ScenarioManager()
+ScenarioUIManager::~ScenarioUIManager()
 {
 	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.begin();
 
@@ -24,7 +24,7 @@ ScenarioManager::~ScenarioManager()
 	m_scenarioDlgManager.clear();
 }
 
-bool ScenarioManager::SendMessages(PerformanceMessage message)
+bool ScenarioUIManager::SendMessages(PerformanceMessage message)
 {
 	if (!m_bAttach)
 		return false;
@@ -32,7 +32,7 @@ bool ScenarioManager::SendMessages(PerformanceMessage message)
 	return HelpInvoker(message);
 }
 
-bool ScenarioManager::HelpInvoker(PerformanceMessage message)
+bool ScenarioUIManager::HelpInvoker(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 
@@ -56,6 +56,10 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = Exist();
 	}
+	else if (message == PM_SCENARIO_CLEAR)
+	{
+		bHelpSuccess = Clear();
+	}
 	else if (message == PM_NOTE_RELOAD)
 	{
 		bHelpSuccess = NoteReload();
@@ -72,7 +76,7 @@ bool ScenarioManager::HelpInvoker(PerformanceMessage message)
 	return bHelpSuccess;
 }
 
-bool ScenarioManager::Create()
+bool ScenarioUIManager::Create()
 {
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
@@ -131,7 +135,7 @@ bool ScenarioManager::Create()
 	return bCreate;
 }
 
-bool ScenarioManager::Destroy()
+bool ScenarioUIManager::Destroy()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -167,7 +171,7 @@ bool ScenarioManager::Destroy()
 	return true;
 }
 
-bool ScenarioManager::Show()
+bool ScenarioUIManager::Show()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -198,7 +202,7 @@ bool ScenarioManager::Show()
 	return true;
 }
 
-bool ScenarioManager::Hide()
+bool ScenarioUIManager::Hide()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -229,7 +233,7 @@ bool ScenarioManager::Hide()
 	return true;
 }
 
-bool ScenarioManager::Exist()
+bool ScenarioUIManager::Exist()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -257,7 +261,26 @@ bool ScenarioManager::Exist()
 	return true;
 }
 
-bool ScenarioManager::NoteReload()
+bool ScenarioUIManager::Clear()
+{
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.begin();
+
+	while (iter != m_scenarioDlgManager.end())
+	{
+		BOKOScenarioDetailDlg* dlg = iter->value.value;
+		dlg->DestroyWindow();
+		delete dlg;
+		dlg = nullptr;
+
+		iter++;
+	}
+	m_scenarioDlgManager.clear();
+	m_scenarioSeqMap.clear();
+
+	return true;
+}
+
+bool ScenarioUIManager::NoteReload()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -291,7 +314,7 @@ bool ScenarioManager::NoteReload()
 	return true;
 }
 
-bool ScenarioManager::IsDraggingMode()
+bool ScenarioUIManager::IsDraggingMode()
 {
 	if (m_scenarioDlgManager.empty())
 		return false;
@@ -318,7 +341,7 @@ bool ScenarioManager::IsDraggingMode()
 	return iter->value.value->m_bDragModeCheck;
 }
 
-bool ScenarioManager::DragProcessLock()
+bool ScenarioUIManager::DragProcessLock()
 {
 	return m_bIsDragging;
 }

@@ -10,33 +10,30 @@
 
 #include "resource.h"		// 주 기호입니다.
 #ifdef _DEBUG
-#pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
+//#pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
 #pragma comment(lib, "ComplexLibrary_dbg.lib")
 #pragma comment(lib, "ComplexUtilProcess_dbg.lib")
 #else
-#pragma comment(lib, "ComplexMVC2_Model.lib")
+//#pragma comment(lib, "ComplexMVC2_Model.lib")
 #pragma comment(lib, "ComplexLibrary.lib")
 #pragma comment(lib, "ComplexUtilProcess.lib")
 #endif
-#include "DlgController.h"
-#include "ScenarioManager.h"
-#include "TransactionNameDefine.h"
-
-//extern COMPLEXMVC2_MODEL_DLL RequestAttribute* RequestScope;
-//extern COMPLEXMVC2_MODEL_DLL SessionAttribute* SessionScope;
+#include "ScenarioDBManager.h"
+#include "ScenarioUIManager.h"
 
 // CBOKOPadApp:
 // 이 클래스의 구현에 대해서는 BOKOPad.cpp을(를) 참조하세요.
 //
 
-static DlgController* MVC_Controller = ComplexSingleton<DlgController>::GetInstancePtr();
-static ScenarioManager* Scenario_Manager = ComplexSingleton<ScenarioManager>::GetInstancePtr();
+static ScenarioDBManager* Scenario_DB_Manager = ComplexSingleton<ScenarioDBManager>::GetInstancePtr();
+static ScenarioUIManager* Scenario_UI_Manager = ComplexSingleton<ScenarioUIManager>::GetInstancePtr();
 
 class CBOKOPadApp : public CWinApp
 {
 public:
 	CBOKOPadApp();
 	~CBOKOPadApp();
+
 
 // 재정의입니다.
 public:

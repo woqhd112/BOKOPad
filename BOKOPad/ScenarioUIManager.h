@@ -1,13 +1,13 @@
 #pragma once
-#include "ManagerManagement.h"
+#include "UIManagerManagement.h"
 
 
-class ScenarioManager : public ManagerManagement
+class ScenarioUIManager : public UIManagerManagement
 {
 public:
 
-	ScenarioManager();
-	virtual ~ScenarioManager();
+	ScenarioUIManager();
+	virtual ~ScenarioUIManager();
 
 	virtual bool SendMessages(PerformanceMessage message);
 
@@ -20,6 +20,7 @@ private:
 	bool Show();
 	bool Hide();
 	bool Exist();
+	bool Clear();
 
 	bool NoteReload();
 	bool IsDraggingMode();

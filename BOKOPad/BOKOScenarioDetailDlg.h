@@ -11,11 +11,11 @@
 class BOKOScenarioDetailDlg : public CDialogEx
 {
 	// 타임라인 접근권한
-	friend class TimelineManager;
+	friend class TimelineUIManager;
 	// 타임라인 접근권한
-	friend class NoteManager;
+	friend class NoteUIManager;
 	// 드래그모드 접근권한
-	friend class ScenarioManager;
+	friend class ScenarioUIManager;
 
 	DECLARE_DYNAMIC(BOKOScenarioDetailDlg)
 

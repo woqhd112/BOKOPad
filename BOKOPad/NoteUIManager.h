@@ -1,12 +1,12 @@
 #pragma once
-#include "ManagerManagement.h"
+#include "UIManagerManagement.h"
 
-class NoteManager : public ManagerManagement
+class NoteUIManager : public UIManagerManagement
 {
 public:
 
-	NoteManager();
-	virtual ~NoteManager();
+	NoteUIManager();
+	virtual ~NoteUIManager();
 
 	virtual bool SendMessages(PerformanceMessage message);
 

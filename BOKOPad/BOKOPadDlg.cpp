@@ -56,18 +56,11 @@ CBOKOPadDlg::CBOKOPadDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_BOKOPAD_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	// 컨트롤러 생성
-	//m_controller = new DlgController;
 }
 
 CBOKOPadDlg::~CBOKOPadDlg()
 {
-	/*if (m_controller)
-	{
-		delete m_controller;
-		m_controller = nullptr;
-	}*/
+	Scenario_UI_Manager->SendMessages(PM_SCENARIO_CLEAR);
 }
 
 void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
@@ -132,16 +125,11 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	
 	CURSOR_WAIT;
 	// 옵션 로드
-	if (MVC_Controller->SelectAllPadOption())
-	{
-		RequestScope->GetRequestAttributes(&m_mainOptionData);
-	}
+	Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData);
 
 	// 시나리오 리스트 로드
-	if (MVC_Controller->SelectAllScenarioList())
+	if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
 	{
-		RequestScope->GetRequestAttributes(&m_loadScenarioList);
-
 		ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
 
 		while (iter != m_loadScenarioList.end())
@@ -157,7 +145,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	GotoDlgCtrl(&m_edit_input_scenario);
 	m_edit_input_scenario.LimitText(20);
 
-	Scenario_Manager->AttachManager(this);
+	Scenario_UI_Manager->AttachManager(this);
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -267,19 +255,15 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 	ComplexString inputScenarioTitle = getText.GetBuffer();
 
 	CURSOR_WAIT;
-	RequestScope->SetRequestAttributes(ScenarioListVO(0, 0, inputScenarioTitle));
-	if (MVC_Controller->InsertScenarioList())
+	if (Scenario_DB_Manager->InsertScenarioList(inputScenarioTitle))
 	{
 		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
 		InsertScenario(inputScenarioTitle, index);
 		m_edit_input_scenario.SetWindowTextA("");
 		m_edit_input_scenario.SetFocus();
 
-		if (MVC_Controller->SelectAllScenarioList())
-		{
-			m_loadScenarioList.clear();
-			RequestScope->GetRequestAttributes(&m_loadScenarioList);
-		}
+		m_loadScenarioList.clear();
+		Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList);
 	}
 	CURSOR_ARROW;
 }
@@ -343,7 +327,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		return;
 
 	CURSOR_WAIT;
-	TransactionInstance->RequestSavePoint(TransactionNames[TND_SCENARIO_DELETE]);
+	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_SCENARIO_DELETE]);
 
 	int selectedCount = m_list_scenario_list.GetSelectedCount();
 	POSITION selectPos = m_list_scenario_list.GetFirstSelectedItemPosition();
@@ -361,9 +345,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	{
 		int deleteIndex = selectVector.at(i);
 		ScenarioListVO selectedScenario = m_loadScenarioList.at(deleteIndex);
-		RequestScope->SetRequestAttributes(selectedScenario);
-
-		if (MVC_Controller->DeleteScenarioList() == false)
+		if (Scenario_DB_Manager->DeleteScenarioList(selectedScenario.GetSceSEQ()) == false)
 		{
 			bTransaction = true;
 			break;
@@ -380,17 +362,16 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	{
 		if (m_loadScenarioList.empty())
 		{
-			MVC_Controller->UpdateScenarioListAutoIncrementSeq();
+			Scenario_DB_Manager->UpdateScenarioListAutoIncrementSeq();
 		}
-		TransactionInstance->Commit();
+		Scenario_DB_Manager->CommitTransaction();
 	}
 	else
 	{
-		TransactionInstance->Rollback(TransactionNames[TND_SCENARIO_DELETE]);
-		if (MVC_Controller->SelectAllScenarioList())
+		Scenario_DB_Manager->RollbackTransaction();
+		m_loadScenarioList.clear();
+		if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
 		{
-			RequestScope->GetRequestAttributes(&m_loadScenarioList);
-
 			m_list_scenario_list.DeleteAllItems();
 			ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
 
@@ -403,8 +384,6 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 			}
 		}
 	}
-
-	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_SCENARIO_DELETE]);
 
 	CURSOR_ARROW;
 }
@@ -424,23 +403,22 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 
 	// 시나리오가 이미 존재할 시
 	ScenarioManagerStruct scenarioStruct(m_loadScenarioList.at(mark), mark);
-	Scenario_Manager->InputScenarioStruct(&scenarioStruct);
+	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
 
-	if (Scenario_Manager->SendMessages(PM_EXIST) == true)
+	if (Scenario_UI_Manager->SendMessages(PM_EXIST) == true)
 		return;
 
 	CURSOR_WAIT;
-	TransactionInstance->RequestSavePoint(TransactionNames[TND_SCENARIO_CREATE]);
+	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_SCENARIO_CREATE]);
 
-	Scenario_Manager->InputScenarioStruct(&scenarioStruct);
-	if (Scenario_Manager->SendMessages(PM_CREATE) == false)
+	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
+	if (Scenario_UI_Manager->SendMessages(PM_CREATE) == false)
 	{
-		TransactionInstance->Rollback(TransactionNames[TND_SCENARIO_CREATE]);
+		Scenario_DB_Manager->RollbackTransaction();
 	}
 	else
-		TransactionInstance->Commit();
+		Scenario_DB_Manager->CommitTransaction();
 
-	TransactionInstance->ReleaseSavePoint(TransactionNames[TND_SCENARIO_CREATE]);
 	CURSOR_ARROW;
 	*pResult = 0;
 }

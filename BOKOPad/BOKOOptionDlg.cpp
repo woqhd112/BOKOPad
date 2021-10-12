@@ -50,11 +50,8 @@ BOOL BOKOOptionDlg::OnInitDialog()
 	bool bInit = false;
 
 	CURSOR_WAIT;
-	if (MVC_Controller->SelectAllPadOption())
-	{
+	if (Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData))
 		bInit = true;
-		RequestScope->GetRequestAttributes(&m_mainOptionData);
-	}
 
 	if (bInit)
 	{
@@ -97,26 +94,18 @@ void BOKOOptionDlg::OnBnClickedButtonExportFile()
 	if (!bSelected)
 		return;
 
-	ScenarioListVO inputScenario(0, 0, selectScenarioTitle);
 	ScenarioListVO outputScenario;
 
-	RequestScope->SetRequestAttributes(inputScenario);
-	if (MVC_Controller->SelectInSceSEQScenarioListInSceTITLE())
-	{
-		RequestScope->GetRequestAttributes(&outputScenario);
-	}
+	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
+		return;
 
 	CURSOR_WAIT;
 
 	CString strFullPath = fd.GetPathName();
 
-	NoteInformationVO note(0, outputScenario.GetSceSEQ(), false, false, "");
-	RequestScope->SetRequestAttributes(note);
-	if (MVC_Controller->SelectInSceSEQNoteInformation())
+	ComplexVector<NoteInformationVO> loadNoteInformationContainer;
+	if (Scenario_DB_Manager->SelectInSceSEQNoteInformation(outputScenario.GetSceSEQ(), &loadNoteInformationContainer))
 	{
-		ComplexVector<NoteInformationVO> loadNoteInformationContainer;
-		RequestScope->GetRequestAttributes(&loadNoteInformationContainer);
-
 		ComplexVector<NoteInformationVO>::iterator iter = loadNoteInformationContainer.begin();
 		while (iter != loadNoteInformationContainer.end())
 		{
@@ -159,14 +148,10 @@ void BOKOOptionDlg::OnBnClickedButtonImportFile()
 	if (!bSelected)
 		return;
 
-	ScenarioListVO inputScenario(0, 0, selectScenarioTitle);
 	ScenarioListVO outputScenario;
 
-	RequestScope->SetRequestAttributes(inputScenario);
-	if (MVC_Controller->SelectInSceSEQScenarioListInSceTITLE())
-	{
-		RequestScope->GetRequestAttributes(&outputScenario);
-	}
+	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
+		return;
 
 	CURSOR_WAIT;
 	POSITION pos = fd.GetStartPosition();
@@ -178,10 +163,8 @@ void BOKOOptionDlg::OnBnClickedButtonImportFile()
 		ComplexUtilProcess::ImportFile(strReadUTF8Content, strPathName);
 		//ComplexUtilProcess::UTF8ToANSI(strConvertAnsiContent, strReadUTF8Content);
 
-		//NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, strConvertAnsiContent);
 		NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, false, strReadUTF8Content);
-		RequestScope->SetRequestAttributes(insertNote);
-		if (MVC_Controller->InsertNoteInformation() == false)
+		if (Scenario_DB_Manager->InsertNoteInformation(insertNote) == false)
 		{
 			CURSOR_ARROW;
 			MessageBox("데이터 저장에 실패하였습니다.");

@@ -1,12 +1,12 @@
 #pragma once
-#include "ManagerManagement.h"
+#include "UIManagerManagement.h"
 
-class TimelineManager : public ManagerManagement
+class TimelineUIManager : public UIManagerManagement
 {
 public:
 
-	TimelineManager();
-	virtual ~TimelineManager();
+	TimelineUIManager();
+	virtual ~TimelineUIManager();
 
 	virtual bool SendMessages(PerformanceMessage message);
 

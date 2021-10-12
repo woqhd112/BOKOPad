@@ -17,8 +17,8 @@ BEGIN_MESSAGE_MAP(CBOKOPadApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-
 // CBOKOPadApp 생성
+
 
 CBOKOPadApp::CBOKOPadApp()
 {
@@ -31,17 +31,17 @@ CBOKOPadApp::CBOKOPadApp()
 
 CBOKOPadApp::~CBOKOPadApp()
 {
-	if (MVC_Controller)
+	if (Scenario_DB_Manager)
 	{
-		delete MVC_Controller;
-		MVC_Controller = nullptr;
+		delete Scenario_DB_Manager;
+		Scenario_DB_Manager = nullptr;
 	}
 
-	if (Scenario_Manager)
+	if (Scenario_UI_Manager)
 	{
-		Scenario_Manager->DetachManager();
-		delete Scenario_Manager;
-		Scenario_Manager = nullptr;
+		Scenario_UI_Manager->DetachManager();
+		delete Scenario_UI_Manager;
+		Scenario_UI_Manager = nullptr;
 	}
 }
 // 유일한 CBOKOPadApp 개체입니다.
@@ -83,9 +83,6 @@ BOOL CBOKOPadApp::InitInstance()
 	// TODO: 이 문자열을 회사 또는 조직의 이름과 같은
 	// 적절한 내용으로 수정해야 합니다.
 	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
-
-	// scope data define
-	//MVC_Controller = new DlgController;
 
 	CBOKOPadDlg dlg;
 	m_pMainWnd = &dlg;

@@ -34,6 +34,7 @@ enum PerformanceMessage
 	PM_SHOW,
 	PM_HIDE,
 	PM_EXIST,
+	PM_SCENARIO_CLEAR,
 	PM_DRAG_PROCESS_LOCK,
 	PM_IS_DRAGGING_MODE,
 	PM_LOAD_DRAGGING_MODE,
@@ -133,12 +134,12 @@ struct DragDataStruct
 	ComplexString noteCONTENT;
 };
 
-class ManagerManagement
+class UIManagerManagement
 {
 public:
 
-	ManagerManagement();
-	~ManagerManagement();
+	UIManagerManagement();
+	~UIManagerManagement();
 
 	void AttachManager(CWnd* dlgAttachPointer);
 	CWnd* DetachManager();

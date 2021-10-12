@@ -3,14 +3,15 @@
 #include "ScrollProcess.h"
 #include "NoteListInterface.h"
 
-class NoteManager;
+class NoteDBManager;
+class NoteUIManager;
 // NoteListCtrl 대화 상자
 
 #define BUTTON_COLOR RGB(68, 68, 68)
 
 class NoteListCtrl : public CDialogEx, public NoteListInterface
 {
-	friend class NoteManager;
+	friend class NoteUIManager;
 	friend class BOKOScenarioDetailDlg;
 	DECLARE_DYNAMIC(NoteListCtrl)
 
@@ -55,7 +56,8 @@ public:
 private:
 
 	ComplexVector<NoteInformationVO>* m_noteInformationContainer;
-	NoteManager* m_noteManager;
+	NoteUIManager* m_noteUIManager;
+	NoteDBManager* m_noteDBManager;
 	bool m_bMainScrollFocus;
 
 	CRect m_calculateItemPos;

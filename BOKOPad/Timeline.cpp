@@ -4,8 +4,9 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "Timeline.h"
-#include "TimelineManager.h"
-#include "NoteManager.h"
+#include "TimelineUIManager.h"
+#include "NoteUIManager.h"
+#include "TimelineDBManager.h"
 #include "afxdialogex.h"
 
 
@@ -15,7 +16,8 @@ IMPLEMENT_DYNAMIC(Timeline, CDialogEx)
 
 Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE, pParent)
-	, m_timeManager(new TimelineManager)
+	, m_timeUIManager(new TimelineUIManager)
+	, m_timeDBManager(new TimelineDBManager)
 {
 	m_bAttachManagerInit = false;
 	m_bInit = false;
@@ -30,10 +32,16 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 
 Timeline::~Timeline()
 {
-	if (m_timeManager)
+	if (m_timeUIManager)
 	{
-		delete m_timeManager;
-		m_timeManager = nullptr;
+		delete m_timeUIManager;
+		m_timeUIManager = nullptr;
+	}
+
+	if (m_timeDBManager)
+	{
+		delete m_timeDBManager;
+		m_timeDBManager = nullptr;
 	}
 
 	m_linePen.DeleteObject();
@@ -59,7 +67,7 @@ BOOL Timeline::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_timeManager->AttachManager(this);
+	m_timeUIManager->AttachManager(this);
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	m_linePen.CreatePen(PS_SOLID, 3, LINE_COLOR);
@@ -72,14 +80,16 @@ BOOL Timeline::OnInitDialog()
 	m_detailDlg.ShowWindow(SW_HIDE);
 	m_oneViewDlg.ShowWindow(SW_HIDE);
 
+	m_oneViewDlg.AttachManager(m_timeUIManager, m_timeDBManager);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-void Timeline::AttachNoteManager(NoteManager* manager)
+void Timeline::AttachNoteManager(NoteUIManager* manager)
 {
 	m_bAttachManagerInit = true;
-	m_noteManager = manager;
+	m_noteUIManager = manager;
 }
 
 void Timeline::HideTimelineDetail()
@@ -92,12 +102,10 @@ bool Timeline::ReloadTimeline()
 	TimelineVO time;
 	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 
-	RequestScope->SetRequestAttributes(time);
-	if (MVC_Controller->SelectInSceSEQTimeline() == false)
+	m_timeLineContainer.clear();
+	if (m_timeDBManager->SelectInSceSEQTimeline(m_thisDataStruct.scenarioData.GetSceSEQ(), &m_timeLineContainer) == false)
 		return false;
 
-	m_timeLineContainer.clear();
-	RequestScope->GetRequestAttributes(&m_timeLineContainer);
 	Invalidate();
 
 	return true;
@@ -141,10 +149,7 @@ bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 	//time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	for (int i = m_timeLineContainer.size() - 1; i >= startUpdateTimeIDX; i--)
 	{
-		time.SetTimeIDX(i);
-		time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
-		RequestScope->SetRequestAttributes(time);
-		if (MVC_Controller->UpdateTimelineInTimeIDXPlus() == false)
+		if (m_timeDBManager->UpdateTimelineInTimeIDXPlus(m_timeLineContainer.at(i).GetNotSEQ(), i) == false)
 			return false;
 	}
 
@@ -164,8 +169,7 @@ bool Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 	time.SetNotSEQ(notSEQ);
 	time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
 	time.SetTimeIDX(timeIDX);
-	RequestScope->SetRequestAttributes(time);
-	if (MVC_Controller->InsertTimeline() == false)
+	if (m_timeDBManager->InsertTimeline(time) == false)
 		return false;
 
 	return ReloadTimeline();
@@ -304,12 +308,9 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note;
-				note.SetNotSEQ(thisNoteSEQ);
-				RequestScope->SetRequestAttributes(note);
-				if (MVC_Controller->SelectOneNoteInformation() == false)
+				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note) == false)
 					return false;
 
-				RequestScope->GetRequestAttributes(&note);
 				// this쪽에만 입력
 				m_detailDlg.SetText(note.GetNotCONTENT(), "");
 			}
@@ -323,19 +324,12 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note1, note2;
-				note1.SetNotSEQ(thisNoteSEQ);
-				note2.SetNotSEQ(notSEQ);
-				RequestScope->SetRequestAttributes(note1);
-				if (MVC_Controller->SelectOneNoteInformation() == false)
+				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note1) == false)
 					return false;
 
-				RequestScope->GetRequestAttributes(&note1);
-
-				RequestScope->SetRequestAttributes(note2);
-				if (MVC_Controller->SelectOneNoteInformation() == false)
+				if (m_timeDBManager->SelectOneNoteInformation(notSEQ, &note2) == false)
 					return false;
 
-				RequestScope->GetRequestAttributes(&note2);
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
 				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
 			}
@@ -349,12 +343,8 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 
 				// 해당 timeIDX값 뽑아오는데 db 조회를 해야하는건가? 일단 생각해두자
 				TimelineVO time;
-				time.SetNotSEQ(notSEQ);
-				RequestScope->SetRequestAttributes(time);
-				if (MVC_Controller->SelectInTimeIDXTimelineInNotSEQ() == false)
+				if (m_timeDBManager->SelectInTimeIDXTimelineInNotSEQ(notSEQ, &time) == false)
 					return false;
-
-				RequestScope->GetRequestAttributes(&time);
 
 				// 현재 잡고있는 타임라인 idx값보다 마우스로 댄 타임라인 idx값이 더 클경우는 -1 처리 
 				if (time.GetTimeIDX() < m_nPointingTimeIDX)
@@ -364,19 +354,13 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 
 				int thisNoteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
 				NoteInformationVO note1, note2;
-				note1.SetNotSEQ(thisNoteSEQ);
 				note2.SetNotSEQ(notSEQ);
-				RequestScope->SetRequestAttributes(note1);
-				if (MVC_Controller->SelectOneNoteInformation() == false)
+				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note1) == false)
 					return false;
 
-				RequestScope->GetRequestAttributes(&note1);
-
-				RequestScope->SetRequestAttributes(note2);
-				if (MVC_Controller->SelectOneNoteInformation() == false)
+				if (m_timeDBManager->SelectOneNoteInformation(notSEQ, &note2) == false)
 					return false;
 
-				RequestScope->GetRequestAttributes(&note2);
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
 				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
 			}
@@ -458,25 +442,24 @@ bool Timeline::TimelineOneViewProcess()
 	ComplexVector<TimelineVO>::iterator iter = m_timeLineContainer.begin();
 
 	ComplexString oneViewTimelineText;
+
+	m_oneViewDlg.Clear();
 	while (iter != m_timeLineContainer.end())
 	{
 		NoteInformationVO note;
-		note.SetNotSEQ(iter->value.GetNotSEQ());
-		RequestScope->SetRequestAttributes(note);
-		if (MVC_Controller->SelectOneNoteInformation() == false)
+		if (m_timeDBManager->SelectOneNoteInformation(iter->value.GetNotSEQ(), &note) == false)
 			return false;
 
-		RequestScope->GetRequestAttributes(&note);
-		if (oneViewTimelineText.IsEmpty())
+		/*if (oneViewTimelineText.IsEmpty())
 			oneViewTimelineText.AppendFormat("%s", note.GetNotCONTENT().GetBuffer());
 		else
-			oneViewTimelineText.AppendFormat("\r\n%s", note.GetNotCONTENT().GetBuffer());
+			oneViewTimelineText.AppendFormat("\r\n%s", note.GetNotCONTENT().GetBuffer());*/
+		m_oneViewDlg.SetTimelineText(note.GetNotCONTENT());
 
 
 		iter++;
 	}
 
-	m_oneViewDlg.SetTimelineText(oneViewTimelineText);
 
 	CURSOR_CROSS;
 
@@ -486,8 +469,8 @@ bool Timeline::TimelineOneViewProcess()
 
 bool Timeline::DragDown(MSG* pMsg)
 {
-	Scenario_Manager->InputScenarioStruct(&m_thisDataStruct);
-	if (Scenario_Manager->SendMessages(PM_IS_DRAGGING_MODE) == false)
+	Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
+	if (Scenario_UI_Manager->SendMessages(PM_IS_DRAGGING_MODE) == false)
 		return false;
 
 	POINT pt = pMsg->pt;
@@ -527,8 +510,8 @@ bool Timeline::DragDown(MSG* pMsg)
 	m_defaultDragData.mousePos_X = pMsg->pt.x;
 	m_defaultDragData.mousePos_Y = pMsg->pt.y;
 	m_defaultDragData.noteSEQ = m_timeLineContainer.at(m_nPointingTimeIDX).GetNotSEQ();
-	m_timeManager->InputDragStruct(&m_defaultDragData);
-	m_bDragProcessing = m_timeManager->SendMessages(PM_TIMELINE_DRAG_DOWN);
+	m_timeUIManager->InputDragStruct(&m_defaultDragData);
+	m_bDragProcessing = m_timeUIManager->SendMessages(PM_TIMELINE_DRAG_DOWN);
 
 	if (!m_bDragProcessing)
 		return false;
@@ -558,8 +541,8 @@ bool Timeline::DragMove(MSG* pMsg)
 
 	m_defaultDragData.mousePos_X = pMsg->pt.x;
 	m_defaultDragData.mousePos_Y = pMsg->pt.y;
-	m_timeManager->InputDragStruct(&m_defaultDragData);
-	m_timeManager->SendMessages(PM_TIMELINE_DRAG_MOVE);
+	m_timeUIManager->InputDragStruct(&m_defaultDragData);
+	m_timeUIManager->SendMessages(PM_TIMELINE_DRAG_MOVE);
 
 	return true;
 }
@@ -571,11 +554,11 @@ bool Timeline::DragUp(MSG* pMsg)
 
 	m_defaultDragData.mousePos_X = pMsg->pt.x;
 	m_defaultDragData.mousePos_Y = pMsg->pt.y;
-	m_timeManager->InputDragStruct(&m_defaultDragData);
-	if (m_timeManager->SendMessages(PM_TIMELINE_DRAG_UP))
+	m_timeUIManager->InputDragStruct(&m_defaultDragData);
+	if (m_timeUIManager->SendMessages(PM_TIMELINE_DRAG_UP))
 	{
 		CURSOR_WAIT;
-		DragUpState dus = m_timeManager->GetDragState();
+		DragUpState dus = m_timeUIManager->GetDragState();
 		if (dus == DUS_NOTHING)
 		{
 			if (ReloadTimeline() == false)
@@ -587,33 +570,27 @@ bool Timeline::DragUp(MSG* pMsg)
 		}
 		else if (dus == DUS_THIS)
 		{
-			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
+			m_timeDBManager->StartTransaction(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
 
-			m_timeManager->InputDragStruct(&m_defaultDragData);
-			if (m_timeManager->SendMessages(PM_NOTE_INSERT) == false)
+			m_timeUIManager->InputDragStruct(&m_defaultDragData);
+			if (m_timeUIManager->SendMessages(PM_NOTE_INSERT) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
 
-			TimelineVO time;
-			time.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
-			time.SetNotSEQ(m_defaultDragData.noteSEQ);
-			RequestScope->SetRequestAttributes(time);
-			if (MVC_Controller->DeleteTimeline() == false)
+			if (m_timeDBManager->DeleteTimeline(m_defaultDragData.noteSEQ, m_thisDataStruct.scenarioData.GetSceSEQ()) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -625,43 +602,37 @@ bool Timeline::DragUp(MSG* pMsg)
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 				return false;
 			}
 
-			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_SIGNAL]);
-			TransactionInstance->Commit();
+			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER)
 		{
-			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
+			m_timeDBManager->StartTransaction(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
 
 			// 현재 다이얼로그에서 노트정보 삭제 (timeline <-> noteinformation cascade 관계라 note만 지워도 됨)
 			NoteInformationVO inNote(m_defaultDragData.noteSEQ, 0, false, false, "");
 			// 해당 notSEQ로 notCONTENT 뽑아오기
-			RequestScope->SetRequestAttributes(inNote);
-			if (MVC_Controller->SelectOneNoteInformation() == false)
+			if (m_timeDBManager->SelectOneNoteInformation(m_defaultDragData.noteSEQ, &inNote) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				return false;
 			}
-			RequestScope->GetRequestAttributes(&inNote);
 			m_defaultDragData.noteCONTENT = inNote.GetNotCONTENT();
 
 			// 노트 삭제
-			RequestScope->SetRequestAttributes(inNote);
-			if (MVC_Controller->DeleteNoteInformation() == false)
+			if (m_timeDBManager->DeleteNoteInformation(inNote.GetNotSEQ()) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -674,35 +645,32 @@ bool Timeline::DragUp(MSG* pMsg)
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 				return false;
 			}
 
 			
 			// 노트매니저와 노트컨트롤쪽 컨테이너, 맵 삭제하고 타겟 다이얼로그에 노트 등록
-			m_noteManager->InputDragStruct(&m_defaultDragData);
-			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
+			m_noteUIManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				// 타임라인 -> 타겟다이얼로그 롤백 메시지 구현
-				m_noteManager->InputDragStruct(&m_defaultDragData);
-				if (m_noteManager->SendMessages(PM_ROLLBACK_TIMELINE_ANOTHER_ATTACH) == false)
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_TIMELINE_ANOTHER_ATTACH) == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
-			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_SIGNAL]);
-			TransactionInstance->Commit();
+			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_THIS_TIMELINE)
 		{
-			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+			m_timeDBManager->StartTransaction(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
 
 			// 마우스 다운이벤트때 m_timeLineContainer에서만 해당 타임라인을 삭제시켜서 
 			// ValidatePointToRect() 함수로 가져온 timeIDX값을 가지고 모두 업데이트 시킨다.
@@ -716,37 +684,30 @@ bool Timeline::DragUp(MSG* pMsg)
 			time.SetNotSEQ(m_defaultDragData.noteSEQ);
 
 			// 집어든 notSEQ값으로 timeIDX값을 가져온다.
-			RequestScope->SetRequestAttributes(time);
-			if (MVC_Controller->SelectInTimeIDXTimelineInNotSEQ() == false)
+			if (m_timeDBManager->SelectInTimeIDXTimelineInNotSEQ(m_defaultDragData.noteSEQ, &time) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
 
-			RequestScope->GetRequestAttributes(&time);
 			int dragEventingTimeIDX = time.GetTimeIDX();
 
 			// 집어든 idx가 발견한 idx보다 클때 
 			if (dragEventingTimeIDX + 1 < timeIDX)
 			{
 				// 집어든 timeIDX값을 발견한 timeIDX - 1값으로 갱신
-				time.SetNotSEQ(m_defaultDragData.noteSEQ);
-				time.SetTimeIDX(dragEventingTimeIDX);
-				RequestScope->SetRequestInt(timeIDX - 1);
-				RequestScope->SetRequestAttributes(time);
-				if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
+				if (m_timeDBManager->UpdateTimelineInTimeIDX(m_defaultDragData.noteSEQ, dragEventingTimeIDX, timeIDX - 1) == false)
 				{
 					m_bDragProcessing = false;
 					CURSOR_ARROW;
 
-					TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-					TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+					m_timeDBManager->RollbackTransaction();
 					if (ReloadTimeline() == false)
 						MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -756,16 +717,12 @@ bool Timeline::DragUp(MSG* pMsg)
 				// 발견한 timeIDX값보다 낮고 집어든 timeIDX값보다 높은 timeIDX는 전부 -1 처리 (이미 타임라인 컨테이너는 삭제가되있어서 잡고있는 타임라인 idx부터 처리해야함)
 				for (int i = dragEventingTimeIDX; i < timeIDX - 1; i++)
 				{
-					time.SetTimeIDX(i + 1);	// time idx는 다음꺼임..
-					time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
-					RequestScope->SetRequestAttributes(time);
-					if (MVC_Controller->UpdateTimelineInTimeIDXMinus() == false)
+					if (m_timeDBManager->UpdateTimelineInTimeIDXMinus(m_timeLineContainer.at(i).GetNotSEQ(), i + 1) == false)
 					{
 						m_bDragProcessing = false;
 						CURSOR_ARROW;
 
-						TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-						TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+						m_timeDBManager->RollbackTransaction();
 						if (ReloadTimeline() == false)
 							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -782,17 +739,12 @@ bool Timeline::DragUp(MSG* pMsg)
 			else if (dragEventingTimeIDX > timeIDX)
 			{
 				// 집어든 timeIDX값을 발견한 timeIDX값으로 갱신
-				time.SetNotSEQ(m_defaultDragData.noteSEQ);
-				time.SetTimeIDX(dragEventingTimeIDX);
-				RequestScope->SetRequestInt(timeIDX);
-				RequestScope->SetRequestAttributes(time);
-				if (MVC_Controller->UpdateTimelineInTimeIDX() == false)
+				if (m_timeDBManager->UpdateTimelineInTimeIDX(m_defaultDragData.noteSEQ, dragEventingTimeIDX, timeIDX) == false)
 				{
 					m_bDragProcessing = false;
 					CURSOR_ARROW;
 
-					TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-					TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+					m_timeDBManager->RollbackTransaction();
 					if (ReloadTimeline() == false)
 						MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -802,16 +754,12 @@ bool Timeline::DragUp(MSG* pMsg)
 				// 발견한 timeIDX값보다 높거나 같고 집어든 timeIDX값보다 낮은 timeIDX는 전부 +1 처리
 				for (int i = timeIDX; i < dragEventingTimeIDX; i++)
 				{
-					time.SetTimeIDX(i);
-					time.SetNotSEQ(m_timeLineContainer.at(i).GetNotSEQ());
-					RequestScope->SetRequestAttributes(time);
-					if (MVC_Controller->UpdateTimelineInTimeIDXPlus() == false)
+					if (m_timeDBManager->UpdateTimelineInTimeIDXPlus(m_timeLineContainer.at(i).GetNotSEQ(), i) == false)
 					{
 						m_bDragProcessing = false;
 						CURSOR_ARROW;
 
-						TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-						TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+						m_timeDBManager->RollbackTransaction();
 						if (ReloadTimeline() == false)
 							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -830,51 +778,92 @@ bool Timeline::DragUp(MSG* pMsg)
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
+				m_timeDBManager->RollbackTransaction();
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
-			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL]);
-			TransactionInstance->Commit();
+			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
 		{
-			TransactionInstance->RequestSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
+			m_timeDBManager->StartTransaction(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
 
-			// 클릭한 타임라인의 notSEQ값으로 내용을 가져온다.
-			NoteInformationVO note;
-			note.SetNotSEQ(m_defaultDragData.noteSEQ);
-			RequestScope->SetRequestAttributes(note);
-			if(MVC_Controller->SelectOneNoteInformation() == false)
+			// 집어든 notSEQ값으로 timeIDX값을 가져온다.
+			TimelineVO time;
+			if (m_timeDBManager->SelectInTimeIDXTimelineInNotSEQ(m_defaultDragData.noteSEQ, &time) == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
-				return false;
-			}
-
-			RequestScope->GetRequestAttributes(&note);
-			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
-			m_noteManager->InputDragStruct(&m_defaultDragData);
-			if (m_noteManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
-			{
-				m_bDragProcessing = false;
-				CURSOR_ARROW;
-
-				TransactionInstance->Rollback(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
-				TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
-				m_noteManager->InputDragStruct(&m_defaultDragData);
-				if (m_noteManager->SendMessages(PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH) == false)
+				m_timeDBManager->RollbackTransaction();
+				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
 
-			TransactionInstance->ReleaseSavePoint(TransactionNames[TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL]);
-			TransactionInstance->Commit();
+			int dragEventingTimeIDX = time.GetTimeIDX();
+
+
+			// 클릭한 타임라인의 notSEQ값으로 내용을 가져온다.
+			NoteInformationVO note;
+			if (m_timeDBManager->SelectOneNoteInformation(m_defaultDragData.noteSEQ, &note) == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				m_timeDBManager->RollbackTransaction();
+				return false;
+			}
+
+			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
+			m_noteUIManager->InputDragStruct(&m_defaultDragData);
+			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				m_timeDBManager->RollbackTransaction();
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+
+
+			// 집어든 노트 timeIDX보다 뒤쪽의 IDX를 정렬한다.
+			for (int i = 0; i < m_timeLineContainer.size(); i++)
+			{
+				if (dragEventingTimeIDX < m_timeLineContainer.at(i).GetTimeIDX())
+				{
+					if (m_timeDBManager->UpdateTimelineInTimeIDXMinus(m_timeLineContainer.at(i).GetNotSEQ(), m_timeLineContainer.at(i).GetTimeIDX()) == false)
+					{
+						m_bDragProcessing = false;
+						CURSOR_ARROW;
+
+						m_timeDBManager->RollbackTransaction();
+						if (ReloadTimeline() == false)
+							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+						
+						return false;
+					}
+				}
+			}
+
+			if (ReloadTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				m_timeDBManager->RollbackTransaction();
+				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+
+			m_timeDBManager->CommitTransaction();
 		}
 
 		CURSOR_ARROW;

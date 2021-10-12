@@ -64,3 +64,4 @@ public:
 	afx_msg void OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 };
+

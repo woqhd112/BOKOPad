@@ -26,17 +26,23 @@
     <Filter Include="Default">
       <UniqueIdentifier>{ae71a8a3-8167-4acf-9177-d2fc6895acc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PerformanceManager">
-      <UniqueIdentifier>{a9e9d319-a013-4a1f-a53c-7eda17891a67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PerformanceManager\UI Manager">
-      <UniqueIdentifier>{a961efcf-df52-49bf-8bb4-cb1ed56b6573}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\Scenario\Timeline">
       <UniqueIdentifier>{d62dce94-0cef-4e05-8227-ead3c9682af7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TransactionNameDefine">
+    <Filter Include="Manager">
+      <UniqueIdentifier>{62975cb7-9ebb-4ed0-be2d-29b6abd4900e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\DBManager">
+      <UniqueIdentifier>{590fb245-9a7d-4816-951e-56db7905bd9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\DBManager\TransactionNameDefine">
       <UniqueIdentifier>{c294166e-fe9d-4610-a46d-c946e94a2e6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\UI Manager">
+      <UniqueIdentifier>{a961efcf-df52-49bf-8bb4-cb1ed56b6573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scenario\OneView">
+      <UniqueIdentifier>{d4af6135-4438-4046-86eb-24564c986f55}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -73,15 +79,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="ManagerManagement.h">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="NoteManager.h">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ScenarioManager.h">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClInclude>
     <ClInclude Include="ScrollProcess.h">
       <Filter>UI</Filter>
     </ClInclude>
@@ -94,14 +91,38 @@
     <ClInclude Include="TimelineDetail.h">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClInclude>
-    <ClInclude Include="BOKOTimelineOneViewDlg.h">
-      <Filter>UI\Scenario\Timeline</Filter>
-    </ClInclude>
-    <ClInclude Include="TimelineManager.h">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClInclude>
     <ClInclude Include="TransactionNameDefine.h">
-      <Filter>TransactionNameDefine</Filter>
+      <Filter>Manager\DBManager\TransactionNameDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManagerManagement.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="DBManagerManagement.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOTimelineOneViewDlg.h">
+      <Filter>UI\Scenario\OneView</Filter>
+    </ClInclude>
+    <ClInclude Include="OneViewList.h">
+      <Filter>UI\Scenario\OneView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,15 +150,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Default</Filter>
     </ClCompile>
-    <ClCompile Include="ManagerManagement.cpp">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="NoteManager.cpp">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ScenarioManager.cpp">
-      <Filter>PerformanceManager\UI Manager</Filter>
-    </ClCompile>
     <ClCompile Include="ScrollProcess.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -147,11 +159,35 @@
     <ClCompile Include="TimelineDetail.cpp">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClCompile>
-    <ClCompile Include="BOKOTimelineOneViewDlg.cpp">
-      <Filter>UI\Scenario\Timeline</Filter>
+    <ClCompile Include="NoteDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
     </ClCompile>
-    <ClCompile Include="TimelineManager.cpp">
-      <Filter>PerformanceManager\UI Manager</Filter>
+    <ClCompile Include="NoteUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManagerManagement.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="DBManagerManagement.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOTimelineOneViewDlg.cpp">
+      <Filter>UI\Scenario\OneView</Filter>
+    </ClCompile>
+    <ClCompile Include="OneViewList.cpp">
+      <Filter>UI\Scenario\OneView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

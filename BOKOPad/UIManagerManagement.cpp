@@ -1,16 +1,16 @@
 #include "pch.h"
-#include "ManagerManagement.h"
+#include "UIManagerManagement.h"
 #include "BOKOScenarioDetailDlg.h"
 #include "BOKODragDlg.h"
 //#include "NoteListCtrl.h"
 
-ComplexMap<int, BOKOScenarioDetailDlg*> ManagerManagement::m_scenarioDlgManager;
-ComplexMap<int, int> ManagerManagement::m_scenarioSeqMap;
-DragUpState ManagerManagement::m_dragState;
-int ManagerManagement::m_cursorEventCnt;
-bool ManagerManagement::m_bIsDragging;
+ComplexMap<int, BOKOScenarioDetailDlg*> UIManagerManagement::m_scenarioDlgManager;
+ComplexMap<int, int> UIManagerManagement::m_scenarioSeqMap;
+DragUpState UIManagerManagement::m_dragState;
+int UIManagerManagement::m_cursorEventCnt;
+bool UIManagerManagement::m_bIsDragging;
 
-ManagerManagement::ManagerManagement()
+UIManagerManagement::UIManagerManagement()
 	: m_bAttach(false)
 	, m_mainDlg(nullptr)
 	, m_pPutScenarioStruct(nullptr)
@@ -21,7 +21,7 @@ ManagerManagement::ManagerManagement()
 	m_dragState = DUS_NOTHING;
 }
 
-ManagerManagement::~ManagerManagement()
+UIManagerManagement::~UIManagerManagement()
 {
 	if (m_dragDlg)
 	{
@@ -30,7 +30,7 @@ ManagerManagement::~ManagerManagement()
 	}
 }
 
-void ManagerManagement::AttachManager(CWnd* dlgAttachPointer)
+void UIManagerManagement::AttachManager(CWnd* dlgAttachPointer)
 {
 	m_bAttach = true;
 	m_mainDlg = dlgAttachPointer;
@@ -38,64 +38,64 @@ void ManagerManagement::AttachManager(CWnd* dlgAttachPointer)
 	m_dragDlg->Create(m_dragDlg->IDD, m_mainDlg);
 }
 
-CWnd* ManagerManagement::DetachManager()
+CWnd* UIManagerManagement::DetachManager()
 {
 	m_bAttach = false;
 
 	return m_mainDlg;
 }
 
-void ManagerManagement::InputScenarioStruct(ScenarioManagerStruct* scenarioDataStruct)
+void UIManagerManagement::InputScenarioStruct(ScenarioManagerStruct* scenarioDataStruct)
 {
 	m_pPutScenarioStruct = scenarioDataStruct;
 }
 
-void ManagerManagement::InputNoteStruct(NoteManagerStruct* noteDataStruct)
+void UIManagerManagement::InputNoteStruct(NoteManagerStruct* noteDataStruct)
 {
 	m_pPutNoteStruct = noteDataStruct;
 }
 
-void ManagerManagement::InputDragStruct(DragDataStruct* dragDataStruct)
+void UIManagerManagement::InputDragStruct(DragDataStruct* dragDataStruct)
 {
 	m_pPutDragStruct = dragDataStruct;
 }
 
-ScenarioManagerStruct* ManagerManagement::BringScenarioStruct() const
+ScenarioManagerStruct* UIManagerManagement::BringScenarioStruct() const
 {
 	return m_pPutScenarioStruct;
 }
 
-void ManagerManagement::ReleaseScenarioStruct()
+void UIManagerManagement::ReleaseScenarioStruct()
 {
 	m_pPutScenarioStruct = nullptr;
 }
 
-NoteManagerStruct* ManagerManagement::BringNoteStruct() const
+NoteManagerStruct* UIManagerManagement::BringNoteStruct() const
 {
 	return m_pPutNoteStruct;
 }
 
-void ManagerManagement::ReleaseNoteStruct()
+void UIManagerManagement::ReleaseNoteStruct()
 {
 	m_pPutNoteStruct = nullptr;
 }
 
-DragDataStruct* ManagerManagement::BringDragStruct() const
+DragDataStruct* UIManagerManagement::BringDragStruct() const
 {
 	return m_pPutDragStruct;
 }
 
-void ManagerManagement::ReleaseDragStruct()
+void UIManagerManagement::ReleaseDragStruct()
 {
 	m_pPutDragStruct = nullptr;
 }
 
-DragUpState ManagerManagement::GetDragState() const
+DragUpState UIManagerManagement::GetDragState() const
 {
 	return m_dragState;
 }
 
-void ManagerManagement::SortScenarioManagerKey()
+void UIManagerManagement::SortScenarioManagerKey()
 {
 	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter1 = m_scenarioDlgManager.begin();
 	ComplexMap<int, int>::iterator iter2 = m_scenarioSeqMap.begin();
@@ -125,7 +125,7 @@ void ManagerManagement::SortScenarioManagerKey()
 	m_scenarioSeqMap = sortSeqMap;
 }
 
-void ManagerManagement::SortNoteManagerKey()
+void UIManagerManagement::SortNoteManagerKey()
 {
 	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
 	ComplexMap<int, int>::iterator iter2 = m_noteSeqMap.begin();
@@ -155,7 +155,7 @@ void ManagerManagement::SortNoteManagerKey()
 	m_noteSeqMap = sortSeqMap;
 }
 
-void ManagerManagement::CursorCountRestore(int setCursorCnt)
+void UIManagerManagement::CursorCountRestore(int setCursorCnt)
 {
 	while (m_cursorEventCnt != setCursorCnt)
 	{

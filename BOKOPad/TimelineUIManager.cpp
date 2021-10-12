@@ -1,22 +1,22 @@
 #include "pch.h"
-#include "TimelineManager.h"
+#include "TimelineUIManager.h"
 #include "Timeline.h"
 #include "BOKOScenarioDetailDlg.h"
 #include "BOKODragDlg.h"
 
-TimelineManager::TimelineManager()
+TimelineUIManager::TimelineUIManager()
 	: m_bCursorAttach(true)
 	, m_bCursorDetach(false)
 {
 
 }
 
-TimelineManager::~TimelineManager()
+TimelineUIManager::~TimelineUIManager()
 {
 
 }
 
-bool TimelineManager::SendMessages(PerformanceMessage message)
+bool TimelineUIManager::SendMessages(PerformanceMessage message)
 {
 	if (!m_bAttach)
 		return false;
@@ -24,7 +24,7 @@ bool TimelineManager::SendMessages(PerformanceMessage message)
 	return HelpInvoker(message);
 }
 
-bool TimelineManager::HelpInvoker(PerformanceMessage message)
+bool TimelineUIManager::HelpInvoker(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 
@@ -48,7 +48,7 @@ bool TimelineManager::HelpInvoker(PerformanceMessage message)
 	return bHelpSuccess;
 }
 
-bool TimelineManager::TimelineDragDown()
+bool TimelineUIManager::TimelineDragDown()
 {
 	m_dragState = DUS_THIS_TIMELINE;
 
@@ -58,7 +58,7 @@ bool TimelineManager::TimelineDragDown()
 	return true;
 }
 
-bool TimelineManager::TimelineDragMove()
+bool TimelineUIManager::TimelineDragMove()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -148,7 +148,7 @@ bool TimelineManager::TimelineDragMove()
 	return true;
 }
 
-bool TimelineManager::TimelineDragUp()
+bool TimelineUIManager::TimelineDragUp()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -220,7 +220,7 @@ bool TimelineManager::TimelineDragUp()
 	return true;
 }
 
-bool TimelineManager::NoteInsert()
+bool TimelineUIManager::NoteInsert()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 

@@ -96,6 +96,58 @@ namespace ComplexLibrary
 			return m_buf;
 		}
 
+		ComplexString Left(int leftToCount)
+		{
+			if (m_buf == nullptr)
+				return "";
+
+			if (leftToCount <= 0)
+				return "";
+
+			if (leftToCount > (m_size - 1))
+				leftToCount = m_size - 1;
+
+			char* tmp = new char[m_size];
+
+			int i = 0;
+			for (i = 0; i < leftToCount; i++)
+			{
+				tmp[i] = m_buf[i];
+			}
+			tmp[i] = '\0';
+
+			ComplexString strTmp = tmp;
+			delete[] tmp;
+
+			return strTmp;
+		}
+
+		ComplexString Right(int rightToCount)
+		{
+			if (m_buf == nullptr)
+				return "";
+
+			if (rightToCount <= 0)
+				return "";
+
+			if (rightToCount > (m_size - 1))
+				rightToCount = m_size - 1;
+
+			char* tmp = new char[m_size];
+
+			int i = 0;
+			for (i = rightToCount - 1; i < m_size - 1; i++)
+			{
+				tmp[i] = m_buf[i];
+			}
+			tmp[i] = '\0';
+
+			ComplexString strTmp = tmp;
+			delete[] tmp;
+
+			return strTmp;
+		}
+
 		char GetAt(int idx)
 		{
 			if (idx < 0 || idx >(m_size - 1))

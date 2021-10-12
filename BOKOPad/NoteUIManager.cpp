@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "NoteManager.h"
+#include "NoteUIManager.h"
 #include "BOKOScenarioDetailDlg.h"
 #include "BOKODragDlg.h"
 //#include "NoteListCtrl.h"
@@ -7,7 +7,7 @@
 
 static unsigned int g_notePadID = 10000;
 
-NoteManager::NoteManager()
+NoteUIManager::NoteUIManager()
 	: m_variableCtrlPos_x(0)
 	, m_variableCtrlPos_y(0)
 	, m_bCursorAttach(false)
@@ -16,7 +16,7 @@ NoteManager::NoteManager()
 
 }
 
-NoteManager::~NoteManager()
+NoteUIManager::~NoteUIManager()
 {
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
 
@@ -43,7 +43,7 @@ NoteManager::~NoteManager()
 
 }
 
-bool NoteManager::SendMessages(PerformanceMessage message)
+bool NoteUIManager::SendMessages(PerformanceMessage message)
 {
 	if (!m_bAttach)
 		return false;
@@ -52,7 +52,7 @@ bool NoteManager::SendMessages(PerformanceMessage message)
 }
 
 
-bool NoteManager::HelpInvoker(PerformanceMessage message)
+bool NoteUIManager::HelpInvoker(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 
@@ -152,7 +152,7 @@ bool NoteManager::HelpInvoker(PerformanceMessage message)
 	return bHelpSuccess;
 }
 
-bool NoteManager::Insert()
+bool NoteUIManager::Insert()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -245,7 +245,7 @@ bool NoteManager::Insert()
 	return true;
 }
 
-bool NoteManager::Delete()
+bool NoteUIManager::Delete()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -316,7 +316,7 @@ bool NoteManager::Delete()
 	return true;
 }
 
-bool NoteManager::Clear()
+bool NoteUIManager::Clear()
 {
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
 
@@ -345,7 +345,7 @@ bool NoteManager::Clear()
 	return true;
 }
 
-bool NoteManager::Show()
+bool NoteUIManager::Show()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -381,7 +381,7 @@ bool NoteManager::Show()
 	return true;
 }
 
-bool NoteManager::Hide()
+bool NoteUIManager::Hide()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -417,7 +417,7 @@ bool NoteManager::Hide()
 	return true;
 }
 
-bool NoteManager::Move()
+bool NoteUIManager::Move()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -486,7 +486,7 @@ bool NoteManager::Move()
 	return true;
 }
 
-bool NoteManager::NoteCheckDelete()
+bool NoteUIManager::NoteCheckDelete()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -554,7 +554,7 @@ bool NoteManager::NoteCheckDelete()
 	return true;
 }
 
-bool NoteManager::NoteClick()
+bool NoteUIManager::NoteClick()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -603,7 +603,7 @@ bool NoteManager::NoteClick()
 	return true;
 }
 
-bool NoteManager::DragDown()
+bool NoteUIManager::DragDown()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -676,7 +676,7 @@ bool NoteManager::DragDown()
 	return true;
 }
 
-bool NoteManager::DragMove()
+bool NoteUIManager::DragMove()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -769,7 +769,7 @@ bool NoteManager::DragMove()
 	return true;
 }
 
-bool NoteManager::DragUp()
+bool NoteUIManager::DragUp()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -863,7 +863,7 @@ bool NoteManager::DragUp()
 	return true;
 }
 
-bool NoteManager::DragOff()
+bool NoteUIManager::DragOff()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -902,7 +902,7 @@ bool NoteManager::DragOff()
 	return true;
 }
 
-bool NoteManager::DragNothing()
+bool NoteUIManager::DragNothing()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -943,7 +943,7 @@ bool NoteManager::DragNothing()
 	return true;
 }
 
-bool NoteManager::DragThisAttach()
+bool NoteUIManager::DragThisAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -983,7 +983,7 @@ bool NoteManager::DragThisAttach()
 	return true;
 }
 
-bool NoteManager::DragAnotherAttach()
+bool NoteUIManager::DragAnotherAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1054,7 +1054,7 @@ bool NoteManager::DragAnotherAttach()
 	return true;
 }
 
-bool NoteManager::DragThisTimelineAttach()
+bool NoteUIManager::DragThisTimelineAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1093,7 +1093,7 @@ bool NoteManager::DragThisTimelineAttach()
 	return true;
 }
 
-bool NoteManager::DragAnotherTimelineAttach()
+bool NoteUIManager::DragAnotherTimelineAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1180,7 +1180,7 @@ bool NoteManager::DragAnotherTimelineAttach()
 	return true;
 }
 
-bool NoteManager::FindNoteIndex()
+bool NoteUIManager::FindNoteIndex()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -1212,7 +1212,7 @@ bool NoteManager::FindNoteIndex()
 	return true;
 }
 
-bool NoteManager::RollbackAnotherAttach()
+bool NoteUIManager::RollbackAnotherAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1277,7 +1277,7 @@ bool NoteManager::RollbackAnotherAttach()
 	return true;
 }
 
-bool NoteManager::RollbackThisTimelineAttach()
+bool NoteUIManager::RollbackThisTimelineAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1316,7 +1316,7 @@ bool NoteManager::RollbackThisTimelineAttach()
 	return true;
 }
 
-bool NoteManager::RollbackTimelineAnotherAttach()
+bool NoteUIManager::RollbackTimelineAnotherAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1381,7 +1381,7 @@ bool NoteManager::RollbackTimelineAnotherAttach()
 	return true;
 }
 
-bool NoteManager::RollbackThisAnotherTimelineAttach()
+bool NoteUIManager::RollbackThisAnotherTimelineAttach()
 {
 	DragDataStruct* dragDataStruct = BringDragStruct();
 
@@ -1460,7 +1460,7 @@ bool NoteManager::RollbackThisAnotherTimelineAttach()
 	return true;
 }
 
-bool NoteManager::LoadDraggingMode()
+bool NoteUIManager::LoadDraggingMode()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -1489,7 +1489,7 @@ bool NoteManager::LoadDraggingMode()
 	return true;
 }
 
-bool NoteManager::UnloadDraggingMode()
+bool NoteUIManager::UnloadDraggingMode()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 

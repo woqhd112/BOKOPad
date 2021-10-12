@@ -47,10 +47,8 @@ BOOL BOKOOptionScenarioExportDlg::OnInitDialog()
 	Initialize();
 
 	CURSOR_WAIT;
-	if (MVC_Controller->SelectAllScenarioList())
+	if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
 	{
-		RequestScope->GetRequestAttributes(&m_loadScenarioList);
-
 		ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
 
 		while (iter != m_loadScenarioList.end())

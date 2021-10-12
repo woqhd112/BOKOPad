@@ -201,19 +201,24 @@
     <ClInclude Include="BOKOPadDlg.h" />
     <ClInclude Include="BOKOScenarioDetailDlg.h" />
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
+    <ClInclude Include="DBManagerManagement.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="ManagerManagement.h" />
+    <ClInclude Include="OneViewList.h" />
+    <ClInclude Include="UIManagerManagement.h" />
+    <ClInclude Include="NoteDBManager.h" />
     <ClInclude Include="NoteListCtrl.h" />
     <ClInclude Include="NoteListInterface.h" />
-    <ClInclude Include="NoteManager.h" />
+    <ClInclude Include="NoteUIManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ScenarioManager.h" />
+    <ClInclude Include="ScenarioDBManager.h" />
+    <ClInclude Include="ScenarioUIManager.h" />
     <ClInclude Include="ScrollProcess.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Timeline.h" />
+    <ClInclude Include="TimelineDBManager.h" />
     <ClInclude Include="TimelineDetail.h" />
-    <ClInclude Include="TimelineManager.h" />
+    <ClInclude Include="TimelineUIManager.h" />
     <ClInclude Include="TransactionNameDefine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -224,20 +229,25 @@
     <ClCompile Include="BOKOPadDlg.cpp" />
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
-    <ClCompile Include="ManagerManagement.cpp" />
+    <ClCompile Include="DBManagerManagement.cpp" />
+    <ClCompile Include="OneViewList.cpp" />
+    <ClCompile Include="UIManagerManagement.cpp" />
+    <ClCompile Include="NoteDBManager.cpp" />
     <ClCompile Include="NoteListCtrl.cpp" />
-    <ClCompile Include="NoteManager.cpp" />
+    <ClCompile Include="NoteUIManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ScenarioManager.cpp" />
+    <ClCompile Include="ScenarioDBManager.cpp" />
+    <ClCompile Include="ScenarioUIManager.cpp" />
     <ClCompile Include="ScrollProcess.cpp" />
     <ClCompile Include="Timeline.cpp" />
+    <ClCompile Include="TimelineDBManager.cpp" />
     <ClCompile Include="TimelineDetail.cpp" />
-    <ClCompile Include="TimelineManager.cpp" />
+    <ClCompile Include="TimelineUIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOKOPad.rc" />
