@@ -33,6 +33,9 @@
     <ClInclude Include="commonInclude.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LogProcess.h">
+      <Filter>LogProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -43,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="FileProcess.cpp">
       <Filter>FileProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="LogProcess.cpp">
+      <Filter>LogProcess</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

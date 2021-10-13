@@ -63,5 +63,10 @@ public:
 	afx_msg void OnBnClickedButtonScenarioDelete();
 	afx_msg void OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnScenarioExport();
+	afx_msg void OnScenarioImport();
+	afx_msg void OnProgramClose();
+	afx_msg void OnLogView();
+	afx_msg void OnExplanationView();
 };
 

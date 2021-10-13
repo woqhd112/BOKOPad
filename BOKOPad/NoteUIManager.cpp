@@ -806,6 +806,7 @@ bool NoteUIManager::DragUp()
 	else if (iter1->value.value == m_mainDlg->GetParent())
 	{
 		m_dragState = DUS_THIS;
+		dragDataStruct->target_sceSEQ = -1;
 		// 타임라인인지 구분
 
 		CRect rect;

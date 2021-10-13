@@ -38,6 +38,11 @@ void ScrollProcess::ExecuteScroll(int scrollLineFlag)
 	{
 		m_nAllPageSize -= m_nWheelSize;
 		m_nPageCount--;
+		if (m_nPageCount < 0)
+		{
+			m_nPageCount = 0;
+			m_nAllPageSize = 0;
+		}
 		if (m_nScrollProcessCount > m_nPageCount)
 			m_nScrollProcessCount = m_nPageCount;
 	}

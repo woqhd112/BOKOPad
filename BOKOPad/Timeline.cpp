@@ -44,6 +44,7 @@ Timeline::~Timeline()
 		m_timeDBManager = nullptr;
 	}
 
+	m_oneViewDlg.DestroyWindow();
 	m_linePen.DeleteObject();
 	m_drawPen.DeleteObject();
 	m_drawHoverPen.DeleteObject();
@@ -450,12 +451,7 @@ bool Timeline::TimelineOneViewProcess()
 		if (m_timeDBManager->SelectOneNoteInformation(iter->value.GetNotSEQ(), &note) == false)
 			return false;
 
-		/*if (oneViewTimelineText.IsEmpty())
-			oneViewTimelineText.AppendFormat("%s", note.GetNotCONTENT().GetBuffer());
-		else
-			oneViewTimelineText.AppendFormat("\r\n%s", note.GetNotCONTENT().GetBuffer());*/
 		m_oneViewDlg.SetTimelineText(note.GetNotCONTENT());
-
 
 		iter++;
 	}
@@ -466,6 +462,11 @@ bool Timeline::TimelineOneViewProcess()
 	return true;
 }
 
+void Timeline::OneViewRefresh()
+{
+	if (m_oneViewDlg.IsWindowVisible())
+		TimelineOneViewProcess();
+}
 
 bool Timeline::DragDown(MSG* pMsg)
 {
@@ -783,6 +784,9 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				return false;
 			}
+
+			OneViewRefresh();
+
 			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
@@ -862,6 +866,10 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				return false;
 			}
+
+			OneViewRefresh();
+			Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
+			Scenario_UI_Manager->SendMessages(PM_TARGET_SCENARIO_ONE_VIEW_REFRESH);
 
 			m_timeDBManager->CommitTransaction();
 		}

@@ -23,6 +23,7 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 
 OneViewList::~OneViewList()
 {
+	DeleteAllItems();
 }
 
 void OneViewList::DoDataExchange(CDataExchange* pDX)
@@ -52,6 +53,9 @@ BOOL OneViewList::OnInitDialog()
 	scroll.ExecuteScroll(SCROLL_LINE_NOTHING);
 
 	this->SetBackgroundColor(RGB(250, 250, 250));
+
+	m_buttonFont.CreatePointFont(100, TEXT("굴림"));
+	m_editFont.CreatePointFont(120, TEXT("굴림"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -83,6 +87,8 @@ void OneViewList::InsertItem(ComplexString strText)
 	createButton->Create(strTitle.GetBuffer(), WS_VISIBLE | BS_PUSHBUTTON | BS_LEFT, CRect(0, 0, 0, 0), this, g_oneViewID++);
 	createEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE | WS_DISABLED, CRect(0, 0, 0, 0), this, g_oneViewID++);
 
+	createButton->SetFont(&m_buttonFont);
+	createEdit->SetFont(&m_editFont);
 	createButton->MoveWindow(0, m_variableItemStart_Y, rect.Width(), TAG_BUTTON_HEIGHT);
 	createEdit->MoveWindow(0, m_variableItemStart_Y + 20, rect.Width(), EXPAND_EDIT_HEIGHT);
 	createEdit->ShowWindow(SW_HIDE);
@@ -142,33 +148,54 @@ int OneViewList::GetItemCount() const
 	return m_size;
 }
 
+void OneViewList::GetFullItemText(ComplexString* strText)
+{
+	ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
+
+	CString strEditText;
+	while (iter != m_dataMap.end())
+	{
+		iter->value.value.editButton->GetWindowTextA(strEditText);
+		strText->AppendFormat("%s\r\n", strEditText.GetBuffer());
+		iter++;
+	}
+}
+
 void OneViewList::ExpandAll(bool bExpand)
 {
+	// 접기일땐 우선 스크롤을 맨 위로 올리고 작업한다.
+	if (!bExpand)
+	{
+		for (int i = 0; i < scroll.GetLineCount(); i++)
+		{
+			OnVScroll(SB_LINEUP, 0, GetScrollBarCtrl(SB_VERT));
+		}
+	}
+
 	ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
 	ComplexMap<int, OneViewListDataStruct>::iterator iter1;
 
 	int i = 0;
 	while (iter != m_dataMap.end())
 	{
+		bool bAlreadyExpand = iter->value.value.expandedEdit;
 		iter1 = m_dataMap.begin();
 		while (iter1 != m_dataMap.end())
 		{
 			if (bExpand)
 			{
-				iter1->value.value.expandedEdit = true;
-				iter1->value.value.editButton->ShowWindow(SW_SHOW);
-				if (iter1->value.key > i)
+				if (iter1->value.key > i && !bAlreadyExpand)
 				{
 					iter1->value.value.start_tagButton_pos_Y += EXPAND_EDIT_HEIGHT;
+					m_variableItemStart_Y += EXPAND_EDIT_HEIGHT;
 				}
 			}
 			else
 			{
-				iter1->value.value.expandedEdit = false;
-				iter1->value.value.editButton->ShowWindow(SW_HIDE);
-				if (iter1->value.key > i)
+				if (iter1->value.key > i && bAlreadyExpand)
 				{
 					iter1->value.value.start_tagButton_pos_Y -= EXPAND_EDIT_HEIGHT;
+					m_variableItemStart_Y -= EXPAND_EDIT_HEIGHT;
 				}
 			}
 
@@ -177,6 +204,29 @@ void OneViewList::ExpandAll(bool bExpand)
 			iter1++;
 		}
 
+
+		if (bExpand)
+		{
+			iter->value.value.expandedEdit = true;
+			iter->value.value.editButton->ShowWindow(SW_SHOW);
+			if (!bAlreadyExpand)
+			{
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+			}
+		}
+		else
+		{
+			iter->value.value.expandedEdit = false;
+			iter->value.value.editButton->ShowWindow(SW_HIDE);
+			if (bAlreadyExpand)
+			{
+				scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+				scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+				scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+			}
+		}
 		i++;
 		iter++;
 	}
@@ -186,8 +236,40 @@ void OneViewList::ExpandAll(bool bExpand)
 void OneViewList::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	scroll.OperateScroll(nSBCode, nPos);
 
+	if (scroll.GetLineCount() == 0)
+		return;
+
+	// 스크롤이 맨 위거나 맨 아래일경우는 처리안함 
+	if (nSBCode == SB_LINEUP)
+	{
+		if (scroll.GetScrollCount() > 0)
+		{
+			ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
+			while (iter != m_dataMap.end())
+			{
+				iter->value.value.start_tagButton_pos_Y += 20;
+				iter++;
+			}
+			m_variableItemStart_Y += 20;
+		}
+	}
+	else if (nSBCode == SB_LINEDOWN)
+	{
+		if (scroll.GetScrollCount() < (scroll.GetLineCount() - 1))
+		{
+			ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
+			while (iter != m_dataMap.end())
+			{
+				iter->value.value.start_tagButton_pos_Y -= 20;
+				iter++;
+			}
+			m_variableItemStart_Y -= 20;
+		}
+	}
+
+	scroll.OperateScroll(nSBCode, nPos);
+	
 	//CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
@@ -210,15 +292,19 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 
 		bool bFind = false;
 		bool bFindExpand = false;
+		bool bLineEndClicked = false;
 		while (iter != m_dataMap.end())
 		{
 			if (bFind)
 			{
 				if (bFindExpand)
-					iter->value.value.start_tagButton_pos_Y += (EXPAND_EDIT_HEIGHT - scroll.GetScrollCount() * 20);
+				{
+					iter->value.value.start_tagButton_pos_Y += EXPAND_EDIT_HEIGHT;
+				}
 				else
-					// 스크롤시 동작하게.. 이상함
-					iter->value.value.start_tagButton_pos_Y -= (EXPAND_EDIT_HEIGHT);
+				{
+					iter->value.value.start_tagButton_pos_Y -= EXPAND_EDIT_HEIGHT;
+				}
 
 				iter->value.value.tagButton->SetWindowPos(NULL, 0, iter->value.value.start_tagButton_pos_Y, 0, 0, SWP_NOSIZE);
 				iter->value.value.editButton->SetWindowPos(NULL, 0, iter->value.value.start_tagButton_pos_Y + TAG_BUTTON_HEIGHT, 0, 0, SWP_NOSIZE);
@@ -240,10 +326,57 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 
 				bFind = true;
 			}
-
 			iter++;
 		}
-		
+
+		if (bFind)
+		{
+			if (bFindExpand)
+			{
+				m_variableItemStart_Y += EXPAND_EDIT_HEIGHT;
+			}
+			else
+			{
+				m_variableItemStart_Y -= EXPAND_EDIT_HEIGHT;
+			}
+		}
+
+		// 클릭한 버튼이 맨 마지막에서 3칸이상 경우는 전부 3칸씩 아래로 내린다.
+		if ((scroll.GetLineCount() - 1) == scroll.GetScrollCount() || (scroll.GetLineCount() - 2) == scroll.GetScrollCount() || (scroll.GetLineCount() - 3) == scroll.GetScrollCount())
+		{
+			bLineEndClicked = true;
+		}
+		// 클릭한 버튼이 맨마지막이고 에딧 접기일때만
+		if (bLineEndClicked && !bFindExpand)
+		{
+			OnVScroll(SB_LINEUP, 0, GetScrollBarCtrl(SB_VERT));
+			OnVScroll(SB_LINEUP, 0, GetScrollBarCtrl(SB_VERT));
+			OnVScroll(SB_LINEUP, 0, GetScrollBarCtrl(SB_VERT));
+		}
+
+		if (bFindExpand)
+		{
+			if (m_variableItemStart_Y > 310)
+			{
+				if (scroll.GetLineCount() == 0)
+					scroll.ExecuteScroll(SCROLL_LINE_ADD);
+
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+			}
+
+			if (m_variableItemStart_Y > 330)
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+
+			if (m_variableItemStart_Y > 350)
+				scroll.ExecuteScroll(SCROLL_LINE_ADD);
+		}
+		else
+		{
+			scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+			scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+			scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+		}
+
 		return 1;
 	}
 

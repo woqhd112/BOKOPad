@@ -36,6 +36,7 @@ public:
 	bool SignalUpdateSetTIME(int notSEQ);
 	bool SignalReloadNoteList();
 	bool SignalReloadTimeline();
+	void SignalTimelineOneViewRefresh();
 
 private:
 

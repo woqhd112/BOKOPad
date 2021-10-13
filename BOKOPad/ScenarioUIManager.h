@@ -26,6 +26,8 @@ private:
 	bool IsDraggingMode();
 
 	bool DragProcessLock();
+	bool ThisOneViewRefresh();
+	bool TargetOneViewRefresh();
 
 private:
 

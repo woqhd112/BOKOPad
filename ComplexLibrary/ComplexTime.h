@@ -550,7 +550,7 @@ namespace ComplexLibrary
 
 		}
 
-		static ComplexTimeTable GetCurrentTime()
+		static ComplexTimeTable GetCurrentTimes()
 		{
 			time_t times = time(NULL);
 			tm t;

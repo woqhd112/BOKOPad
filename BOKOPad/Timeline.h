@@ -57,6 +57,7 @@ private:
 	bool TimelineOneViewProcess();
 	int ValidatePointToRectIDX(POINT pt);
 	bool UpdateTimelineIDX(int startUpdateTimeIDX);
+	void OneViewRefresh();
 
 	bool m_bDetailOpen;
 	bool m_bAttachManagerInit;

@@ -6,7 +6,8 @@
 #include "framework.h"
 #include "BOKOPad.h"
 #include "BOKOPadDlg.h"
-#include "BOKOOptionDlg.h"
+#include "FileProcess.h"
+#include "BOKOOptionScenarioExportDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -85,6 +86,11 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_DELETE, &CBOKOPadDlg::OnBnClickedButtonScenarioDelete)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMDblclkListScenarioList)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMClickListScenarioList)
+	ON_COMMAND(ID_SCENARIO_EXPORT, &CBOKOPadDlg::OnScenarioExport)
+	ON_COMMAND(ID_SCENARIO_IMPORT, &CBOKOPadDlg::OnScenarioImport)
+	ON_COMMAND(ID_PROGRAM_CLOSE, &CBOKOPadDlg::OnProgramClose)
+	ON_COMMAND(ID_LOG_VIEW, &CBOKOPadDlg::OnLogView)
+	ON_COMMAND(ID_EXPLANATION_VIEW, &CBOKOPadDlg::OnExplanationView)
 END_MESSAGE_MAP()
 
 
@@ -126,6 +132,8 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	CURSOR_WAIT;
 	// 옵션 로드
 	Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData);
+
+	m_btn_option.ShowWindow(SW_HIDE);
 
 	// 시나리오 리스트 로드
 	if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
@@ -301,8 +309,8 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 void CBOKOPadDlg::OnBnClickedButtonOption()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	BOKOOptionDlg optionDlg;
-	optionDlg.DoModal();
+	//BOKOOptionDlg optionDlg;
+	//optionDlg.DoModal();
 }
 
 
@@ -434,4 +442,131 @@ void CBOKOPadDlg::OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 		m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
 	}
 	*pResult = 0;
+}
+
+
+void CBOKOPadDlg::OnScenarioExport()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	char dir_[2048] = { 0 };
+	::GetModuleFileNameA(NULL, dir_, 2048);
+
+	ComplexString path;
+	path = dir_;
+	path.Remove(DB_MODULE_NANE);
+
+	CFolderPickerDialog fd(path.GetBuffer(), OFN_FILEMUSTEXIST, NULL, 0);
+	if (fd.DoModal() != IDOK)
+		return;
+
+	// 등록할 시나리오선택.. 
+	bool bSelected = false;
+	ComplexString selectScenarioTitle;
+	BOKOOptionScenarioExportDlg exportDlg(BOKOOptionScenarioExportDlg::SCENARIO_EXPORT, &bSelected, &selectScenarioTitle);
+	exportDlg.DoModal();
+
+	if (!bSelected)
+		return;
+
+	ScenarioListVO outputScenario;
+
+	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
+		return;
+
+	CURSOR_WAIT;
+
+	CString strFullPath = fd.GetPathName();
+
+	ComplexVector<NoteInformationVO> loadNoteInformationContainer;
+	if (Scenario_DB_Manager->SelectInSceSEQNoteInformation(outputScenario.GetSceSEQ(), &loadNoteInformationContainer))
+	{
+		ComplexVector<NoteInformationVO>::iterator iter = loadNoteInformationContainer.begin();
+		while (iter != loadNoteInformationContainer.end())
+		{
+			NoteInformationVO noteInform = iter->value;
+
+			ComplexString strWriteAnsiContent, strConvertUTF8Content;
+			strWriteAnsiContent = noteInform.GetNotCONTENT();
+			//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
+			//ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
+			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+
+			iter++;
+		}
+	}
+	else
+	{
+		CURSOR_ARROW;
+		MessageBox("데이터 불러오기에 실패하였습니다.");
+		return;
+	}
+
+	CURSOR_ARROW;
+	MessageBox("파일 내보내기에 성공하였습니다.");
+}
+
+
+void CBOKOPadDlg::OnScenarioImport()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CFileDialog fd(TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT, "All Files(*.*) | *.*||", this);
+	if (fd.DoModal() != IDOK)
+		return;
+
+	// 등록할 시나리오선택.. 
+	bool bSelected = false;
+	ComplexString selectScenarioTitle;
+	BOKOOptionScenarioExportDlg exportDlg(BOKOOptionScenarioExportDlg::SCENARIO_IMPORT, &bSelected, &selectScenarioTitle);
+	exportDlg.DoModal();
+
+	if (!bSelected)
+		return;
+
+	ScenarioListVO outputScenario;
+
+	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
+		return;
+
+	CURSOR_WAIT;
+	POSITION pos = fd.GetStartPosition();
+
+	while (pos != NULL)
+	{
+		ComplexString strPathName = fd.GetNextPathName(pos).GetBuffer();
+		ComplexString strReadUTF8Content, strConvertAnsiContent;
+		ComplexUtilProcess::ImportFile(strReadUTF8Content, strPathName);
+		//ComplexUtilProcess::UTF8ToANSI(strConvertAnsiContent, strReadUTF8Content);
+
+		NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, false, strReadUTF8Content);
+		if (Scenario_DB_Manager->InsertNoteInformation(insertNote) == false)
+		{
+			CURSOR_ARROW;
+			MessageBox("데이터 저장에 실패하였습니다.");
+			return;
+		}
+	}
+
+	CURSOR_ARROW;
+	MessageBox("파일 불러오기에 성공하였습니다.");
+}
+
+
+void CBOKOPadDlg::OnProgramClose()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	Scenario_UI_Manager->SendMessages(PM_SCENARIO_CLEAR);
+	this->PostMessageA(WM_CLOSE);
+}
+
+
+void CBOKOPadDlg::OnLogView()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CBOKOPadDlg::OnExplanationView()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }

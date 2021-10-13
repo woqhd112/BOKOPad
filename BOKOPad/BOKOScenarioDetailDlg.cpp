@@ -251,6 +251,11 @@ bool BOKOScenarioDetailDlg::SignalReloadNoteList()
 	return true;
 }
 
+void BOKOScenarioDetailDlg::SignalTimelineOneViewRefresh()
+{
+	m_timeline.OneViewRefresh();
+}
+
 bool BOKOScenarioDetailDlg::SignalReloadTimeline()
 {
 	return m_timeline.ReloadTimeline();

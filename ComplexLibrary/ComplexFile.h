@@ -65,7 +65,7 @@ namespace ComplexLibrary
 				char arr[4096];
 				read_file.getline(arr, 4096);
 				buf.AppendString(arr);
-				buf.AppendString("\r\n");
+				buf.AppendString("\n");
 			}
 
 			read_file.close();
@@ -91,7 +91,7 @@ namespace ComplexLibrary
 				char arr[4096];
 				read_file.getline(arr, 4096);
 				buf.AppendString(arr);
-				buf.AppendString("\r\n");
+				buf.AppendString("\n");
 			}
 
 			read_file.close();

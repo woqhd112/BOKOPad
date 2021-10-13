@@ -34,6 +34,7 @@ private:
 	OneViewList m_list_one_view;
 
 	bool m_bExpandedProcess;
+	bool m_bPreviewProcess;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

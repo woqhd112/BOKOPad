@@ -16,6 +16,7 @@
 #define IDD_DIALOG_TIMELINE_DETAIL      143
 #define IDD_DIALOG_TIMELINE_ONE_VIEW    147
 #define IDD_DIALOG_ONE_VIEW_LIST        149
+#define IDR_MENU_MAIN                   153
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -40,14 +41,26 @@
 #define IDC_BUTTON_NOTE_DELETE          1030
 #define IDC_BUTTON_ONE_VIEW             1031
 #define IDC_BUTTON_EXPAND_ALL           1032
+#define ID_32771                        32771
+#define ID_32772                        32772
+#define ID_32773                        32773
+#define ID_32774                        32774
+#define ID_32775                        32775
+#define ID_32776                        32776
+#define ID_SCENARIO_EXPORT              32777
+#define ID_SCENARIO_IMPORT              32778
+#define ID_PROGRAM_CLOSE                32779
+#define ID_LOG_VIEW                     32780
+#define ID_32781                        32781
+#define ID_EXPLANATION_VIEW             32782
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1033
+#define _APS_NEXT_RESOURCE_VALUE        154
+#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_CONTROL_VALUE         1034
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

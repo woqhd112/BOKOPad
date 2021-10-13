@@ -26,6 +26,8 @@ public:
 	int GetItemCount() const;
 	void ExpandAll(bool bExpand);
 
+	void GetFullItemText(ComplexString* strText);
+
 private:
 
 	struct OneViewListDataStruct
@@ -47,6 +49,9 @@ private:
 	// value : 리스트 ui컨트롤
 	ComplexMap<int, OneViewListDataStruct> m_dataMap;
 	ScrollProcess scroll;
+	CFont m_buttonFont;
+	CFont m_editFont;
+
 	int m_size;
 
 	int m_variableItemStart_Y;

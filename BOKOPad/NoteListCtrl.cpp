@@ -606,6 +606,10 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 				return false;
 			}
+			
+			Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
+			Scenario_UI_Manager->SendMessages(PM_THIS_SCENARIO_ONE_VIEW_REFRESH);
+
 			m_noteDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
@@ -626,6 +630,9 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 				return false;
 			}
+
+			Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
+			Scenario_UI_Manager->SendMessages(PM_TARGET_SCENARIO_ONE_VIEW_REFRESH);
 
 			m_noteDBManager->CommitTransaction();
 		}

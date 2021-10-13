@@ -72,6 +72,14 @@ bool ScenarioUIManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = DragProcessLock();
 	}
+	else if (message == PM_THIS_SCENARIO_ONE_VIEW_REFRESH)
+	{
+		bHelpSuccess = ThisOneViewRefresh();
+	}
+	else if (message == PM_TARGET_SCENARIO_ONE_VIEW_REFRESH)
+	{
+		bHelpSuccess = TargetOneViewRefresh();
+	}
 
 	return bHelpSuccess;
 }
@@ -137,13 +145,16 @@ bool ScenarioUIManager::Create()
 
 bool ScenarioUIManager::Destroy()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -173,13 +184,16 @@ bool ScenarioUIManager::Destroy()
 
 bool ScenarioUIManager::Show()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -204,13 +218,16 @@ bool ScenarioUIManager::Show()
 
 bool ScenarioUIManager::Hide()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -235,13 +252,16 @@ bool ScenarioUIManager::Hide()
 
 bool ScenarioUIManager::Exist()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -282,13 +302,16 @@ bool ScenarioUIManager::Clear()
 
 bool ScenarioUIManager::NoteReload()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -316,13 +339,16 @@ bool ScenarioUIManager::NoteReload()
 
 bool ScenarioUIManager::IsDraggingMode()
 {
-	if (m_scenarioDlgManager.empty())
-		return false;
-
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
 
 	if (scenarioDataStruct == nullptr)
 		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
 
 	if (scenarioDataStruct->scenarioIndex < 0)
 	{
@@ -344,4 +370,89 @@ bool ScenarioUIManager::IsDraggingMode()
 bool ScenarioUIManager::DragProcessLock()
 {
 	return m_bIsDragging;
+}
+
+bool ScenarioUIManager::ThisOneViewRefresh()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (dragDataStruct->sceIndex < 0)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 현재 시나리오의 타임라인 한눈에보기 갱신
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(dragDataStruct->sceIndex);
+	if (iter == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	iter->value.value->SignalTimelineOneViewRefresh();
+
+	ReleaseDragStruct();
+	return true;
+}
+
+bool ScenarioUIManager::TargetOneViewRefresh()
+{
+	DragDataStruct* dragDataStruct = BringDragStruct();
+
+	if (dragDataStruct == nullptr)
+		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (dragDataStruct->target_sceSEQ == -1)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	// 타겟 시나리오가 존재하면.. (드래그 업으로 target_sceSEQ 값을 부여받은놈이면)
+	// 해당 시나리오 타임라인 한눈에보기 갱신
+	ComplexMap<int, int>::iterator iter1 = m_scenarioSeqMap.begin();
+	bool bFind = false;
+	while (iter1 != m_scenarioSeqMap.end())
+	{
+		if (iter1->value.value == dragDataStruct->target_sceSEQ)
+		{
+			bFind = true;
+			break;
+		}
+		iter1++;
+	}
+
+	if (!bFind)
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter3 = m_scenarioDlgManager.find(iter1->value.key);
+	if (iter3 == m_scenarioDlgManager.end())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	iter3->value.value->SignalTimelineOneViewRefresh();
+
+	ReleaseDragStruct();
+	return true;
 }

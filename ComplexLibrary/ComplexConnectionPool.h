@@ -79,7 +79,7 @@ namespace ComplexLibrary
 			this->Join();
 		}
 
-		bool InitializeDBFile(ComplexString filePath, ComplexString* error = nullptr)
+		bool InitializeDBFile(ComplexString filePath)
 		{
 			ComplexVector<ComplexPoolData<ComplexDatabase>*>* poolDataFactory = GetPoolDataFactory();
 
@@ -88,10 +88,7 @@ namespace ComplexLibrary
 			{
 				ComplexPoolData<ComplexDatabase>* data = poolDataFactory->at(i);
 				ComplexDatabase* dbInstance = data->GetInstance();
-				if (error == nullptr)
-					bSuccess = dbInstance->ConnectDatabase(filePath);
-				else
-					bSuccess = dbInstance->ConnectDatabase(filePath, error);
+				bSuccess = dbInstance->ConnectDatabase(filePath);
 				if (!bSuccess)
 					return false;
 			}

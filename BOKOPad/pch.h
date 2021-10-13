@@ -21,5 +21,8 @@
 #include <afxcontrolbars.h>
 #include <afxcontrolbars.h>
 #include <afxcontrolbars.h>
+#include <afxcontrolbars.h>
+
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 #endif //PCH_H

@@ -17,6 +17,7 @@ IMPLEMENT_DYNAMIC(BOKOTimelineOneViewDlg, CDialogEx)
 BOKOTimelineOneViewDlg::BOKOTimelineOneViewDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE_ONE_VIEW, pParent)
 	, m_bExpandedProcess(false)
+	, m_bPreviewProcess(false)
 {
 
 }
@@ -111,6 +112,7 @@ BOOL BOKOTimelineOneViewDlg::OnInitDialog()
 	CRect rect;
 	GetClientRect(rect);
 
+	m_edit_one_view.MoveWindow(rect.left + 20, 20, rect.right - 40, 310);
 	m_list_one_view.MoveWindow(rect.left + 20, 20, rect.right - 40, 310);
 	m_list_one_view.ShowWindow(SW_SHOW);
 
@@ -124,11 +126,13 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonExpandAll()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	if (!m_bExpandedProcess)
 	{
+		m_list_one_view.SetWindowTextA("모두 접기");
 		m_list_one_view.ExpandAll(true);
 		m_bExpandedProcess = true;
 	}
 	else
 	{
+		m_list_one_view.SetWindowTextA("모두 펼치기");
 		m_list_one_view.ExpandAll(false);
 		m_bExpandedProcess = false;
 	}
@@ -138,4 +142,26 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonExpandAll()
 void BOKOTimelineOneViewDlg::OnBnClickedButtonOneView()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	if (m_bPreviewProcess)
+	{
+		m_edit_one_view.SetWindowTextA("");
+		m_edit_one_view.ShowWindow(SW_HIDE);
+		m_list_one_view.ShowWindow(SW_SHOW);
+		m_bPreviewProcess = false;
+
+		m_btn_preview.SetWindowTextA("미리보기");
+	}
+	else
+	{
+		ComplexString strFullText;
+		m_list_one_view.GetFullItemText(&strFullText);
+
+		m_edit_one_view.SetWindowTextA(strFullText.GetBuffer());
+		m_edit_one_view.ShowWindow(SW_SHOW);
+		m_list_one_view.ShowWindow(SW_HIDE);
+		m_bPreviewProcess = true;
+
+		m_btn_preview.SetWindowTextA("목록보기");
+	}
 }
