@@ -38,6 +38,7 @@ private:
 	void LoadLog();
 	void AnalyzeLogData();
 	void InsertCountList(int index, ComplexString type, ComplexString text);
+	void InsertViewList(int index, ComplexString type, ComplexString time, ComplexString content);
 
 public:
 

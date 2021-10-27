@@ -45,4 +45,5 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonExpandAll();
 	afx_msg void OnBnClickedButtonOneView();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

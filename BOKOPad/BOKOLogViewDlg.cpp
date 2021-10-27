@@ -73,8 +73,8 @@ void BOKOLogViewDlg::Initialize()
 
 	m_list_log_view.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	m_list_log_view.InsertColumn(0, "", LVCFMT_LEFT, 0);
-	m_list_log_view.InsertColumn(1, "종류", LVCFMT_CENTER, 70);
-	m_list_log_view.InsertColumn(2, "시간", LVCFMT_CENTER, 100);
+	m_list_log_view.InsertColumn(1, "종류", LVCFMT_CENTER, 55);
+	m_list_log_view.InsertColumn(2, "시간", LVCFMT_CENTER, 60);
 	m_list_log_view.InsertColumn(3, "내용", LVCFMT_LEFT, 270);
 
 	m_combo_log_divide.InsertString(0, "All");
@@ -104,10 +104,36 @@ void BOKOLogViewDlg::InsertCountList(int index, ComplexString type, ComplexStrin
 	m_list_log_count.SetItem(&item2);
 }
 
+void BOKOLogViewDlg::InsertViewList(int index, ComplexString type, ComplexString time, ComplexString content)
+{
+	m_list_log_view.InsertItem(index, "");
+
+	LVITEM item1;
+	item1.mask = LVIF_TEXT;
+	item1.iItem = index;
+	item1.iSubItem = 1;
+	item1.pszText = (LPSTR)type.GetBuffer();
+	m_list_log_view.SetItem(&item1);
+
+	LVITEM item2;
+	item2.mask = LVIF_TEXT;
+	item2.iItem = index;
+	item2.iSubItem = 2;
+	item2.pszText = (LPSTR)time.GetBuffer();
+	m_list_log_view.SetItem(&item2);
+
+	LVITEM item3;
+	item3.mask = LVIF_TEXT;
+	item3.iItem = index;
+	item3.iSubItem = 3;
+	item3.pszText = (LPSTR)content.GetBuffer();
+	m_list_log_view.SetItem(&item3);
+}
+
 void BOKOLogViewDlg::OnCbnSelchangeComboLogDivide()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	TRACE("!\n");
+	//TRACE("!\n");
 }
 
 
@@ -121,7 +147,6 @@ void BOKOLogViewDlg::LoadLog()
 {
 	Log_Manager->OnLoadLogData();
 	m_logMap = Log_Manager->GetLogData();
-	AnalyzeLogData();
 }
 
 void BOKOLogViewDlg::AnalyzeLogData()
@@ -142,10 +167,35 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	if (strStartTime == m_startDate && strEndTime == m_endDate && selectCombo == m_selectComboIndex)
 		return;
 
+	// 시작 날짜가 끝 날짜보다 높을떄는 리턴한다.
+	if (startTime > endTime)
+		return;
+
+	ComplexMap<ComplexString, ComplexVector<ComplexString>>::iterator iter;
+	iter = m_logMap->find(strStartTime.GetBuffer());
+
+	ComplexTimeTable timeTable;
+	timeTable.year = startTime.GetYear();
+	timeTable.month = startTime.GetMonth();
+	timeTable.day = startTime.GetDay();
+
+	// start 타임값을 찾는다.
+	// end 까지 날짜를 세고 없으면 리턴한다.
+	do
+	{
+		strStartTime.Format("%04d_%02d_%02d", timeTable.year, timeTable.month, timeTable.day);
+		iter = m_logMap->find(strStartTime.GetBuffer());
+
+		if (strStartTime == strEndTime)
+			break;
+
+		timeTable += 86400;	// 하루 (초)
+	}
+	while (iter == m_logMap->end());
+
 	m_list_log_view.SetRedraw(FALSE);
 	m_list_log_view.DeleteAllItems();
 
-	ComplexMap<ComplexString, ComplexVector<ComplexString>>::iterator iter = m_logMap->find(strStartTime.GetBuffer());
 
 	int eventCount = 0;
 	int processCount = 0;
@@ -156,27 +206,32 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	int startLogIndex = 0;
 	int endLogIndex = 0;
 	ComplexString strTime, strLog;
+
+	int insertLogViewIndex = 0;
 	while (iter != m_logMap->end())
 	{
 		ComplexVector<ComplexString>::iterator iter1 = iter->value.value.begin();
 		for (int i = 0; i < iter->value.value.size(); i++)
 		{
 			ComplexString logElement = iter->value.value.at(i);
-
+			const char* type;
 			if (logElement.Find("Event") != -1)
 			{
 				eventCount++;
 				startTimeIndex = 8;
+				type = "Event";
 			}
 			else if (logElement.Find("Process") != -1)
 			{
 				processCount++;
 				startTimeIndex = 10;
+				type = "Process";
 			}
 			else if (logElement.Find("Operate") != -1)
 			{
 				operateCount++;
 				startTimeIndex = 10;
+				type = "Operate";
 			}
 			else
 				return;
@@ -188,7 +243,39 @@ void BOKOLogViewDlg::AnalyzeLogData()
 			strTime = logElement.GetText(startTimeIndex, endTimeIndex);
 			strLog = logElement.GetText(startLogIndex, endLogIndex);
 
-			// 리스트(카운트, 뷰) 등록 (콤보박스 구분)
+			if (selectCombo == 0)	
+			{
+				// All
+				InsertViewList(insertLogViewIndex, type, strTime, strLog);
+				insertLogViewIndex++;
+			}
+			else if (selectCombo == 1)
+			{
+				// Event
+				if (type == "Event")
+				{
+					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					insertLogViewIndex++;
+				}
+			}
+			else if (selectCombo == 2)
+			{
+				// Process
+				if (type == "Process")
+				{
+					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					insertLogViewIndex++;
+				}
+			}
+			else if (selectCombo == 3)
+			{
+				// Operate
+				if (type == "Operate")
+				{
+					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					insertLogViewIndex++;
+				}
+			}
 		}
 
 		if (iter->value.key == strEndTime.GetBuffer())
@@ -197,6 +284,33 @@ void BOKOLogViewDlg::AnalyzeLogData()
 		}
 		iter++;
 	}
+
+	if (selectCombo == 1)
+	{
+		// Event
+		processCount = 0;
+		operateCount = 0;
+	}
+	else if (selectCombo == 2)
+	{
+		// Process
+		eventCount = 0;
+		operateCount = 0;
+	}
+	else if (selectCombo == 3)
+	{
+		// Operate
+		eventCount = 0;
+		processCount = 0;
+	}
+
+	ComplexString strEventCount, strProcessCount, strOperateCount;
+	strEventCount.Format("%d", eventCount);
+	strProcessCount.Format("%d", processCount);
+	strOperateCount.Format("%d", operateCount);
+	m_list_log_count.SetItemText(0, 2, strEventCount.GetBuffer());
+	m_list_log_count.SetItemText(1, 2, strProcessCount.GetBuffer());
+	m_list_log_count.SetItemText(2, 2, strOperateCount.GetBuffer());
 
 	m_startDate = strStartTime;
 	m_endDate = strEndTime;

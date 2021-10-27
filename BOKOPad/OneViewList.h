@@ -1,12 +1,18 @@
 ﻿#pragma once
 #include "ScrollProcess.h"
+#include "NoteListInterface.h"
 
 // OneViewList 대화 상자
 class TimelineUIManager;
 class TimelineDBManager;
 
-class OneViewList : public CDialogEx
+#define BASE_BK_COLOR RGB(240, 240, 240)
+#define DRAG_BK_COLOR RGB(227, 214, 231)
+
+class OneViewList : public CDialogEx, public NoteListInterface
 {
+	// ctrl 버튼 이벤트 참조
+	friend class BOKOTimelineOneViewDlg;
 	DECLARE_DYNAMIC(OneViewList)
 
 public:
@@ -27,6 +33,13 @@ public:
 	void ExpandAll(bool bExpand);
 
 	void GetFullItemText(ComplexString* strText);
+
+
+protected:
+
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 private:
 
@@ -56,6 +69,8 @@ private:
 
 	int m_variableItemStart_Y;
 
+	bool m_bClickEvent;
+
 	const int TAG_BUTTON_HEIGHT = 20;
 	const int EXPAND_EDIT_HEIGHT = 60;
 
@@ -68,4 +83,5 @@ public:
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

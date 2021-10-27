@@ -394,7 +394,15 @@ namespace ComplexLibrary
 			unsigned long long tmp = value;
 			int count = 0;
 			char* newBuf = new char[4096];
-			while (tmp)
+			/*while (tmp)
+			{
+				int remainder = tmp % 10;
+				newBuf[count] = remainder + 48;
+
+				tmp /= 10;
+				count++;
+			}*/
+			do
 			{
 				int remainder = tmp % 10;
 				newBuf[count] = remainder + 48;
@@ -402,6 +410,7 @@ namespace ComplexLibrary
 				tmp /= 10;
 				count++;
 			}
+			while (tmp);
 
 			if (count < total_size)
 			{

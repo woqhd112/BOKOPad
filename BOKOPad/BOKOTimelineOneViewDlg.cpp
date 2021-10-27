@@ -102,7 +102,7 @@ BOOL BOKOTimelineOneViewDlg::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
-
+	this->SetBackgroundColor(BASE_BK_COLOR);
 	m_editFont.CreatePointFont(150, TEXT("굴림"));
 
 	m_edit_one_view.SetFont(&m_editFont);
@@ -171,4 +171,28 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonOneView()
 
 		m_btn_preview.SetWindowTextA("목록보기");
 	}
+}
+
+
+BOOL BOKOTimelineOneViewDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (WM_KEYDOWN == pMsg->message)
+	{
+		if (pMsg->wParam == VK_CONTROL)
+		{
+			if (m_list_one_view.m_bClickEvent)
+			{
+				this->SetBackgroundColor(DRAG_BK_COLOR);
+				m_list_one_view.m_bClickEvent = false;
+			}
+			else
+			{
+				this->SetBackgroundColor(BASE_BK_COLOR);
+				m_list_one_view.m_bClickEvent = true;
+			}
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

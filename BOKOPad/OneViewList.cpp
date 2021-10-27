@@ -6,6 +6,7 @@
 #include "OneViewList.h"
 #include "TimelineUIManager.h"
 #include "TimelineDBManager.h"
+#include "BOKOTimelineOneViewDlg.h"
 #include "afxdialogex.h"
 
 static unsigned int g_oneViewID = 30000;
@@ -17,6 +18,7 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ONE_VIEW_LIST, pParent)
 	, m_size(0)
 	, m_variableItemStart_Y(0)
+	, m_bClickEvent(true)
 {
 	Log_Manager->OnPutLog("OneViewList 생성자 호출", LogType::LT_PROCESS);
 }
@@ -289,6 +291,9 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
+		if (m_bClickEvent == false)
+			return 0;
+
 		ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
 
 		bool bFind = false;
@@ -382,4 +387,75 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 
 	return CDialogEx::OnCommand(wParam, lParam);
+}
+
+
+BOOL OneViewList::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (WM_KEYDOWN == pMsg->message)
+	{
+		if (pMsg->wParam == VK_CONTROL)
+		{
+			BOKOTimelineOneViewDlg* parent = (BOKOTimelineOneViewDlg*)GetParent();
+			if (m_bClickEvent)
+			{
+				parent->SetBackgroundColor(DRAG_BK_COLOR);
+				m_bClickEvent = false;
+			}
+			else
+			{
+				parent->SetBackgroundColor(BASE_BK_COLOR);
+				m_bClickEvent = true;
+			}
+		}
+	}
+	else if (pMsg->message == WM_LBUTTONDOWN)
+	{
+		if (!m_bClickEvent)
+		{
+			if (DragDown(pMsg))
+				return TRUE;
+		}
+	}
+	else if (pMsg->message == WM_LBUTTONUP)
+	{
+		if (!m_bClickEvent)
+		{
+			if (DragUp(pMsg))
+				return TRUE;
+		}
+	}
+	else if (pMsg->message == WM_MOUSEMOVE)
+	{
+		if (!m_bClickEvent)
+		{
+			if (DragMove(pMsg))
+				return FALSE;
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+bool OneViewList::DragDown(MSG* pMsg)
+{
+	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
+	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
+	{
+		CButton* downButton = (CButton*)FromHandle(pMsg->hwnd);
+	}
+}
+
+bool OneViewList::DragMove(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
+}
+
+bool OneViewList::DragUp(MSG* pMsg)
+{
+	if (!m_bDragProcessing)
+		return false;
 }
