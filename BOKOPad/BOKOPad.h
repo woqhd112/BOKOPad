@@ -12,15 +12,15 @@
 #ifdef _DEBUG
 //#pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
 #pragma comment(lib, "ComplexLibrary_dbg.lib")
-#pragma comment(lib, "ComplexUtilProcess_dbg.lib")
+//#pragma comment(lib, "ComplexUtilProcess_dbg.lib")
 #else
 //#pragma comment(lib, "ComplexMVC2_Model.lib")
 #pragma comment(lib, "ComplexLibrary.lib")
-#pragma comment(lib, "ComplexUtilProcess.lib")
+//#pragma comment(lib, "ComplexUtilProcess.lib")
 #endif
 #include "ScenarioDBManager.h"
 #include "ScenarioUIManager.h"
-#include "LogProcess.h"
+#include "LogManager.h"
 
 // CBOKOPadApp:
 // 이 클래스의 구현에 대해서는 BOKOPad.cpp을(를) 참조하세요.
@@ -28,6 +28,7 @@
 
 static ScenarioDBManager* Scenario_DB_Manager = ComplexSingleton<ScenarioDBManager>::GetInstancePtr();
 static ScenarioUIManager* Scenario_UI_Manager = ComplexSingleton<ScenarioUIManager>::GetInstancePtr();
+static LogManager* Log_Manager = ComplexSingleton<LogManager>::GetInstancePtr();
 
 class CBOKOPadApp : public CWinApp
 {

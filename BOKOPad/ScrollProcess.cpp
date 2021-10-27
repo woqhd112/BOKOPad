@@ -10,6 +10,7 @@ ScrollProcess::ScrollProcess()
 	m_nScrollProcessCount = 0;
 	//m_nOnePageSize = 0;
 	m_bInit = false;
+	m_prePos = 0;
 }
 
 ScrollProcess::~ScrollProcess()
@@ -91,26 +92,29 @@ bool ScrollProcess::OperateScroll(int nSBCode, int nPos)
 		return false;
 
 	int delta = 0;
-	switch (nSBCode)
+	if (nSBCode == SB_LINEUP || nSBCode == SB_PAGEUP)
 	{
-	case SB_LINEUP:
 		delta = -m_nWheelSize;
-		break;
-	case SB_PAGEUP:
-		delta = -m_nWheelSize;
-		break;
-	/*case SB_THUMBTRACK:
-		delta = static_cast<int>(nPos) - m_nScrollPos;
-		break;*/
-	case SB_PAGEDOWN:
-		delta = m_nWheelSize;
-		break;
-	case SB_LINEDOWN:
-		delta = m_nWheelSize;
-		break;
-	default:
-		return false;
 	}
+	else if (nSBCode == SB_LINEDOWN || nSBCode == SB_PAGEDOWN)
+	{
+		delta = m_nWheelSize;
+	}
+	else if (nSBCode == SB_THUMBTRACK)
+	{
+		if (m_prePos < nPos && nPos % m_nWheelSize == 0)
+		{
+			delta = m_nWheelSize;
+			nSBCode = SB_PAGEDOWN;
+		}
+		else if (m_prePos > nPos && nPos % m_nWheelSize == 0)
+		{
+			delta = -m_nWheelSize;
+			nSBCode = SB_PAGEUP;
+		}
+	}
+
+	m_prePos = nPos;
 
 	if (m_nScrollProcessCount < 0)
 		m_nScrollProcessCount = 0;

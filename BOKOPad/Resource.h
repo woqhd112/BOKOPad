@@ -17,6 +17,7 @@
 #define IDD_DIALOG_TIMELINE_ONE_VIEW    147
 #define IDD_DIALOG_ONE_VIEW_LIST        149
 #define IDR_MENU_MAIN                   153
+#define IDD_DIALOG_LOG_VIEW             154
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -41,6 +42,12 @@
 #define IDC_BUTTON_NOTE_DELETE          1030
 #define IDC_BUTTON_ONE_VIEW             1031
 #define IDC_BUTTON_EXPAND_ALL           1032
+#define IDC_LIST_LOG_VIEW               1034
+#define IDC_COMBO_LOG_DIVIDE            1035
+#define IDC_LIST_LOG_COUNT              1036
+#define IDC_DATETIMEPICKER_CURRENT_DATE 1037
+#define IDC_DATETIMEPICKER_LAST_DATE    1038
+#define IDC_BUTTON_EXECUTE_LOG          1039
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -58,9 +65,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        154
+#define _APS_NEXT_RESOURCE_VALUE        156
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1034
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

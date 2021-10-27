@@ -13,6 +13,12 @@
 #define COMPLEXUTILPROCESS_DLL _declspec(dllimport)
 #endif
 
+#ifdef _DEBUG 
+#define DB_MODULE_NANE "BOKOPad_dbg.exe"
+#else
+#define DB_MODULE_NANE "BOKOPad.exe"
+#endif
+
 using namespace ComplexLibrary;
 
 class LogProcess : public ComplexThread
@@ -23,6 +29,7 @@ public:
 	~LogProcess();
 
 	void Init();
+	void Terminate();
 	bool EventLog(ComplexString eventText);
 	bool OperateLog(ComplexString operateText);
 	bool ProcessLog(ComplexString processText);
@@ -60,7 +67,8 @@ extern "C"
 
 	namespace ComplexUtilProcess
 	{
-		COMPLEXUTILPROCESS_DLL void INIT_LOG();
+		COMPLEXUTILPROCESS_DLL void INITIALIZE_LOG();
+		COMPLEXUTILPROCESS_DLL void TERMINATE_LOG();
 		COMPLEXUTILPROCESS_DLL bool LOG_E(ComplexString log);
 		COMPLEXUTILPROCESS_DLL bool LOG_O(ComplexString log);
 		COMPLEXUTILPROCESS_DLL bool LOG_P(ComplexString log);

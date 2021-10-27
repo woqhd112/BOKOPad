@@ -9,6 +9,8 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 // CBOKOPadApp
@@ -42,6 +44,12 @@ CBOKOPadApp::~CBOKOPadApp()
 		Scenario_UI_Manager->DetachManager();
 		delete Scenario_UI_Manager;
 		Scenario_UI_Manager = nullptr;
+	}
+
+	if (Log_Manager)
+	{
+		delete Log_Manager;
+		Log_Manager = nullptr;
 	}
 }
 // 유일한 CBOKOPadApp 개체입니다.
@@ -84,8 +92,9 @@ BOOL CBOKOPadApp::InitInstance()
 	// 적절한 내용으로 수정해야 합니다.
 	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
 
-	// 로그 이닛
-	ComplexUtilProcess::INIT_LOG();
+	Log_Manager->OnPutLog("BOKOPad.exe 시작", LogType::LT_OPERATE);
+	Log_Manager->OnPutLog("시나리오 UI 매니저 생성 완료", LogType::LT_PROCESS);
+	Log_Manager->OnPutLog("시나리오 DB 매니저 생성 완료", LogType::LT_PROCESS);
 
 	CBOKOPadDlg dlg;
 	m_pMainWnd = &dlg;

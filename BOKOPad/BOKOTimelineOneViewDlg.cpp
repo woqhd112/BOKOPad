@@ -19,11 +19,12 @@ BOKOTimelineOneViewDlg::BOKOTimelineOneViewDlg(CWnd* pParent /*=nullptr*/)
 	, m_bExpandedProcess(false)
 	, m_bPreviewProcess(false)
 {
-
+	Log_Manager->OnPutLog("BOKOTimelineOneViewDlg 생성자 호출", LogType::LT_PROCESS);
 }
 
 BOKOTimelineOneViewDlg::~BOKOTimelineOneViewDlg()
 {
+	Log_Manager->OnPutLog("BOKOTimelineOneViewDlg 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void BOKOTimelineOneViewDlg::DoDataExchange(CDataExchange* pDX)
@@ -70,6 +71,7 @@ void BOKOTimelineOneViewDlg::SetTimelineText(ComplexString& strText)
 void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Log_Manager->OnPutLog("타임라인 내보내기 버튼 클릭", LogType::LT_EVENT);
 	char dir_[2048] = { 0 };
 	::GetModuleFileNameA(NULL, dir_, 2048);
 
@@ -83,14 +85,14 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 
 	CString strFullPath = fd.GetPathName();
 
-	CString strText;
-	m_edit_one_view.GetWindowTextA(strText);
 	ComplexString strWriteAnsiContent, strConvertUTF8Content;
-	strWriteAnsiContent = strText.GetBuffer();
+	m_list_one_view.GetFullItemText(&strWriteAnsiContent);
 
 	// 이거 pc별로 포맷팅이 다른데 구분하는법있나.. BOKOOptionDlg도 처리해야함..
 	//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
 	ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+	Log_Manager->OnPutLog("타임라인 내보내기 성공", LogType::LT_PROCESS);
+	MessageBox("타임라인 내보내기에 성공하였습니다.");
 }
 
 
@@ -108,6 +110,7 @@ BOOL BOKOTimelineOneViewDlg::OnInitDialog()
 	m_edit_one_view.ShowWindow(SW_HIDE);
 
 	m_list_one_view.Create(OneViewList::IDD, this);
+	Log_Manager->OnPutLog("한눈에 보기 리스트 화면 생성 완료", LogType::LT_OPERATE);
 
 	CRect rect;
 	GetClientRect(rect);
@@ -126,13 +129,15 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonExpandAll()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	if (!m_bExpandedProcess)
 	{
-		m_list_one_view.SetWindowTextA("모두 접기");
+		Log_Manager->OnPutLog("모두 펼치기 버튼 클릭", LogType::LT_EVENT);
+		m_btn_expand_all.SetWindowTextA("모두 접기");
 		m_list_one_view.ExpandAll(true);
 		m_bExpandedProcess = true;
 	}
 	else
 	{
-		m_list_one_view.SetWindowTextA("모두 펼치기");
+		Log_Manager->OnPutLog("모두 접기 버튼 클릭", LogType::LT_EVENT);
+		m_btn_expand_all.SetWindowTextA("모두 펼치기");
 		m_list_one_view.ExpandAll(false);
 		m_bExpandedProcess = false;
 	}
@@ -145,6 +150,7 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonOneView()
 
 	if (m_bPreviewProcess)
 	{
+		Log_Manager->OnPutLog("목록보기 버튼 클릭", LogType::LT_EVENT);
 		m_edit_one_view.SetWindowTextA("");
 		m_edit_one_view.ShowWindow(SW_HIDE);
 		m_list_one_view.ShowWindow(SW_SHOW);
@@ -154,6 +160,7 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonOneView()
 	}
 	else
 	{
+		Log_Manager->OnPutLog("미리보기 버튼 클릭", LogType::LT_EVENT);
 		ComplexString strFullText;
 		m_list_one_view.GetFullItemText(&strFullText);
 

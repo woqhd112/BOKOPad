@@ -103,7 +103,7 @@ namespace ComplexLibrary
 			if (find_cnt <= 0)
 				return false;
 
-			if (loopSplit(strings, buf, div, 0, include_token) == false)
+			if (loopSplit(buf, strings.GetLength(), div, 0, include_token) == false)
 			{
 				if (m_tokens.empty())
 					return false;
@@ -111,37 +111,38 @@ namespace ComplexLibrary
 			return true;
 		}
 
-		bool loopSplit(ComplexString bufs, const char* buf, char div, int matrix_cnt, bool include_token)
+		bool loopSplit(const char* buf, int bufSize, char div, int matrix_cnt, bool include_token)
 		{
 			ComplexString preFindString, sufFindString;
-			char* tmp1 = new char[bufs.GetLength() + 1];
-			char* tmp2 = new char[bufs.GetLength() + 1];
+			char* tmp1 = new char[bufSize + 1];
+			//char* tmp2 = new char[bufs.GetLength() + 1];
 			bool bFind = false;
 
 			int buf_idx = 0;
 			int pre_len = 0;
-			int suf_len = 0;
-			bool oneFind = true;
+			//int suf_len = 0;
+			//bool oneFind = true;
 
 			for (int i = 0; i < static_cast<int>(strlen(buf)); i++)
 			{
 				if (buf[i] == div)
 				{
 					bFind = true;
-					if (oneFind)
+					/*if (oneFind)
 					{
 						buf_idx = 0;
 						continue;
-					}
+					}*/
 
 				}
 
 				if (bFind)
 				{
-					tmp2[buf_idx] = buf[i];
-					buf_idx++;
-					suf_len++;
-					oneFind = false;
+					break;
+					//tmp2[buf_idx] = buf[i];
+					//buf_idx++;
+					//suf_len++;
+					//oneFind = false;
 				}
 				else
 				{
@@ -152,12 +153,13 @@ namespace ComplexLibrary
 			}
 
 			tmp1[pre_len] = '\0';
-			tmp2[suf_len] = '\0';
-
+			//tmp2[suf_len] = '\0';
 			preFindString = tmp1;
-			sufFindString = tmp2;
+			//sufFindString = tmp2;
+			sufFindString = buf;
+			sufFindString.Remove(preFindString + ",");
 			delete[] tmp1;
-			delete[] tmp2;
+			//delete[] tmp2;
 
 
 			m_tokens.push_tail(preFindString);
@@ -170,7 +172,7 @@ namespace ComplexLibrary
 			if (sufFindString.GetLength() + 1 <= 1)
 				return false;
 
-			return loopSplit(bufs, sufFindString.GetBuffer(), div, matrix_cnt + 1, include_token);
+			return loopSplit(sufFindString.GetBuffer(), bufSize, div, matrix_cnt + 1, include_token);
 		}
 
 		TokenIterator m_iterator;

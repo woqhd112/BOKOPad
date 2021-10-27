@@ -14,11 +14,12 @@ IMPLEMENT_DYNAMIC(TimelineDetail, CDialogEx)
 TimelineDetail::TimelineDetail(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE_DETAIL, pParent)
 {
-
+	Log_Manager->OnPutLog("TimelineDetail 생성자 호출", LogType::LT_PROCESS);
 }
 
 TimelineDetail::~TimelineDetail()
 {
+	Log_Manager->OnPutLog("TimelineDetail 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void TimelineDetail::DoDataExchange(CDataExchange* pDX)
@@ -54,4 +55,5 @@ void TimelineDetail::SetText(ComplexString thisText, ComplexString targetText)
 {
 	m_edit_detail_this.SetWindowTextA(thisText.GetBuffer());
 	m_edit_detail_target.SetWindowTextA(targetText.GetBuffer());
+	Log_Manager->OnPutLog("타임라인 상세화면 출력 완료", LogType::LT_EVENT);
 }

@@ -5,13 +5,10 @@
 #include "ScenarioListVO.h"
 #include "NoteInformationVO.h"
 #include "TimelineVO.h"
-#include <memory>
 
 #ifdef _DEBUG
-#pragma comment(lib, "ComplexLibrary_dbg.lib")
 #pragma comment(lib, "ComplexMVC2_Model_dbg.lib")
 #else
-#pragma comment(lib, "ComplexLibrary.lib")
 #pragma comment(lib, "ComplexMVC2_Model.lib")
 #endif
 

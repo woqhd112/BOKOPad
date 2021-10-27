@@ -44,6 +44,12 @@
     <Filter Include="UI\Scenario\OneView">
       <UniqueIdentifier>{d4af6135-4438-4046-86eb-24564c986f55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\LOGManager">
+      <UniqueIdentifier>{bf802dc0-6bc2-4173-8274-aa855ead86d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Log">
+      <UniqueIdentifier>{b60f0481-0659-49fc-90ba-93748a6b3f1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -124,6 +130,12 @@
     <ClInclude Include="OneViewList.h">
       <Filter>UI\Scenario\OneView</Filter>
     </ClInclude>
+    <ClInclude Include="LogManager.h">
+      <Filter>Manager\LOGManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOLogViewDlg.h">
+      <Filter>UI\Log</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -188,6 +200,12 @@
     </ClCompile>
     <ClCompile Include="OneViewList.cpp">
       <Filter>UI\Scenario\OneView</Filter>
+    </ClCompile>
+    <ClCompile Include="LogManager.cpp">
+      <Filter>Manager\LOGManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOLogViewDlg.cpp">
+      <Filter>UI\Log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

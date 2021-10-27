@@ -252,6 +252,7 @@ namespace ComplexLibrary
 
 			m_buf[m_size - 1] = '\0';
 
+			delete[] before_buf;
 
 			__crt_va_end(args);
 		}

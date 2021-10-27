@@ -40,5 +40,6 @@ private:
 	int m_nAllPageSize;	// 현재 보이는 화면
 	int m_nScrollPos;
 	int m_nWheelSize;	// 스크롤 이동 휠 단위 (LINE_DOWN, LINE_UP)
+	int m_prePos;
 
 };

@@ -28,6 +28,9 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	m_nPointingTimeIDX = -1;
 	m_bDetailOpen = false;
 	m_timelineThickApprochState = TTA_NOTHING;
+	Log_Manager->OnPutLog("타임라인 UI 매니저 생성 완료", LogType::LT_PROCESS);
+	Log_Manager->OnPutLog("타임라인 DB 매니저 생성 완료", LogType::LT_PROCESS);
+	Log_Manager->OnPutLog("Timeline 생성자 호출", LogType::LT_PROCESS);
 }
 
 Timeline::~Timeline()
@@ -45,9 +48,11 @@ Timeline::~Timeline()
 	}
 
 	m_oneViewDlg.DestroyWindow();
+	m_detailDlg.DestroyWindow();
 	m_linePen.DeleteObject();
 	m_drawPen.DeleteObject();
 	m_drawHoverPen.DeleteObject();
+	Log_Manager->OnPutLog("Timeline 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void Timeline::DoDataExchange(CDataExchange* pDX)
@@ -69,6 +74,7 @@ BOOL Timeline::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	m_timeUIManager->AttachManager(this);
+	Log_Manager->OnPutLog("Timeline UI 매니저 연결", LogType::LT_PROCESS);
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	m_linePen.CreatePen(PS_SOLID, 3, LINE_COLOR);
@@ -76,12 +82,15 @@ BOOL Timeline::OnInitDialog()
 	m_drawPen.CreatePen(PS_SOLID, 1, LINE_COLOR);
 
 	m_detailDlg.Create(TimelineDetail::IDD, this);
+	Log_Manager->OnPutLog("노트 상세정보 화면 생성 완료", LogType::LT_OPERATE);
 	m_oneViewDlg.Create(BOKOTimelineOneViewDlg::IDD, this);
+	Log_Manager->OnPutLog("한눈에 보기 화면 생성 완료", LogType::LT_OPERATE);
 	m_detailDlg.MoveWindow(0, 0, 400, 200);
 	m_detailDlg.ShowWindow(SW_HIDE);
 	m_oneViewDlg.ShowWindow(SW_HIDE);
 
 	m_oneViewDlg.AttachManager(m_timeUIManager, m_timeDBManager);
+	Log_Manager->OnPutLog("한눈에보기 매니저 연결", LogType::LT_PROCESS);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -106,6 +115,8 @@ bool Timeline::ReloadTimeline()
 	m_timeLineContainer.clear();
 	if (m_timeDBManager->SelectInSceSEQTimeline(m_thisDataStruct.scenarioData.GetSceSEQ(), &m_timeLineContainer) == false)
 		return false;
+
+	Log_Manager->OnPutLog("타임라인 정보 갱신", LogType::LT_PROCESS);
 
 	Invalidate();
 
@@ -154,6 +165,8 @@ bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 			return false;
 	}
 
+	Log_Manager->OnPutLog("타임라인 시퀀스 정보 갱신", LogType::LT_PROCESS);
+
 	return true;
 }
 
@@ -172,6 +185,8 @@ bool Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 	time.SetTimeIDX(timeIDX);
 	if (m_timeDBManager->InsertTimeline(time) == false)
 		return false;
+
+	Log_Manager->OnPutLog("타임라인 등록 성공", LogType::LT_PROCESS);
 
 	return ReloadTimeline();
 }
@@ -304,6 +319,8 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 			
 			if (m_timelineThickApprochState == TTA_WELL_APPROCH)
 			{
+				Log_Manager->OnPutLog("마우스와 타임라인 접촉 이벤트", LogType::LT_EVENT);
+
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
 					return false;
 
@@ -312,11 +329,15 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note) == false)
 					return false;
 
+				Log_Manager->OnPutLog("집은 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
+
 				// this쪽에만 입력
 				m_detailDlg.SetText(note.GetNotCONTENT(), "");
 			}
 			else if (m_timelineThickApprochState == TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH)
 			{
+				Log_Manager->OnPutLog("노트와 타임라인 접촉 이벤트", LogType::LT_EVENT);
+
 				if (m_nPointingTimeIDX > m_timeLineContainer.size() - 1)
 					return false;
 
@@ -328,8 +349,12 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note1) == false)
 					return false;
 
+				Log_Manager->OnPutLog("집은 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
+
 				if (m_timeDBManager->SelectOneNoteInformation(notSEQ, &note2) == false)
 					return false;
+
+				Log_Manager->OnPutLog("갖다 댄 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
 
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
 				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
@@ -338,6 +363,7 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 			{
 				// 마우스 다운이벤트때 timeIDX 정렬을 안하고 컨테이너 삭제만 했기때문에 
 				// m_nPointingTimeIDX값이 정렬안된 상태의 인덱스임. 그래서 따로 구분함..
+				Log_Manager->OnPutLog("타임라인과 타임라인 접촉 이벤트", LogType::LT_EVENT);
 
 				if (notSEQ < 0)
 					return false;
@@ -346,6 +372,7 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 				TimelineVO time;
 				if (m_timeDBManager->SelectInTimeIDXTimelineInNotSEQ(notSEQ, &time) == false)
 					return false;
+				Log_Manager->OnPutLog("노트 시퀀스로 타임라인정보 DB 조회 성공", LogType::LT_PROCESS);
 
 				// 현재 잡고있는 타임라인 idx값보다 마우스로 댄 타임라인 idx값이 더 클경우는 -1 처리 
 				if (time.GetTimeIDX() < m_nPointingTimeIDX)
@@ -359,8 +386,12 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 				if (m_timeDBManager->SelectOneNoteInformation(thisNoteSEQ, &note1) == false)
 					return false;
 
+				Log_Manager->OnPutLog("집은 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
+
 				if (m_timeDBManager->SelectOneNoteInformation(notSEQ, &note2) == false)
 					return false;
+
+				Log_Manager->OnPutLog("갖다 댄 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
 
 				// 둘다 입력 (첫번째는 드래그해서 온 노트가 this가 된다.)
 				m_detailDlg.SetText(note2.GetNotCONTENT(), note1.GetNotCONTENT());
@@ -450,12 +481,14 @@ bool Timeline::TimelineOneViewProcess()
 		NoteInformationVO note;
 		if (m_timeDBManager->SelectOneNoteInformation(iter->value.GetNotSEQ(), &note) == false)
 			return false;
+		Log_Manager->OnPutLog("노트 정보 DB 조회 완료", LogType::LT_PROCESS);
 
 		m_oneViewDlg.SetTimelineText(note.GetNotCONTENT());
 
 		iter++;
 	}
 
+	Log_Manager->OnPutLog("한눈에 보기 화면 출력 완료", LogType::LT_EVENT);
 
 	CURSOR_CROSS;
 
@@ -466,6 +499,8 @@ void Timeline::OneViewRefresh()
 {
 	if (m_oneViewDlg.IsWindowVisible())
 		TimelineOneViewProcess();
+
+	Log_Manager->OnPutLog("한눈에 보기 화면 갱신 완료", LogType::LT_PROCESS);
 }
 
 bool Timeline::DragDown(MSG* pMsg)
@@ -532,6 +567,8 @@ bool Timeline::DragDown(MSG* pMsg)
 		iter2++;
 	}
 
+	Log_Manager->OnPutLog("드래그 버튼 다운", LogType::LT_EVENT);
+
 	return true;
 }
 
@@ -553,6 +590,8 @@ bool Timeline::DragUp(MSG* pMsg)
 	if (!m_bDragProcessing)
 		return false;
 
+	Log_Manager->OnPutLog("드래그 버튼 업", LogType::LT_EVENT);
+
 	m_defaultDragData.mousePos_X = pMsg->pt.x;
 	m_defaultDragData.mousePos_Y = pMsg->pt.y;
 	m_timeUIManager->InputDragStruct(&m_defaultDragData);
@@ -568,6 +607,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 				return false;
 			}
+			Log_Manager->OnPutLog("선택한 위치 : 없음", LogType::LT_PROCESS);
 		}
 		else if (dus == DUS_THIS)
 		{
@@ -580,6 +620,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 노트 프로세스 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
@@ -592,11 +633,13 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 타임라인 DB 삭제 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
+			Log_Manager->OnPutLog("타임라인 정보 DB 삭제 완료", LogType::LT_PROCESS);
 
 			if (ReloadTimeline() == false)
 			{
@@ -604,10 +647,12 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 				return false;
 			}
 
+			Log_Manager->OnPutLog("선택한 위치 : 현재 시나리오", LogType::LT_PROCESS);
 			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER)
@@ -623,8 +668,10 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 노트 정보 DB 조회 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				return false;
 			}
+			Log_Manager->OnPutLog("노트 정보 DB 조회 완료", LogType::LT_PROCESS);
 			m_defaultDragData.noteCONTENT = inNote.GetNotCONTENT();
 
 			// 노트 삭제
@@ -634,11 +681,13 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 노트 정보 DB 삭제 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
+			Log_Manager->OnPutLog("노트 정보 DB 삭제 완료", LogType::LT_PROCESS);
 
 			// 타임라인정보 갱신
 			if (ReloadTimeline() == false)
@@ -647,6 +696,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 				return false;
 			}
@@ -660,6 +710,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 타임라인 프로세스 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				// 타임라인 -> 타겟다이얼로그 롤백 메시지 구현
 				m_noteUIManager->InputDragStruct(&m_defaultDragData);
 				if (m_noteUIManager->SendMessages(PM_ROLLBACK_TIMELINE_ANOTHER_ATTACH) == false)
@@ -667,6 +718,8 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				return false;
 			}
+			
+			Log_Manager->OnPutLog("선택한 위치 : 다른 시나리오", LogType::LT_PROCESS);
 			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_THIS_TIMELINE)
@@ -691,11 +744,14 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("노트 시퀀스로 타임라인정보 DB 조회 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
+
+			Log_Manager->OnPutLog("노트 시퀀스로 타임라인정보 DB 조회 성공", LogType::LT_PROCESS);
 
 			int dragEventingTimeIDX = time.GetTimeIDX();
 
@@ -709,11 +765,13 @@ bool Timeline::DragUp(MSG* pMsg)
 					CURSOR_ARROW;
 
 					m_timeDBManager->RollbackTransaction();
+					Log_Manager->OnPutLog("타임라인 정보 DB 갱신 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 					if (ReloadTimeline() == false)
 						MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 					return false;
 				}
+				Log_Manager->OnPutLog("타임라인 정보 DB 갱신 성공", LogType::LT_PROCESS);
 
 				// 발견한 timeIDX값보다 낮고 집어든 timeIDX값보다 높은 timeIDX는 전부 -1 처리 (이미 타임라인 컨테이너는 삭제가되있어서 잡고있는 타임라인 idx부터 처리해야함)
 				for (int i = dragEventingTimeIDX; i < timeIDX - 1; i++)
@@ -724,12 +782,14 @@ bool Timeline::DragUp(MSG* pMsg)
 						CURSOR_ARROW;
 
 						m_timeDBManager->RollbackTransaction();
+						Log_Manager->OnPutLog("타임라인 정보 DB 갱신 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 						if (ReloadTimeline() == false)
 							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 						return false;
 					}
 				}
+				Log_Manager->OnPutLog("타임라인 정보 DB 갱신 성공", LogType::LT_PROCESS);
 			}
 			// 집어든 idx가 그대로일때
 			else if (dragEventingTimeIDX + 1 == timeIDX)
@@ -746,11 +806,13 @@ bool Timeline::DragUp(MSG* pMsg)
 					CURSOR_ARROW;
 
 					m_timeDBManager->RollbackTransaction();
+					Log_Manager->OnPutLog("타임라인 정보 DB 갱신 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 					if (ReloadTimeline() == false)
 						MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 					return false;
 				}
+				Log_Manager->OnPutLog("타임라인 정보 DB 갱신 성공", LogType::LT_PROCESS);
 
 				// 발견한 timeIDX값보다 높거나 같고 집어든 timeIDX값보다 낮은 timeIDX는 전부 +1 처리
 				for (int i = timeIDX; i < dragEventingTimeIDX; i++)
@@ -761,12 +823,14 @@ bool Timeline::DragUp(MSG* pMsg)
 						CURSOR_ARROW;
 
 						m_timeDBManager->RollbackTransaction();
+						Log_Manager->OnPutLog("타임라인 정보 DB 갱신 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 						if (ReloadTimeline() == false)
 							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 						return false;
 					}
 				}
+				Log_Manager->OnPutLog("타임라인 정보 DB 갱신 성공", LogType::LT_PROCESS);
 			}
 			// 같을때는 m_timeLineContainer가 하나밖에없는 상태에서 드래그처리했을 시
 			else
@@ -780,6 +844,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
@@ -787,6 +852,7 @@ bool Timeline::DragUp(MSG* pMsg)
 
 			OneViewRefresh();
 
+			Log_Manager->OnPutLog("선택한 위치 : 현재 타임라인", LogType::LT_PROCESS);
 			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_ANOTHER_TIMELINE)
@@ -801,11 +867,13 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("노트 시퀀스로 타임라인정보 DB 조회 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 				if (ReloadTimeline() == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
+			Log_Manager->OnPutLog("노트 시퀀스로 타임라인정보 DB 조회 성공", LogType::LT_PROCESS);
 
 			int dragEventingTimeIDX = time.GetTimeIDX();
 
@@ -818,8 +886,10 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("선택한 노트 정보 DB 조회 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 				return false;
 			}
+			Log_Manager->OnPutLog("선택한 노트 정보 DB 조회 성공", LogType::LT_PROCESS);
 
 			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
@@ -829,6 +899,7 @@ bool Timeline::DragUp(MSG* pMsg)
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("다른 타임라인 프로세스 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				m_noteUIManager->InputDragStruct(&m_defaultDragData);
 				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_ANOTHER_TIMELINE_ATTACH) == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
@@ -848,6 +919,7 @@ bool Timeline::DragUp(MSG* pMsg)
 						CURSOR_ARROW;
 
 						m_timeDBManager->RollbackTransaction();
+						Log_Manager->OnPutLog("타임라인 정보 DB 갱신 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 						if (ReloadTimeline() == false)
 							MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 						
@@ -856,12 +928,15 @@ bool Timeline::DragUp(MSG* pMsg)
 				}
 			}
 
+			Log_Manager->OnPutLog("타임라인 정보 DB 갱신 성공", LogType::LT_PROCESS);
+
 			if (ReloadTimeline() == false)
 			{
 				m_bDragProcessing = false;
 				CURSOR_ARROW;
 
 				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
 				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
@@ -871,13 +946,21 @@ bool Timeline::DragUp(MSG* pMsg)
 			Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
 			Scenario_UI_Manager->SendMessages(PM_TARGET_SCENARIO_ONE_VIEW_REFRESH);
 
+			Log_Manager->OnPutLog("선택한 위치 : 다른 타임라인", LogType::LT_PROCESS);
 			m_timeDBManager->CommitTransaction();
 		}
 
 		CURSOR_ARROW;
 	}
+	else
+	{
+		CURSOR_ARROW;
+		m_bDragProcessing = false;
+		Log_Manager->OnPutLog("드래그 버튼 업 이벤트 실패", LogType::LT_PROCESS);
+		return false;
+	}
 
+	Log_Manager->OnPutLog("드래그 버튼 업 이벤트 완료", LogType::LT_PROCESS);
 	m_bDragProcessing = false;
-
 	return true;
 }

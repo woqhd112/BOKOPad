@@ -18,12 +18,13 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 	, m_size(0)
 	, m_variableItemStart_Y(0)
 {
-
+	Log_Manager->OnPutLog("OneViewList 생성자 호출", LogType::LT_PROCESS);
 }
 
 OneViewList::~OneViewList()
 {
 	DeleteAllItems();
+	Log_Manager->OnPutLog("OneViewList 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void OneViewList::DoDataExchange(CDataExchange* pDX)

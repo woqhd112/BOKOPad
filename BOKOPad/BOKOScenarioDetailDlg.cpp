@@ -18,11 +18,13 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 	m_thisDataStruct = thisDataStruct;
 	m_bDragModeCheck = true;
 	m_bKeyDownEvent = false;
+	Log_Manager->OnPutLog("BOKOScenarioDetailDlg 생성자 호출", LogType::LT_PROCESS);
 }
 
 BOKOScenarioDetailDlg::~BOKOScenarioDetailDlg()
 {
 	m_list_notePad.DestroyWindow();
+	Log_Manager->OnPutLog("BOKOScenarioDetailDlg 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void BOKOScenarioDetailDlg::DoDataExchange(CDataExchange* pDX)
@@ -52,10 +54,11 @@ END_MESSAGE_MAP()
 void BOKOScenarioDetailDlg::OnClose()
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	Log_Manager->OnPutLog("시나리오 화면 x 클릭", LogType::LT_EVENT);
 	ScenarioManagerStruct scenarioStruct(m_thisDataStruct.scenarioData, m_thisDataStruct.scenarioIndex);
 	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
 	Scenario_UI_Manager->SendMessages(PM_DESTROY);
-
+	Log_Manager->OnPutLog("시나리오 화면 종료", LogType::LT_OPERATE);
 	//CDialogEx::OnClose();
 }
 
@@ -123,8 +126,11 @@ void BOKOScenarioDetailDlg::Initialize()
 {
 	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
+	Log_Manager->OnPutLog("노트 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.Create(Timeline::IDD, this);
+	Log_Manager->OnPutLog("타임라인 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager);
+	Log_Manager->OnPutLog("타임라인 UI 매니저 연결", LogType::LT_PROCESS);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
@@ -140,6 +146,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_btn_drag_mode.ShowWindow(SW_HIDE);
 	m_btn_drag_mode.SetCheck(TRUE);
 	m_btn_note_delete.EnableWindow(FALSE);
+	Log_Manager->OnPutLog("시나리오 화면 초기화", LogType::LT_PROCESS);
 }
 
 
@@ -184,10 +191,12 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 		m_stt_note_limit_size.SetWindowTextA("0 / 500");
 		m_edit_note_input.SetFocus();
 		Scenario_DB_Manager->CommitTransaction();
+		Log_Manager->OnPutLog("노트 입력 성공", LogType::LT_EVENT);
 	}
 	else
 	{
 		Scenario_DB_Manager->RollbackTransaction();
+		Log_Manager->OnPutLog("노트 입력 실패로 인한 롤백 처리", LogType::LT_PROCESS);
 		ScenarioManagerStruct scenarioStruct(m_thisDataStruct.scenarioData, m_thisDataStruct.scenarioIndex);
 		Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
 		if (Scenario_UI_Manager->SendMessages(PM_NOTE_RELOAD) == false)
@@ -289,7 +298,10 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 			m_btn_note_input.EnableWindow(TRUE);
 			m_bDragModeCheck = true;
 			SignalReloadNoteList();
+			Log_Manager->OnPutLog("클릭모드 정보 로드 오류로 인해 노트 갱신", LogType::LT_PROCESS);
+			return;
 		}
+		Log_Manager->OnPutLog("클릭모드 On", LogType::LT_EVENT);
 	}
 	else
 	{
@@ -304,7 +316,10 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 			m_btn_note_input.EnableWindow(FALSE);
 			m_bDragModeCheck = false;
 			SignalReloadNoteList();
+			Log_Manager->OnPutLog("클릭모드 정보 로드 오류로 인해 노트 갱신", LogType::LT_PROCESS);
+			return;
 		}
+		Log_Manager->OnPutLog("드래그모드 On", LogType::LT_EVENT);
 	}
 }
 
@@ -324,6 +339,7 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteDelete()
 
 		return;
 	}
+	Log_Manager->OnPutLog("노트 삭제 완료", LogType::LT_EVENT);
 
 	Scenario_DB_Manager->CommitTransaction();
 	CURSOR_ARROW;

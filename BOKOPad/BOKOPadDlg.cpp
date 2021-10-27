@@ -8,6 +8,7 @@
 #include "BOKOPadDlg.h"
 #include "FileProcess.h"
 #include "BOKOOptionScenarioExportDlg.h"
+#include "BOKOLogViewDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -57,11 +58,13 @@ CBOKOPadDlg::CBOKOPadDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_BOKOPAD_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	Log_Manager->OnPutLog("BOKOPadDlg 생성자 호출", LogType::LT_PROCESS);
 }
 
 CBOKOPadDlg::~CBOKOPadDlg()
 {
 	Scenario_UI_Manager->SendMessages(PM_SCENARIO_CLEAR);
+	Log_Manager->OnPutLog("BOKOPadDlg 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
@@ -128,10 +131,12 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
 	Initialize();
+	Log_Manager->OnPutLog("메인 화면 초기화", LogType::LT_PROCESS);
 	
 	CURSOR_WAIT;
 	// 옵션 로드
-	Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData);
+	if (Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData))
+		Log_Manager->OnPutLog("옵션 정보 로드", LogType::LT_PROCESS);
 
 	m_btn_option.ShowWindow(SW_HIDE);
 
@@ -147,6 +152,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 			InsertScenario(title, index);
 			iter++;
 		}
+		Log_Manager->OnPutLog("시나리오 정보 로드", LogType::LT_PROCESS);
 	}
 	CURSOR_ARROW;
 
@@ -154,6 +160,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	m_edit_input_scenario.LimitText(20);
 
 	Scenario_UI_Manager->AttachManager(this);
+	Log_Manager->OnPutLog("시나리오 UI 매니저 연결", LogType::LT_PROCESS);
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -261,17 +268,21 @@ void CBOKOPadDlg::OnBnClickedButtonInputScenario()
 		return;
 
 	ComplexString inputScenarioTitle = getText.GetBuffer();
-
+	ComplexString logMsg = inputScenarioTitle + " 시나리오 DB 등록 성공";
 	CURSOR_WAIT;
 	if (Scenario_DB_Manager->InsertScenarioList(inputScenarioTitle))
 	{
+		Log_Manager->OnPutLog(inputScenarioTitle + " 시나리오 DB 등록 성공", LogType::LT_PROCESS);
 		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
 		InsertScenario(inputScenarioTitle, index);
 		m_edit_input_scenario.SetWindowTextA("");
 		m_edit_input_scenario.SetFocus();
 
 		m_loadScenarioList.clear();
-		Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList);
+		if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
+			Log_Manager->OnPutLog("시나리오 정보 갱신", LogType::LT_PROCESS);
+
+		Log_Manager->OnPutLog(inputScenarioTitle + " 시나리오 등록 성공", LogType::LT_EVENT);
 	}
 	CURSOR_ARROW;
 }
@@ -348,6 +359,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		selectVector.push_back(selectedIndex);
 	}
 
+	ComplexString logMsg;
 	bool bTransaction = false;
 	for (int i = selectVector.size() - 1; i >= 0; i--)
 	{
@@ -359,6 +371,9 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 			break;
 		}
 
+		logMsg.Format("%d", deleteIndex + 1);
+		Log_Manager->OnPutLog(logMsg + "번째 시나리오 DB 삭제 성공", LogType::LT_PROCESS);
+		Log_Manager->OnPutLog(logMsg + "번째 시나리오 삭제 성공", LogType::LT_EVENT);
 		m_list_scenario_list.DeleteItem(deleteIndex);
 		m_loadScenarioList.erase(deleteIndex);
 	}
@@ -371,6 +386,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 		if (m_loadScenarioList.empty())
 		{
 			Scenario_DB_Manager->UpdateScenarioListAutoIncrementSeq();
+			Log_Manager->OnPutLog("시나리오 미존재로 인한 시퀀스번호 갱신", LogType::LT_PROCESS);
 		}
 		Scenario_DB_Manager->CommitTransaction();
 	}
@@ -378,6 +394,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 	{
 		Scenario_DB_Manager->RollbackTransaction();
 		m_loadScenarioList.clear();
+		Log_Manager->OnPutLog("삭제 오류로 인한 롤백처리", LogType::LT_PROCESS);
 		if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
 		{
 			m_list_scenario_list.DeleteAllItems();
@@ -390,6 +407,7 @@ void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
 				InsertScenario(title, index);
 				iter++;
 			}
+			Log_Manager->OnPutLog("시나리오 정보 갱신", LogType::LT_PROCESS);
 		}
 	}
 
@@ -423,9 +441,15 @@ void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
 	if (Scenario_UI_Manager->SendMessages(PM_CREATE) == false)
 	{
 		Scenario_DB_Manager->RollbackTransaction();
+		Log_Manager->OnPutLog("타임라인 화면 정보 로드 오류", LogType::LT_PROCESS);
 	}
 	else
 		Scenario_DB_Manager->CommitTransaction();
+
+	ComplexString logMsg;
+	logMsg.Format("%d", mark + 1);
+	Log_Manager->OnPutLog(logMsg + "번째 시나리오 화면 정보 출력 성공", LogType::LT_OPERATE);
+	Log_Manager->OnPutLog(logMsg + "번째 시나리오 더블클릭", LogType::LT_EVENT);
 
 	CURSOR_ARROW;
 	*pResult = 0;
@@ -474,13 +498,17 @@ void CBOKOPadDlg::OnScenarioExport()
 	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
 		return;
 
+	Log_Manager->OnPutLog("내보낼 시나리오 정보 로드", LogType::LT_PROCESS);
+
 	CURSOR_WAIT;
 
 	CString strFullPath = fd.GetPathName();
+	Log_Manager->OnPutLog(ComplexString(strFullPath.GetBuffer()) + " 폴더 선택", LogType::LT_EVENT);
 
 	ComplexVector<NoteInformationVO> loadNoteInformationContainer;
 	if (Scenario_DB_Manager->SelectInSceSEQNoteInformation(outputScenario.GetSceSEQ(), &loadNoteInformationContainer))
 	{
+		Log_Manager->OnPutLog("해당 시나리오의 노트정보 로드", LogType::LT_PROCESS);
 		ComplexVector<NoteInformationVO>::iterator iter = loadNoteInformationContainer.begin();
 		while (iter != loadNoteInformationContainer.end())
 		{
@@ -491,7 +519,7 @@ void CBOKOPadDlg::OnScenarioExport()
 			//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
 			//ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
 			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
-
+			Log_Manager->OnPutLog("노트 내보내기 성공", LogType::LT_PROCESS);
 			iter++;
 		}
 	}
@@ -499,6 +527,7 @@ void CBOKOPadDlg::OnScenarioExport()
 	{
 		CURSOR_ARROW;
 		MessageBox("데이터 불러오기에 실패하였습니다.");
+		Log_Manager->OnPutLog("시나리오 내보내기 실패", LogType::LT_PROCESS);
 		return;
 	}
 
@@ -528,14 +557,18 @@ void CBOKOPadDlg::OnScenarioImport()
 	if (Scenario_DB_Manager->SelectInSceSEQScenarioListInSceTITLE(selectScenarioTitle, &outputScenario) == false)
 		return;
 
+	Log_Manager->OnPutLog("불러올 시나리오 정보 로드", LogType::LT_PROCESS);
+
 	CURSOR_WAIT;
 	POSITION pos = fd.GetStartPosition();
 
 	while (pos != NULL)
 	{
 		ComplexString strPathName = fd.GetNextPathName(pos).GetBuffer();
+		Log_Manager->OnPutLog(ComplexString("불러온 파일 명 : ") + strPathName, LogType::LT_PROCESS);
 		ComplexString strReadUTF8Content, strConvertAnsiContent;
 		ComplexUtilProcess::ImportFile(strReadUTF8Content, strPathName);
+		Log_Manager->OnPutLog("파일 불러오기 성공", LogType::LT_PROCESS);
 		//ComplexUtilProcess::UTF8ToANSI(strConvertAnsiContent, strReadUTF8Content);
 
 		NoteInformationVO insertNote(0, outputScenario.GetSceSEQ(), false, false, strReadUTF8Content);
@@ -543,8 +576,10 @@ void CBOKOPadDlg::OnScenarioImport()
 		{
 			CURSOR_ARROW;
 			MessageBox("데이터 저장에 실패하였습니다.");
+			Log_Manager->OnPutLog("노트 정보 DB 저장 실패", LogType::LT_PROCESS);
 			return;
 		}
+		Log_Manager->OnPutLog("노트 정보 DB 저장 성공", LogType::LT_PROCESS);
 	}
 
 	CURSOR_ARROW;
@@ -556,6 +591,7 @@ void CBOKOPadDlg::OnProgramClose()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	Scenario_UI_Manager->SendMessages(PM_SCENARIO_CLEAR);
+	Log_Manager->OnPutLog("BOKOPad.exe 종료", LogType::LT_OPERATE);
 	this->PostMessageA(WM_CLOSE);
 }
 
@@ -563,10 +599,13 @@ void CBOKOPadDlg::OnProgramClose()
 void CBOKOPadDlg::OnLogView()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	BOKOLogViewDlg logView;
+	logView.DoModal();
 }
 
 
 void CBOKOPadDlg::OnExplanationView()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
 }

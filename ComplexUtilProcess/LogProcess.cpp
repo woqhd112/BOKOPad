@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "LogProcess.h"
 
+
 LogProcess::LogProcess()
 	: m_log(new ComplexLog)
 	, m_bInit(false)
@@ -10,6 +11,23 @@ LogProcess::LogProcess()
 
 LogProcess::~LogProcess()
 {
+	Terminate();
+}
+
+
+void LogProcess::Init()
+{
+	m_bInit = true;
+
+	CreateDir();
+
+	this->Start();
+}
+
+void LogProcess::Terminate()
+{
+	m_bInit = false;
+
 	this->Stop();
 	this->Join();
 
@@ -20,21 +38,6 @@ LogProcess::~LogProcess()
 		delete m_log;
 		m_log = nullptr;
 	}
-}
-
-#ifdef _DEBUG 
-#define DB_MODULE_NANE "BOKOPad_dbg.exe"
-#else
-#define DB_MODULE_NANE "BOKOPad.exe"
-#endif
-
-void LogProcess::Init()
-{
-	m_bInit = true;
-
-	CreateDir();
-
-	this->Start();
 }
 
 void LogProcess::CreateDir()
@@ -153,9 +156,14 @@ LogProcess* GetLogProcess()
 
 namespace ComplexUtilProcess
 {
-	COMPLEXUTILPROCESS_DLL void INIT_LOG()
+	COMPLEXUTILPROCESS_DLL void INITIALIZE_LOG()
 	{
 		LogProc->Init();
+	}
+
+	COMPLEXUTILPROCESS_DLL void TERMINATE_LOG()
+	{
+		LogProc->Terminate();
 	}
 
 	COMPLEXUTILPROCESS_DLL bool LOG_E(ComplexString log)

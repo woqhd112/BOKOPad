@@ -17,7 +17,7 @@ namespace ComplexLibrary
 
 		virtual ~ComplexUniqueQueue()
 		{
-
+			m_queue.clear();
 		}
 
 		void push(T value)
@@ -94,7 +94,11 @@ namespace ComplexLibrary
 			m_outputQueue = &m_queue[1];
 		}
 
-		virtual ~ComplexUniqueSwapQueue() {}
+		virtual ~ComplexUniqueSwapQueue()
+		{
+			m_queue[0].clear();
+			m_queue[1].clear();
+		}
 
 		void push(T value) { m_inputQueue->push(value); }
 		T& front() const { return m_inputQueue->front(); }

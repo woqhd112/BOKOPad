@@ -195,6 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BOKODragDlg.h" />
+    <ClInclude Include="BOKOLogViewDlg.h" />
     <ClInclude Include="BOKOOptionDlg.h" />
     <ClInclude Include="BOKOOptionScenarioExportDlg.h" />
     <ClInclude Include="BOKOPad.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
     <ClInclude Include="DBManagerManagement.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LogManager.h" />
     <ClInclude Include="OneViewList.h" />
     <ClInclude Include="UIManagerManagement.h" />
     <ClInclude Include="NoteDBManager.h" />
@@ -223,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKODragDlg.cpp" />
+    <ClCompile Include="BOKOLogViewDlg.cpp" />
     <ClCompile Include="BOKOOptionDlg.cpp" />
     <ClCompile Include="BOKOOptionScenarioExportDlg.cpp" />
     <ClCompile Include="BOKOPad.cpp" />
@@ -230,6 +233,7 @@
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
     <ClCompile Include="DBManagerManagement.cpp" />
+    <ClCompile Include="LogManager.cpp" />
     <ClCompile Include="OneViewList.cpp" />
     <ClCompile Include="UIManagerManagement.cpp" />
     <ClCompile Include="NoteDBManager.cpp" />
