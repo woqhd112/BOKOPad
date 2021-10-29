@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "LogManager.h"
+#include "BOKOProgressPopup.h"
 
 LogManager::LogManager()
 {
@@ -47,9 +48,28 @@ bool LogManager::OnLoadLogData()
 
 	fullPath.ReplaceAll("\\", "/");
 
-	CFileFind finder;
-	BOOL bWorking = finder.FindFile(fullPath.GetBuffer());
+	CFileFind finder, countFinder;
+	
+	BOOL test = countFinder.FindFile(fullPath.GetBuffer());
+	int fileCount = 0;
+	while (test)
+	{
+		//다음 파일 or 폴더 가 존재하면다면 TRUE 반환
+		test = countFinder.FindNextFile();
+		// folder 일 경우는 continue 
+		if (countFinder.IsDirectory())
+			continue;
+		else if (countFinder.IsDots())
+			continue;
 
+		fileCount++;
+	}
+	BOKOProgressPopup progress(fileCount);
+	progress.Create(BOKOProgressPopup::IDD);
+	progress.ShowWindow(SW_SHOW);
+
+	BOOL bWorking = finder.FindFile(fullPath.GetBuffer());
+	
 	while (bWorking)
 	{
 		//다음 파일 or 폴더 가 존재하면다면 TRUE 반환
@@ -62,6 +82,10 @@ bool LogManager::OnLoadLogData()
 		// 파일 일때 //파일의 이름 
 		fileName = finder.GetFileName().GetBuffer();
 
+		progress.SetAnalyzeFileName(fileName);
+		if (progress.AddProgressPos())
+			progress.Success();
+
 		ComplexVector<ComplexString> logDataContainer;
 		if (AnalysisLogFile(folderName + fileName, &logDataContainer))
 		{
@@ -70,6 +94,9 @@ bool LogManager::OnLoadLogData()
 		else
 			return false;
 	}
+
+	progress.ShowWindow(SW_HIDE);
+	progress.DestroyWindow();
 
 	return true;
 }

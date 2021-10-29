@@ -18,15 +18,22 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ONE_VIEW_LIST, pParent)
 	, m_size(0)
 	, m_variableItemStart_Y(0)
-	, m_bClickEvent(true)
+	, m_downButton(nullptr)
+	, m_downButtonKey(-1)
+	, m_focusButtonKey(-1)
+	, m_mprps(MPRPS_BUTTON_NONE)
 {
 	Log_Manager->OnPutLog("OneViewList 생성자 호출", LogType::LT_PROCESS);
+	this->Start();
 }
 
 OneViewList::~OneViewList()
 {
 	DeleteAllItems();
 	Log_Manager->OnPutLog("OneViewList 소멸자 호출", LogType::LT_PROCESS);
+	this->Stop();
+	m_cond.Destroy();
+	this->Join();
 }
 
 void OneViewList::DoDataExchange(CDataExchange* pDX)
@@ -38,6 +45,7 @@ void OneViewList::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(OneViewList, CDialogEx)
 	ON_WM_VSCROLL()
 	ON_WM_MOUSEWHEEL()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -92,8 +100,8 @@ void OneViewList::InsertItem(ComplexString strText)
 
 	createButton->SetFont(&m_buttonFont);
 	createEdit->SetFont(&m_editFont);
-	createButton->MoveWindow(0, m_variableItemStart_Y, rect.Width(), TAG_BUTTON_HEIGHT);
-	createEdit->MoveWindow(0, m_variableItemStart_Y + 20, rect.Width(), EXPAND_EDIT_HEIGHT);
+	createButton->MoveWindow(1, m_variableItemStart_Y + 1, rect.Width() - 2, TAG_BUTTON_HEIGHT - 1);
+	createEdit->MoveWindow(1, m_variableItemStart_Y + 1 + 20, rect.Width() - 2, EXPAND_EDIT_HEIGHT);
 	createEdit->ShowWindow(SW_HIDE);
 	createEdit->SetWindowTextA(strText.GetBuffer());
 
@@ -202,8 +210,8 @@ void OneViewList::ExpandAll(bool bExpand)
 				}
 			}
 
-			iter1->value.value.tagButton->SetWindowPos(NULL, 0, iter1->value.value.start_tagButton_pos_Y, 0, 0, SWP_NOSIZE);
-			iter1->value.value.editButton->SetWindowPos(NULL, 0, iter1->value.value.start_tagButton_pos_Y + TAG_BUTTON_HEIGHT, 0, 0, SWP_NOSIZE);
+			iter1->value.value.tagButton->SetWindowPos(NULL, 1, iter1->value.value.start_tagButton_pos_Y, 0, 0, SWP_NOSIZE);
+			iter1->value.value.editButton->SetWindowPos(NULL, 1, iter1->value.value.start_tagButton_pos_Y + TAG_BUTTON_HEIGHT, 0, 0, SWP_NOSIZE);
 			iter1++;
 		}
 
@@ -291,9 +299,6 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
-		if (m_bClickEvent == false)
-			return 0;
-
 		ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
 
 		bool bFind = false;
@@ -312,8 +317,8 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 					iter->value.value.start_tagButton_pos_Y -= EXPAND_EDIT_HEIGHT;
 				}
 
-				iter->value.value.tagButton->SetWindowPos(NULL, 0, iter->value.value.start_tagButton_pos_Y, 0, 0, SWP_NOSIZE);
-				iter->value.value.editButton->SetWindowPos(NULL, 0, iter->value.value.start_tagButton_pos_Y + TAG_BUTTON_HEIGHT, 0, 0, SWP_NOSIZE);
+				iter->value.value.tagButton->SetWindowPos(NULL, 1, iter->value.value.start_tagButton_pos_Y, 0, 0, SWP_NOSIZE);
+				iter->value.value.editButton->SetWindowPos(NULL, 1, iter->value.value.start_tagButton_pos_Y + TAG_BUTTON_HEIGHT, 0, 0, SWP_NOSIZE);
 			}
 
 			if (iter->value.value.tagButton->GetDlgCtrlID() == LOWORD(wParam))
@@ -393,69 +398,326 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 BOOL OneViewList::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-	if (WM_KEYDOWN == pMsg->message)
+	if (pMsg->message == WM_LBUTTONDOWN)
 	{
-		if (pMsg->wParam == VK_CONTROL)
-		{
-			BOKOTimelineOneViewDlg* parent = (BOKOTimelineOneViewDlg*)GetParent();
-			if (m_bClickEvent)
-			{
-				parent->SetBackgroundColor(DRAG_BK_COLOR);
-				m_bClickEvent = false;
-			}
-			else
-			{
-				parent->SetBackgroundColor(BASE_BK_COLOR);
-				m_bClickEvent = true;
-			}
-		}
-	}
-	else if (pMsg->message == WM_LBUTTONDOWN)
-	{
-		if (!m_bClickEvent)
-		{
-			if (DragDown(pMsg))
-				return TRUE;
-		}
+		DragDown(pMsg);
 	}
 	else if (pMsg->message == WM_LBUTTONUP)
 	{
-		if (!m_bClickEvent)
-		{
-			if (DragUp(pMsg))
-				return TRUE;
-		}
+		if (DragUp(pMsg))
+			return TRUE;
 	}
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
-		if (!m_bClickEvent)
-		{
-			if (DragMove(pMsg))
-				return FALSE;
-		}
+		if (DragMove(pMsg))
+			return FALSE;
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
+void OneViewList::Run()
+{
+	while (this->IsRunning())
+	{
+		m_cond.Wait();
+		m_nDragTime = 0;
+		while (m_bDragTimer)
+		{
+			m_timerLock.Lock();
+			m_nDragTime += 100;
+			m_timerLock.UnLock();
+			ComplexThread::Sleep(100);
+			if (m_bDragTimer)
+			{
+				if (m_nDragTime >= 300)
+				{
+					if (m_downButton)
+					{
+						m_bDragProcessing = true;
+						m_downButton->ShowWindow(SW_HIDE);
+						
+						SetCapture();
+					}
+
+					m_bDragTimer = false;
+					break;
+				}
+			}
+		}
+	}
+}
 
 bool OneViewList::DragDown(MSG* pMsg)
 {
 	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
 	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
 	{
-		CButton* downButton = (CButton*)FromHandle(pMsg->hwnd);
+		m_downButton = (CButton*)FromHandle(pMsg->hwnd);
+		ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
+		while (iter != m_dataMap.end())
+		{
+			if (iter->value.value.tagButton == m_downButton)
+			{
+				m_downButtonKey = iter->value.key;
+				break;
+			}
+			iter++;
+		}
+		m_bDragTimer = true;
+		m_cond.Signal();
 	}
+
+	return true;
 }
 
 bool OneViewList::DragMove(MSG* pMsg)
 {
 	if (!m_bDragProcessing)
 		return false;
+
+	if (m_downButton == nullptr)
+		return false;
+
+	CURSOR_CROSS;
+
+	CRect rect;
+	ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
+	while (iter != m_dataMap.end())
+	{
+		if (iter->value.value.tagButton != m_downButton)
+		{
+			iter->value.value.tagButton->GetWindowRect(rect);
+			if (PtInRect(rect, pMsg->pt))
+			{
+				// 버튼 포커싱 색 상태변경
+				if (pMsg->pt.y >= (rect.top - 2) && pMsg->pt.y <= (rect.top - 2) + 4)
+				{
+					// 상단쪽 버튼과 버튼 사이
+					m_mprps = MPRPS_BUTTON_TOP;
+				}
+				else if (pMsg->pt.y >= (rect.top - 2) + 4 && pMsg->pt.y <= (rect.top - 2) + ((rect.Height() + 2) / 2))
+				{
+					// 버튼의 상중쪽 
+					m_mprps = MPRPS_BUTTON_TOP_MIDDLE;
+				}
+				else if (pMsg->pt.y >= (rect.top - 2) + ((rect.Height() + 2) / 2) && pMsg->pt.y <= rect.bottom - 4)
+				{
+					// 버튼의 중하쪽
+					m_mprps = MPRPS_BUTTON_MIDDLE_BOTTOM;
+				}
+				else if (pMsg->pt.y >= rect.bottom - 4 && pMsg->pt.y <= rect.bottom)
+				{
+					// 하단쪽 버튼과 버튼 사이
+					m_mprps = MPRPS_BUTTON_BOTTOM;
+				}
+
+				m_focusButtonKey = iter->value.key;
+
+				break;
+			}
+			Invalidate();
+		}
+
+		iter++;
+	}
+
+
+
+
+
+	return true;
 }
 
 bool OneViewList::DragUp(MSG* pMsg)
 {
-	if (!m_bDragProcessing)
+	m_bDragTimer = false;
+
+	if (m_downButton == nullptr)
+	{
+		m_bDragProcessing = false;
 		return false;
+	}
+
+	if (!m_bDragProcessing)
+	{
+		m_downButton = nullptr;
+		m_downButtonKey = -1;
+		return false;
+	}
+
+	m_downButton->ShowWindow(SW_SHOW);
+	CURSOR_ARROW;
+	ReleaseCapture();
+
+	m_bDragProcessing = false;
+	m_downButton = nullptr;
+	m_downButtonKey = -1;
+	Invalidate();
+
+	return true;
+}
+
+void OneViewList::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
+					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
+
+	if (m_focusButtonKey != -1)
+	{
+		switch (m_mprps)
+		{
+			case MPRPS_BUTTON_TOP:
+			{
+				ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.find(m_focusButtonKey);
+				if (iter != m_dataMap.end())
+				{
+					CRect rect;
+					this->GetClientRect(rect);
+
+					CPen* oldPen;
+					CPen drawHoverPen;
+					drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+
+					oldPen = dc.SelectObject(&drawHoverPen);
+					// 상단 가로축
+					dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+					dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+
+					// 상단 왼쪽 세로축
+					dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+					dc.LineTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey + (TAG_BUTTON_HEIGHT / 2));
+
+					// 상단 오른쪽 세로축
+					dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+					dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey + (TAG_BUTTON_HEIGHT / 2));
+
+					if (m_focusButtonKey - 1 > -1)
+					{
+						oldPen = dc.SelectObject(&drawHoverPen);
+						// 하단 가로축
+						dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+						dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+
+						// 하단 왼쪽 세로축
+						dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+						dc.LineTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey - (TAG_BUTTON_HEIGHT / 2));
+
+						// 하단 오른쪽 세로축
+						dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+						dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey - (TAG_BUTTON_HEIGHT / 2));
+					}
+
+					dc.SelectObject(oldPen);
+
+					drawHoverPen.DeleteObject();
+				}
+				break;
+			}
+
+			case MPRPS_BUTTON_TOP_MIDDLE:
+			{
+				CRect rect;
+				this->GetClientRect(rect);
+
+				CPen* oldPen;
+				CPen drawHoverPen;
+				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+
+				oldPen = dc.SelectObject(&drawHoverPen);
+				// 상단 가로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+
+				// 상단 왼쪽 세로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+				dc.LineTo(0, TAG_BUTTON_HEIGHT * m_focusButtonKey + (TAG_BUTTON_HEIGHT / 2));
+
+				// 상단 오른쪽 세로축
+				dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey);
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * m_focusButtonKey + (TAG_BUTTON_HEIGHT / 2));
+
+				dc.SelectObject(oldPen);
+
+				drawHoverPen.DeleteObject();
+				break;
+			}
+
+			case MPRPS_BUTTON_MIDDLE_BOTTOM:
+			{
+				CRect rect;
+				this->GetClientRect(rect);
+
+				CPen* oldPen;
+				CPen drawHoverPen;
+				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+
+				oldPen = dc.SelectObject(&drawHoverPen);
+				// 하단 가로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+
+				// 하단 왼쪽 세로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) - (TAG_BUTTON_HEIGHT / 2));
+
+				// 하단 오른쪽 세로축
+				dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) - (TAG_BUTTON_HEIGHT / 2));
+
+				dc.SelectObject(oldPen);
+
+				drawHoverPen.DeleteObject();
+				break;
+			}
+
+			case MPRPS_BUTTON_BOTTOM:
+			{
+				CRect rect;
+				this->GetClientRect(rect);
+
+				CPen* oldPen;
+				CPen drawHoverPen;
+				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+
+				oldPen = dc.SelectObject(&drawHoverPen);
+				// 하단 가로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+
+				// 하단 왼쪽 세로축
+				dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) - (TAG_BUTTON_HEIGHT / 2));
+
+				// 하단 오른쪽 세로축
+				dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+				dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) - (TAG_BUTTON_HEIGHT / 2));
+
+				if (m_focusButtonKey + 1 < (m_dataMap.size() - 1))
+				{
+					oldPen = dc.SelectObject(&drawHoverPen);
+					// 하단 가로축
+					dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+					dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+
+					// 하단 왼쪽 세로축
+					dc.MoveTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+					dc.LineTo(0, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) + (TAG_BUTTON_HEIGHT / 2));
+
+					// 하단 오른쪽 세로축
+					dc.MoveTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1));
+					dc.LineTo(rect.right, TAG_BUTTON_HEIGHT * (m_focusButtonKey + 1) + (TAG_BUTTON_HEIGHT / 2));
+				}
+
+				drawHoverPen.DeleteObject();
+				break;
+			}
+
+			default:
+				break;
+		}
+
+		m_focusButtonKey = -1;
+	}
 }

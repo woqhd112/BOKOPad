@@ -1,18 +1,16 @@
 ﻿#pragma once
 #include "ScrollProcess.h"
 #include "NoteListInterface.h"
+#include "ComplexThread.h"
+#include "ComplexCondition.h"
+#include "ComplexLock.h"
 
 // OneViewList 대화 상자
 class TimelineUIManager;
 class TimelineDBManager;
 
-#define BASE_BK_COLOR RGB(240, 240, 240)
-#define DRAG_BK_COLOR RGB(227, 214, 231)
-
-class OneViewList : public CDialogEx, public NoteListInterface
+class OneViewList : public CDialogEx, public NoteListInterface, public ComplexThread
 {
-	// ctrl 버튼 이벤트 참조
-	friend class BOKOTimelineOneViewDlg;
 	DECLARE_DYNAMIC(OneViewList)
 
 public:
@@ -41,7 +39,23 @@ protected:
 	virtual bool DragMove(MSG* pMsg);
 	virtual bool DragUp(MSG* pMsg);
 
+	virtual void Run();
+
+	ComplexLock m_timerLock;
+	ComplexCondition m_cond;
+	bool m_bDragTimer;
+	int m_nDragTime;
+
 private:
+
+	enum MousePointRectPositionStatus
+	{
+		MPRPS_BUTTON_NONE = 0,
+		MPRPS_BUTTON_TOP,
+		MPRPS_BUTTON_TOP_MIDDLE,
+		MPRPS_BUTTON_MIDDLE_BOTTOM,
+		MPRPS_BUTTON_BOTTOM
+	};
 
 	struct OneViewListDataStruct
 	{
@@ -65,11 +79,14 @@ private:
 	CFont m_buttonFont;
 	CFont m_editFont;
 
+	CButton* m_downButton;
+	int m_downButtonKey;
+	int m_focusButtonKey;
+	MousePointRectPositionStatus m_mprps;
+
 	int m_size;
 
 	int m_variableItemStart_Y;
-
-	bool m_bClickEvent;
 
 	const int TAG_BUTTON_HEIGHT = 20;
 	const int EXPAND_EDIT_HEIGHT = 60;
@@ -84,4 +101,5 @@ public:
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnPaint();
 };

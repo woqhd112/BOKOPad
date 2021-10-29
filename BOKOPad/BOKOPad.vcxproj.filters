@@ -50,6 +50,15 @@
     <Filter Include="UI\Log">
       <UniqueIdentifier>{b60f0481-0659-49fc-90ba-93748a6b3f1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\Excel">
+      <UniqueIdentifier>{2171625f-0157-44f4-aaa8-939a21bc1e4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Excel\include">
+      <UniqueIdentifier>{4c856984-c0bf-4339-a270-6c34bf175a31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util\Word">
+      <UniqueIdentifier>{24ab305a-dbb8-4313-9ee8-bb04b3b710cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -136,6 +145,99 @@
     <ClInclude Include="BOKOLogViewDlg.h">
       <Filter>UI\Log</Filter>
     </ClInclude>
+    <ClInclude Include="CExcel\CWindow0.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CWindows.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CWorkbook.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CWorkbooks.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CWorksheet.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CWorksheets.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CApplication.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CBorder.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CBorders.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CCellFormat.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CChart.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CChartColorFormat.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CChartFillFormat.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CCharts.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CChartTitle.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CFont0.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CHPageBreak.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CHPageBreaks.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CLegend.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CLegendEntry.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CLegendKey.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\Cnterior.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CPoint0.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CRange.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CSeries.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CStyle.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CStyles.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CVPageBreak.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CExcel\CVPageBreaks.h">
+      <Filter>Util\Excel\include</Filter>
+    </ClInclude>
+    <ClInclude Include="ExcelFormat.h">
+      <Filter>Util\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOProgressPopup.h">
+      <Filter>UI\Log</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -205,6 +307,12 @@
       <Filter>Manager\LOGManager</Filter>
     </ClCompile>
     <ClCompile Include="BOKOLogViewDlg.cpp">
+      <Filter>UI\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="ExcelFormat.cpp">
+      <Filter>Util\Excel</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOProgressPopup.cpp">
       <Filter>UI\Log</Filter>
     </ClCompile>
   </ItemGroup>
