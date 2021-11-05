@@ -100,7 +100,7 @@ bool ScrollProcess::OperateScroll(int nSBCode, int nPos)
 	{
 		delta = m_nWheelSize;
 	}
-	else if (nSBCode == SB_THUMBTRACK)
+	/*else if (nSBCode == SB_THUMBTRACK)
 	{
 		if (m_prePos < nPos && nPos % m_nWheelSize == 0)
 		{
@@ -114,7 +114,7 @@ bool ScrollProcess::OperateScroll(int nSBCode, int nPos)
 		}
 	}
 
-	m_prePos = nPos;
+	m_prePos = nPos;*/
 
 	if (m_nScrollProcessCount < 0)
 		m_nScrollProcessCount = 0;
@@ -176,6 +176,11 @@ int ScrollProcess::GetScrollCount() const
 int ScrollProcess::GetScrollSize() const
 {
 	return m_nScrollPos;
+}
+
+int ScrollProcess::GetWheelSize() const
+{
+	return m_nWheelSize;
 }
 
 void ScrollProcess::ResetScroll()

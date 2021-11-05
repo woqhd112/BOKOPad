@@ -119,7 +119,7 @@ void LogProcess::WriteLog()
 	{
 		data = m_logQueue.frontOutputQueue();
 		m_logQueue.popOutputQueue();
-		m_log->FileLog(m_strWritePath, "%s", data.GetBuffer());
+		m_log->FileLog(m_strWritePath, "%s\n", data.GetBuffer());
 		data.Replace(",", "\n");
 		m_log->PrintLog("%s", data.GetBuffer());
 		OutputDebugStringA(data.GetBuffer());

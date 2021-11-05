@@ -6,6 +6,7 @@
 #include "NoteListInterface.h"
 
 class NoteUIManager;
+class NoteDBManager;
 class TimelineDBManager;
 class TimelineUIManager;
 // Timeline 대화 상자
@@ -36,6 +37,8 @@ public:
 		TTA_TIMELINE_BY_TIMELINE_DRAG_EVENT_APPROCH
 	};
 	
+	void SetExpandCloseEvent();
+
 protected:
 
 	virtual bool DragDown(MSG* pMsg);
@@ -44,7 +47,7 @@ protected:
 
 private:
 
-	void AttachNoteManager(NoteUIManager* manager);
+	void AttachNoteManager(NoteUIManager* manager, NoteDBManager* dbmanager);
 
 	// 시그널 함수
 	bool SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);

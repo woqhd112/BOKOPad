@@ -13,6 +13,7 @@ public:
 	bool InsertNoteInformation(NoteInformationVO& note);
 	bool DeleteNoteInformation(int in_notSEQ);
 	bool SelectOneNoteInformation(int in_notSEQ, NoteInformationVO* out);
+	bool UpdateNoteInformationInNotContent(int in_notSEQ, ComplexString in_notCONTENT);
 
 private:
 

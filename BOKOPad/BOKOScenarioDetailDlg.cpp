@@ -129,7 +129,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	Log_Manager->OnPutLog("노트 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.Create(Timeline::IDD, this);
 	Log_Manager->OnPutLog("타임라인 화면 생성 완료", LogType::LT_OPERATE);
-	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager);
+	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager, m_list_notePad.m_noteDBManager);
 	Log_Manager->OnPutLog("타임라인 UI 매니저 연결", LogType::LT_PROCESS);
 
 	CRect thisRect;

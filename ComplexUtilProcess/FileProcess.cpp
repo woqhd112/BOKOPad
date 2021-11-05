@@ -46,7 +46,7 @@ namespace ComplexUtilProcess
 		else
 			strFullPath.Format("%s/%s.txt", writePath.GetBuffer(), writeTitle.GetBuffer());
 
-		file.Write(strFullPath, writeContent);
+		file.Write(strFullPath, writeContent, ComplexFile::FM_W_OVERWRITE);
 	}
 
 	COMPLEXUTILPROCESS_DLL void ImportFile(ComplexString& readContent, ComplexString readPath)

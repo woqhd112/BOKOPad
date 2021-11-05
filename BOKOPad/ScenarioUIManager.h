@@ -23,11 +23,14 @@ private:
 	bool Clear();
 
 	bool NoteReload();
+	bool TimeLineReload();
 	bool IsDraggingMode();
 
 	bool DragProcessLock();
 	bool ThisOneViewRefresh();
 	bool TargetOneViewRefresh();
+
+	bool TimelineOneViewExpandAllClose();
 
 private:
 

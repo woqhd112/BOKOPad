@@ -25,6 +25,7 @@ public:
 	int GetLineCount() const;
 	int GetScrollCount() const;
 	int GetScrollSize() const;
+	int GetWheelSize() const;
 
 	void ResetScroll();
 

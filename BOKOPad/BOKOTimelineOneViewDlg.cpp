@@ -46,9 +46,9 @@ END_MESSAGE_MAP()
 
 // BOKOTimelineOneViewDlg 메시지 처리기
 
-void BOKOTimelineOneViewDlg::AttachManager(TimelineUIManager* manager, TimelineDBManager* dbmanager)
+void BOKOTimelineOneViewDlg::AttachManager(NoteDBManager* dbmanager)
 {
-	m_list_one_view.AttachManager(manager, dbmanager);
+	m_list_one_view.AttachManager(dbmanager);
 }
 
 void BOKOTimelineOneViewDlg::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
@@ -62,10 +62,10 @@ void BOKOTimelineOneViewDlg::Clear()
 	m_bExpandedProcess = false;
 }
 
-void BOKOTimelineOneViewDlg::SetTimelineText(ComplexString& strText)
+void BOKOTimelineOneViewDlg::SetTimelineText(ComplexString& strText, int noteSEQ)
 {
 	//m_edit_one_view.SetWindowTextA(strText.GetBuffer());
-	m_list_one_view.InsertItem(strText);
+	m_list_one_view.InsertItem(strText, noteSEQ);
 }
 
 void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
@@ -136,10 +136,15 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonExpandAll()
 	else
 	{
 		Log_Manager->OnPutLog("모두 접기 버튼 클릭", LogType::LT_EVENT);
-		m_btn_expand_all.SetWindowTextA("모두 펼치기");
-		m_list_one_view.ExpandAll(false);
-		m_bExpandedProcess = false;
+		SetExpandCloseEvent();
 	}
+}
+
+void BOKOTimelineOneViewDlg::SetExpandCloseEvent()
+{
+	m_btn_expand_all.SetWindowTextA("모두 펼치기");
+	m_list_one_view.ExpandAll(false);
+	m_bExpandedProcess = false;
 }
 
 

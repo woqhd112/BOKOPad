@@ -80,6 +80,14 @@ bool ScenarioUIManager::HelpInvoker(PerformanceMessage message)
 	{
 		bHelpSuccess = TargetOneViewRefresh();
 	}
+	else if (message == PM_TIMELINE_RELOAD)
+	{
+		bHelpSuccess = TimeLineReload();
+	}
+	else if (message == PM_TIMELINE_ONEVIEW_EXPANDALL_CLOSE)
+	{
+		bHelpSuccess = TimelineOneViewExpandAllClose();
+	}
 
 	return bHelpSuccess;
 }
@@ -337,6 +345,43 @@ bool ScenarioUIManager::NoteReload()
 	return true;
 }
 
+bool ScenarioUIManager::TimeLineReload()
+{
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
+	if (iter == m_scenarioDlgManager.end())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	if (iter->value.value->SignalReloadTimeline() == false)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ReleaseScenarioStruct();
+
+	return true;
+}
+
 bool ScenarioUIManager::IsDraggingMode()
 {
 	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
@@ -454,5 +499,38 @@ bool ScenarioUIManager::TargetOneViewRefresh()
 	iter3->value.value->SignalTimelineOneViewRefresh();
 
 	ReleaseDragStruct();
+	return true;
+}
+
+bool ScenarioUIManager::TimelineOneViewExpandAllClose()
+{
+	ScenarioManagerStruct* scenarioDataStruct = BringScenarioStruct();
+
+	if (scenarioDataStruct == nullptr)
+		return false;
+
+	if (m_scenarioDlgManager.empty())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	if (scenarioDataStruct->scenarioIndex < 0)
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	ComplexMap<int, BOKOScenarioDetailDlg*>::iterator iter = m_scenarioDlgManager.find(scenarioDataStruct->scenarioIndex);
+	if (iter == m_scenarioDlgManager.end())
+	{
+		ReleaseScenarioStruct();
+		return false;
+	}
+
+	iter->value.value->m_timeline.SetExpandCloseEvent();
+
+	ReleaseScenarioStruct();
+
 	return true;
 }

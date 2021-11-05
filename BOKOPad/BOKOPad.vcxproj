@@ -232,10 +232,22 @@
     <ClInclude Include="CExcel\CWorkbooks.h" />
     <ClInclude Include="CExcel\CWorksheet.h" />
     <ClInclude Include="CExcel\CWorksheets.h" />
+    <ClInclude Include="CWord\CApplication0.h" />
+    <ClInclude Include="CWord\CDocument0.h" />
+    <ClInclude Include="CWord\CDocuments.h" />
+    <ClInclude Include="CWord\CFont1.h" />
+    <ClInclude Include="CWord\CRange0.h" />
+    <ClInclude Include="CWord\CSection.h" />
+    <ClInclude Include="CWord\CSelection.h" />
+    <ClInclude Include="CWord\CShape.h" />
+    <ClInclude Include="CWord\CShapes.h" />
+    <ClInclude Include="CWord\CTable0.h" />
+    <ClInclude Include="CWord\CTables0.h" />
     <ClInclude Include="DBManagerManagement.h" />
     <ClInclude Include="ExcelFormat.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LogManager.h" />
+    <ClInclude Include="OfficeAutomationInterface.h" />
     <ClInclude Include="OneViewList.h" />
     <ClInclude Include="UIManagerManagement.h" />
     <ClInclude Include="NoteDBManager.h" />
@@ -253,6 +265,7 @@
     <ClInclude Include="TimelineDetail.h" />
     <ClInclude Include="TimelineUIManager.h" />
     <ClInclude Include="TransactionNameDefine.h" />
+    <ClInclude Include="WordFormat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKODragDlg.cpp" />
@@ -285,6 +298,7 @@
     <ClCompile Include="TimelineDBManager.cpp" />
     <ClCompile Include="TimelineDetail.cpp" />
     <ClCompile Include="TimelineUIManager.cpp" />
+    <ClCompile Include="WordFormat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOKOPad.rc" />

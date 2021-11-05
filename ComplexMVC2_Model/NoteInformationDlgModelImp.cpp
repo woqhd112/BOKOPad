@@ -215,7 +215,7 @@ bool NoteInformationDlgModelImp::UpdateNoteInformationInNotContent(ComplexString
 {
 	bool bSuccess = false;
 	DATA_INSTANCE->SetNoteInformation(in_notSEQ, 0, false, false, in_notCONTENT);
-	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_NOTCONTENT], PrepareStatementDeleteNoteInformation);
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[UPDATE_NOTE_INFORMATION_TABLE_IN_NOTCONTENT], PrepareStatementUpdateNoteInformationInNotCONTENT);
 
 	DATA_INSTANCE->ResetNoteInformation();
 

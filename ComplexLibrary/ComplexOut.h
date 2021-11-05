@@ -23,7 +23,7 @@ namespace ComplexLibrary
 
 		bool Write(ComplexString path, ComplexString buf)
 		{
-			return ComplexSingleton<ComplexFile>::GetInstance().Write(path, buf);
+			return ComplexSingleton<ComplexFile>::GetInstance().Write(path, buf, ComplexFile::FM_WR_CREATE_AND_EOF_WRITE);
 		}
 
 	private:

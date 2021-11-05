@@ -25,6 +25,14 @@ namespace ComplexLibrary
 
 		}
 
+		enum FileMode
+		{
+			FM_WR_CREATE_AND_EOF_WRITE = 0,
+			FM_W_OVERWRITE = 1,
+			FM_WR_BINARY = 2,
+			FM_R_NOT_CREATE_READ = 3
+		};
+
 		bool Exist(ComplexString path)
 		{
 			std::ifstream read_file;
@@ -46,13 +54,21 @@ namespace ComplexLibrary
 			return m_filePath;
 		}
 
-		bool Read(ComplexString& buf)
+		bool Read(ComplexString& buf, FileMode fm = FM_R_NOT_CREATE_READ)
 		{
+			if (fm == FM_W_OVERWRITE)
+				return false;
+
 			if (buf.GetLength() > 4096)
 				return false;
 
 			std::ifstream read_file;
-			read_file.open(m_filePath.GetBuffer());
+			if (fm == FM_WR_CREATE_AND_EOF_WRITE)
+				read_file.open(m_filePath.GetBuffer(), std::ios::app);
+			else if (fm == FM_WR_BINARY)
+				read_file.open(m_filePath.GetBuffer(), std::ios::binary);
+			else if(fm == FM_R_NOT_CREATE_READ)
+				read_file.open(m_filePath.GetBuffer(), std::ios::in);
 
 			if (!read_file.is_open())
 			{
@@ -72,13 +88,21 @@ namespace ComplexLibrary
 			return true;
 		}
 
-		bool Read(ComplexString path, ComplexString& buf)
+		bool Read(ComplexString path, ComplexString& buf, FileMode fm = FM_R_NOT_CREATE_READ)
 		{
+			if (fm == FM_W_OVERWRITE)
+				return false;
+
 			if (buf.GetLength() > 4096)
 				return false;
 
 			std::ifstream read_file;
-			read_file.open(path.GetBuffer());
+			if (fm == FM_WR_CREATE_AND_EOF_WRITE)
+				read_file.open(path.GetBuffer(), std::ios::app);
+			else if (fm == FM_WR_BINARY)
+				read_file.open(path.GetBuffer(), std::ios::binary);
+			else if (fm == FM_R_NOT_CREATE_READ)
+				read_file.open(path.GetBuffer(), std::ios::in);
 
 			if (!read_file.is_open())
 			{
@@ -98,10 +122,19 @@ namespace ComplexLibrary
 			return true;
 		}
 
-		bool Write(ComplexString buf)
+		bool Write(ComplexString buf, FileMode fm = FM_W_OVERWRITE)
 		{
+			if (fm == FM_R_NOT_CREATE_READ)
+				return false;
+
 			std::ofstream write_file;
-			write_file.open(m_filePath.GetBuffer());
+
+			if (fm == FM_W_OVERWRITE)
+				write_file.open(m_filePath.GetBuffer(), std::ios::out);
+			else if (fm == FM_WR_BINARY)
+				write_file.open(m_filePath.GetBuffer(), std::ios::binary);
+			else if (fm == FM_WR_CREATE_AND_EOF_WRITE)
+				write_file.open(m_filePath.GetBuffer(), std::ios::app);
 
 			if (!write_file.is_open())
 			{
@@ -115,10 +148,18 @@ namespace ComplexLibrary
 			return true;
 		}
 
-		bool Write(ComplexString path, ComplexString buf)
+		bool Write(ComplexString path, ComplexString buf, FileMode fm = FM_W_OVERWRITE)
 		{
+			if (fm == FM_R_NOT_CREATE_READ)
+				return false;
+
 			std::ofstream write_file;
-			write_file.open(path.GetBuffer());
+			if (fm == FM_W_OVERWRITE)
+				write_file.open(path.GetBuffer(), std::ios::out);
+			else if (fm == FM_WR_BINARY)
+				write_file.open(path.GetBuffer(), std::ios::binary);
+			else if (fm == FM_WR_CREATE_AND_EOF_WRITE)
+				write_file.open(path.GetBuffer(), std::ios::app);
 
 			if (!write_file.is_open())
 			{

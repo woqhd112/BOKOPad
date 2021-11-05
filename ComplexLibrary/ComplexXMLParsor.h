@@ -103,7 +103,7 @@ namespace ComplexLibrary
 			if (resultDoc.IsEmpty())
 				return false;
 
-			if (Write(strPath, resultDoc) == false)
+			if (Write(strPath, resultDoc, FM_W_OVERWRITE) == false)
 				return false;
 
 			return true;
@@ -562,7 +562,7 @@ namespace ComplexLibrary
 					}
 				}
 				else
-					throw "Not Close Tag";
+					throw ComplexXMLParseException("XML document is not close tag.", "ComplexXMLParsor", "ValidateTag");
 			}
 
 

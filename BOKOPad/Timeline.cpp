@@ -6,6 +6,7 @@
 #include "Timeline.h"
 #include "TimelineUIManager.h"
 #include "NoteUIManager.h"
+#include "NoteDBManager.h"
 #include "TimelineDBManager.h"
 #include "afxdialogex.h"
 
@@ -89,17 +90,17 @@ BOOL Timeline::OnInitDialog()
 	m_detailDlg.ShowWindow(SW_HIDE);
 	m_oneViewDlg.ShowWindow(SW_HIDE);
 
-	m_oneViewDlg.AttachManager(m_timeUIManager, m_timeDBManager);
 	Log_Manager->OnPutLog("한눈에보기 매니저 연결", LogType::LT_PROCESS);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-void Timeline::AttachNoteManager(NoteUIManager* manager)
+void Timeline::AttachNoteManager(NoteUIManager* manager, NoteDBManager* dbmanager)
 {
 	m_bAttachManagerInit = true;
 	m_noteUIManager = manager;
+	m_oneViewDlg.AttachManager(dbmanager);
 }
 
 void Timeline::HideTimelineDetail()
@@ -256,6 +257,8 @@ bool Timeline::SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct)
 	m_thisDataStruct = thisDataStruct;
 	m_defaultDragData.sceSEQ = thisDataStruct.scenarioData.GetSceSEQ();
 	m_defaultDragData.sceIndex = thisDataStruct.scenarioIndex;
+
+	m_oneViewDlg.SetScenarioManagerStruct(m_thisDataStruct);
 
 	GetClientRect(m_thisRect);
 	m_nLineStartPoint_X = m_thisRect.left + 5;
@@ -421,6 +424,11 @@ bool Timeline::ThickEventTimeline(int notSEQ, POINT pts, TimelineThickApproch m_
 	return true;
 }
 
+void Timeline::SetExpandCloseEvent()
+{
+	m_oneViewDlg.SetExpandCloseEvent();
+}
+
 BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
@@ -483,7 +491,7 @@ bool Timeline::TimelineOneViewProcess()
 			return false;
 		Log_Manager->OnPutLog("노트 정보 DB 조회 완료", LogType::LT_PROCESS);
 
-		m_oneViewDlg.SetTimelineText(note.GetNotCONTENT());
+		m_oneViewDlg.SetTimelineText(note.GetNotCONTENT(), note.GetNotSEQ());
 
 		iter++;
 	}

@@ -14,6 +14,7 @@ CExcelFormat::CExcelFormat()
 	_nCpyDepth = 0;
 	_nSaveHeight = 0;
 	_nSaveTab = 0;
+	_type = OAT_EXCEL;
 }
 
 
@@ -73,7 +74,7 @@ bool CExcelFormat::SetFix(CString& fix, std::vector<char> loopVector)
 			bResult = false;
 			break;
 		}
-		strFix.Format(_T("%c"), loopVector.at(i));
+		strFix.Format("%c", loopVector.at(i));
 		fix = strFix + fix;
 	}
 
@@ -104,10 +105,10 @@ bool CExcelFormat::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int
 	}
 	
 	nWidth -= 1;
-	CString prefixStr = _T("");
-	CString suffixStr = _T("");
-	CString prefixNum = _T("");
-	CString sufixNum = _T("");
+	CString prefixStr = "";
+	CString suffixStr = "";
+	CString prefixNum = "";
+	CString sufixNum = "";
 	bool bPrefixSuccess = false;
 	bool bSuffixSuccess = false;
 	
@@ -129,8 +130,8 @@ bool CExcelFormat::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int
 		// set start, end row range
 		int startCellNum = nDepth + 1;
 		int endCellNum = nDepth + nHeight;
-		prefixNum.Format(_T("%d"), startCellNum);	
-		sufixNum.Format(_T("%d"), endCellNum);		
+		prefixNum.Format("%d", startCellNum);	
+		sufixNum.Format("%d", endCellNum);		
 		
 		eo->_range = eo->_ws.get_Range(COleVariant(prefixStr + prefixNum), COleVariant(suffixStr + sufixNum));
 		_bSetRange = true;
@@ -427,40 +428,10 @@ void CExcelFormat::AddWorkSheet(CString WorkSheetName)
 	BorderReset(false);
 }
 
-bool CExcelFormat::OnReadyExcel(CString* strFileName, CString* strFilePath)
-{
-	CFileDialog fileDlg(FALSE, _T("xlsx"), _T("*.xlsx"), OFN_LONGNAMES | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("REPORT file (*.xlsx) | *.xlsx |"));
-
-	if (IDOK != fileDlg.DoModal()) 
-	{
-		return false;
-	}
-
-	CString strProcedure = _T("");
-	*strFileName = fileDlg.GetFileName();
-	*strFilePath = fileDlg.GetPathName();
-	CFile cFile;
-	if (cFile.Open(*strFilePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary, NULL))
-	{
-		USHORT nShort = 0xfeff;
-		int nSize = -1;
-		nSize = sizeof(nShort);
-		cFile.Write(&nShort, nSize);
-		cFile.Write((LPTSTR)(LPCTSTR)strProcedure, strProcedure.GetLength() * sizeof(TCHAR));
-		cFile.Close();
-	}
-	else 
-	{
-		AfxMessageBox(_T("저장에 실패했습니다."));
-		return false;
-	}
-
-	return true;
-}
 
 bool CExcelFormat::StartExcel(CString WorkSheetName)
 {
-	if (!eo->_app.CreateDispatch(_T("Excel.Application")))
+	if (!eo->_app.CreateDispatch("Excel.Application"))
 	{
 		return false;
 	}
@@ -535,11 +506,11 @@ void CExcelFormat::CloseExcel(CString strFilePath)
 
 	if (!_bAttach) 
 	{
-		::ShellExecute(NULL, _T("open"), strFilePath, NULL, NULL, SW_SHOW);
+		::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
 	}
 	else
 	{
-		AfxMessageBox(_T("엑셀 저장에 실패하였습니다."));
+		AfxMessageBox("엑셀 저장에 실패하였습니다.");
 	}
 }
 
@@ -727,7 +698,7 @@ CString CExcelFormat::SetVisibleTime(CString strTime)
 
 void CExcelFormat::InsertChartData(int whichChart, std::map<CString, CString> chartPairData)
 {
-	AddWorkSheet(_T("통계 데이터"));
+	AddWorkSheet("통계 데이터");
 	if (SetRange(1, GetDepth(), (int)chartPairData.size(), 1))
 	{
 		int nIndex = 0;
@@ -751,13 +722,13 @@ void CExcelFormat::InsertChartData(int whichChart, std::map<CString, CString> ch
 			{
 				if (_ttof(strValue) > 0)
 				{
-					strFormat.Format(_T("%s%%"), strValue);
+					strFormat.Format("%s%%", strValue);
 					SetItem(nIndex, 1, strFormat);
 				}
 			}
 			else
 			{
-				strFormat.Format(_T("%s%%"), strValue);
+				strFormat.Format("%s%%", strValue);
 				SetItem(nIndex, 1, strFormat);
 			}
 		}
@@ -776,7 +747,7 @@ void CExcelFormat::SetChart(ChartData chartData)
 
 	eo->_charts = eo->_wb.get_Charts();
 	eo->_chart = eo->_charts.Add(_colOption, covOptional, _colOption);
-	eo->_chart.put_Name(_T("통계 그래프"));
+	eo->_chart.put_Name("통계 그래프");
 	
 	eo->_chart.put_ChartType(chartData.kindOfChart);
 
@@ -855,7 +826,7 @@ void CExcelFormat::SetLineChartColor(int whichChart, int legendSize, std::vector
 		eo->_entry = eo->_legend.LegendEntries(COleVariant((short)1));
 		eo->_key = eo->_entry.get_LegendKey();
 		eo->_borders = eo->_key.get_Border();
-		eo->_borders.put_Color(COleVariant((DOUBLE)CExcelFormat::COLOR_THICK_GREY));
+		eo->_borders.put_Color(COleVariant((DOUBLE)COLOR_THICK_GREY));
 
 		if (whichChart == CHART_POINTLINE)
 		{
@@ -872,7 +843,7 @@ void CExcelFormat::SetLineChartColor(int whichChart, int legendSize, std::vector
 					if (i == j)
 					{	
 						eo->_point.put_MarkerBackgroundColor(long(eo->_interior.get_Color().dblVal));
-						eo->_point.put_MarkerForegroundColor(CExcelFormat::COLOR_WHITE);
+						eo->_point.put_MarkerForegroundColor(COLOR_WHITE);
 						break;
 					}
 				}

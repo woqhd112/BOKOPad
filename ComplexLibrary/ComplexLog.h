@@ -26,14 +26,9 @@ namespace ComplexLibrary
 
 		void ComplexWrite(ComplexString filePath, const char* format, va_list args)
 		{
-			ComplexString buf;
-			Read(filePath, buf);
-
 			ComplexFormat formatting;
-			ComplexString test = formatting.GetFormatString(format, args);
-			buf += test;
-
-			if (Write(filePath, buf) == false)
+			ComplexString buf = formatting.GetFormatString(format, args);
+			if (Write(filePath, buf, FM_WR_CREATE_AND_EOF_WRITE) == false)
 				return;
 		}
 

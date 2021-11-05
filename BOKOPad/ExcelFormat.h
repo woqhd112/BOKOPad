@@ -29,18 +29,7 @@
 #include "CExcel\CPoint0.h"
 #include <vector> 
 #include <map>
-#include <afx.h> 
-#include <afxwin.h>  
-#include <afxext.h>  
-#include <afxdlgs.h>
-#include <afxdisp.h>
-
-#ifndef _AFX_NO_OLE_SUPPORT
-#include <afxdtctl.h>           // Internet Explorer 4 공용 컨트롤에 대한 MFC 지원입니다.
-#endif
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>             // Windows 공용 컨트롤에 대한 MFC 지원입니다.
-#endif // _AFX_NO_AFXCMN_SUPPORT
+#include "OfficeAutomationInterface.h"
 
 #define AUTO_COLUMN				0
 #define AUTO_ROW				1
@@ -55,7 +44,7 @@
 //https://gusrealworld.tistory.com/47 vba colorindex 표
 
 // ms office의 엑셀 클래스를 사용하기 편하게 처리하는 클래스
-class CExcelFormat
+class CExcelFormat : public OAInterface
 {
 public:
 
@@ -63,46 +52,10 @@ public:
 	CExcelFormat();
 
 	// 소멸자
-	~CExcelFormat();
+	virtual ~CExcelFormat();
 
 public:
 
-	/*
-	 * Excel RGB Color
-	 */
-	enum Color
-	{
-		// cell color
-		COLOR_THICK_GREY =				 RGB(128, 128, 128),
-		COLOR_LESS_THICK_GREY =			 RGB(166, 166, 166),
-		COLOR_GREY =					 RGB(191, 191, 191),
-		COLOR_LESS_LIGHT_GREY =			 RGB(217, 217, 217),
-		COLOR_LIGHT_GREY =				 RGB(242, 242, 242),
-		COLOR_WHITE =					 RGB(255, 255, 255),
-		COLOR_BLACK =					 RGB(0, 0, 0),
-		COLOR_RED =						 RGB(255, 0, 0),
-		//project&&env depth color
-		COLOR_PASTEL_ORANGE =			 RGB(237, 125, 49),
-		COLOR_PASTEL_LESS_ORANGE =		 RGB(244, 176, 132),
-		COLOR_PASTEL_LIGHT_ORANGE =		 RGB(252, 228, 214),
-		//group depth color
-		COLOR_PASTEL_GREEN =			 RGB(146, 208, 80),
-		COLOR_PASTEL_LESS_GREEN =		 RGB(169, 208, 142),
-		COLOR_PASTEL_LIGHT_GREEN =		 RGB(226, 239, 218),
-		//scenario depth color
-		COLOR_PASTEL_BLUE =				 RGB(47, 117, 181),
-		COLOR_PASTEL_LESS_BLUE =		 RGB(189, 215, 238),
-		COLOR_PASTEL_LIGHT_BLUE =		 RGB(221, 235, 247),
-		//message depth color
-		COLOR_PASTEL_THICK_YELLOW =		 RGB(255, 192, 0),
-		COLOR_PASTEL_YELLOW =			 RGB(255, 217, 102),
-		COLOR_PASTEL_LESS_YELLOW =		 RGB(255, 230, 153),
-		COLOR_PASTEL_LIGHT_YELLOW =		 RGB(255, 242, 204),
-		//reason depth color
-		COLOR_PASTEL_TURQUOISE =		 RGB(32, 178, 198),
-		COLOR_PASTEL_LESS_TURQUOISE =	 RGB(147, 219, 229),
-		COLOR_PASTEL_LIGHT_TURQUOISE =	 RGB(221, 244, 247)
-	};
 
 	/*
 	 * 기본 보더설정값 (예약용)
@@ -186,95 +139,87 @@ public:
 
 private:
  
-	// 엑셀에서 사용하기위한 true 값
-	COleVariant _colTrue;
-
-	// 엑셀에서 사용하기위한 false 값
-	COleVariant _colFalse;
-
-	// 엑셀에서 사용하기위한 옵션값
-	COleVariant _colOption; 
 
 	// 엑셀의 기능들의 객체 집합 구조체
 	struct ExcelObject
 	{
 		// 엑셀데이터의 최상위 객체
-		CApplication _app;	
+		CApplication		_app;	
 
 		// 워크북들을 담고있는 콜렉션 객체
-		CWorkbooks _wbs;			
+		CWorkbooks			_wbs;			
 
 		// 단일 워크북 객체
-		CWorkbook _wb;		
+		CWorkbook			_wb;		
 
 		// 워크시트를 담고있는 콜렉션 객체
-		CWorksheets _wss;		
+		CWorksheets			_wss;		
 
 		// 단일 워크시트 객체
-		CWorksheet _ws;		
+		CWorksheet			_ws;		
 
 		// 워크시트 안에 존재하는 셀 범위를 담당하는 객체
-		CRange _range;				
+		CRange				_range;				
 
 		// 해당 범위안에 있는 데이터의 폰트를 지정하는 객체
-		CFont0 _font;	
+		CFont0				_font;	
 
 		// 해당 범위안에 있는 셀의 보더값들을 담고있는 객체
-		CBorders _borders;	
+		CBorders			_borders;	
 
 		// 보더값의 단일 객체
-		CBorder _bl, _bt, _bb, _br;	
+		CBorder				_bl, _bt, _bb, _br;	
 
 		// 해당 범위를 디자인할수있는 객체
-		Cnterior _interior;	
+		Cnterior			_interior;	
 
 		// 워크북에 존재하는 차트 콜렉션 객체
-		CCharts _charts;	
+		CCharts				_charts;	
 
 		// 차트콜렉션에서 추가한 단일 차트객체
-		CChart _chart;				
+		CChart				_chart;				
 
 		// 차트객체의 타이틀을 담고있는 객체
-		CChartTitle _title;		
+		CChartTitle			_title;		
 
 		// 차트객체의 데이터의 색을 입힐수있는 객체
-		CChartColorFormat _cform;	
+		CChartColorFormat	_cform;	
 
 		// 차트객체의 데이터의 채우기기능을 사용할수 있는 객체
-		CChartFillFormat _fform;
+		CChartFillFormat	_fform;
 
 		// 차트객체의 계열값을 담고있는 객체
-		CSeries _srs;				
+		CSeries				_srs;				
 
 		// 계열값의 데이터와 그래프를 연결해주는 객체
-		CPoint0 _point;	
+		CPoint0				_point;	
 
 		// 차트객체의 범례값을 가지고있는 객체
-		CLegend _legend;	
+		CLegend				_legend;	
 
 		// 단일 범례값을 담고있는 객체
-		CLegendEntry _entry;	
+		CLegendEntry		_entry;	
 
 		// 범례값의 데이터와 그래프를 연결해주는 객체
-		CLegendKey _key;			
+		CLegendKey			_key;			
 
 		// 엑셀의 가로 페이지나누기값을 담고있는 콜렉션 객체
-		CHPageBreaks _hpbs;		
+		CHPageBreaks		_hpbs;		
 
 		// 단일 가로 페이지나누기 객체
-		CHPageBreak _hpb;
+		CHPageBreak			_hpb;
 
 		// 엑셀의 세로 페이지나누기값을 담고있는 콜렉션 객체
-		CVPageBreaks _vpbs;				
+		CVPageBreaks		_vpbs;				
 
 		// 단일 세로 페이지나누기 객체
-		CVPageBreak _vpb;
+		CVPageBreak			_vpb;
 
 		// 엑셀의 전체 창을 나타내는 콜렉션 객체
-		CWindows _wnds;
+		CWindows			_wnds;
 
 		// 단일 창객체
-		CWindow0 _wnd;					
+		CWindow0			_wnd;					
 	};
 
 	// 엑셀의 기능들의 객체 집합 구조체 포인터
@@ -288,9 +233,6 @@ private:
 
 	// 사방면 보더값 사용 유무
 	bool _bSetBl, _bSetBr, _bSetBb, _bSetBt;	
-
-	// 엑셀 스타트유무
-	bool _bAttach;	
 
 	// 셀의 범위가 설정되었는지 유무
 	bool _bSetRange;
@@ -535,21 +477,6 @@ public:
 	* @ return	:	설정된범위의 넓이값
 	*/
 	double GetColumnFixelValue();
-
-	/*
-	 * 엑셀 로드준비
-	 * 저장할 파일이름과 경로값 전달
-	 * 엑셀 준비 성공여부
-	 */
-
-	/**
-	* OnReadyExcel
-	* @ param1	:	엑셀을 실행 후 저장할 파일 이름
-	* @ param2	:	엑셀을 실행 후 저장할 파일 경로
-	* @ see		:	엑셀 실행을 준비하는 함수
-	* @ return	:	엑셀 준비 성공 여부
-	*/
-	bool OnReadyExcel(CString* strFileName, CString* strFilePath);
 
 	/**
 	* ResetDepth

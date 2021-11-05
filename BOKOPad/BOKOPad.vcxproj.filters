@@ -59,6 +59,9 @@
     <Filter Include="Util\Word">
       <UniqueIdentifier>{24ab305a-dbb8-4313-9ee8-bb04b3b710cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util\Word\include">
+      <UniqueIdentifier>{98879c69-76a5-4e61-86a2-2218d6832bb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -238,6 +241,45 @@
     <ClInclude Include="BOKOProgressPopup.h">
       <Filter>UI\Log</Filter>
     </ClInclude>
+    <ClInclude Include="OfficeAutomationInterface.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="WordFormat.h">
+      <Filter>Util\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CApplication0.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CDocument0.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CDocuments.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CFont1.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CRange0.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CSection.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CShape.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CShapes.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CTable0.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CTables0.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CWord\CSelection.h">
+      <Filter>Util\Word\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -314,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="BOKOProgressPopup.cpp">
       <Filter>UI\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="WordFormat.cpp">
+      <Filter>Util\Word</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

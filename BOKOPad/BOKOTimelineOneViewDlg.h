@@ -2,10 +2,11 @@
 #include "OneViewList.h"
 
 // BOKOTimelineOneViewDlg 대화 상자
-class TimelineUIManager;
+class NoteDBManager;
 
 class BOKOTimelineOneViewDlg : public CDialogEx
 {
+	friend class OneViewList;
 	DECLARE_DYNAMIC(BOKOTimelineOneViewDlg)
 
 public:
@@ -15,11 +16,12 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_TIMELINE_ONE_VIEW };
 
-	void AttachManager(TimelineUIManager* manager, TimelineDBManager* dbmanager);
+	void AttachManager(NoteDBManager* dbmanager);
 	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 
 	void Clear();
-	void SetTimelineText(ComplexString& strText);
+	void SetTimelineText(ComplexString& strText, int noteSEQ);
+	void SetExpandCloseEvent();
 
 public:
 

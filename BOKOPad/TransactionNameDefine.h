@@ -14,6 +14,7 @@ enum TRANSACTION_NAME_DEFINE
 	TND_DRAG_EVENT_TIMELINE_THIS_TIMELINE_SIGNAL,
 	TND_DRAG_EVENT_TIMELINE_ANOTHER_TIMELINE_SIGNAL,
 	TND_NOTE_CHECK_DELETE,
+	TND_TIMELINE_ONEVIEW_CHANGE,
 };
 
 // 세이브 포인트명은 공백포함 안됨
@@ -30,4 +31,5 @@ static const char* TransactionNames[] = {
 										"Drag_Event_Timeline_This_Timeline_Signal",
 										"Drag_Event_Timeline_Another_Timeline_Signal",
 										"Note_Check_Delete",
+										"Timeline_Oneview_Change",
 										};

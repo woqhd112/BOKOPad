@@ -74,3 +74,16 @@ bool NoteDBManager::SelectOneNoteInformation(int in_notSEQ, NoteInformationVO* o
 
 	return false;
 }
+
+bool NoteDBManager::UpdateNoteInformationInNotContent(int in_notSEQ, ComplexString in_notCONTENT)
+{
+	m_inputNoteVO.SetNotSEQ(in_notSEQ);
+	m_inputNoteVO.SetNotCONTENT(in_notCONTENT);
+	RequestScope->SetRequestAttributes(m_inputNoteVO);
+	m_inputNoteVO.Clear();
+
+	if (MVC_Controller->UpdateNoteInformationInNotContent())
+		return true;
+
+	return false;
+}
