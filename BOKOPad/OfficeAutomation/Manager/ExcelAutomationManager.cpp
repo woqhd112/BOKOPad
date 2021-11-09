@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "ExcelFormat.h"
+#include "ExcelAutomationManager.h"
  
-CExcelFormat::CExcelFormat()
+ExcelAutomationManager::ExcelAutomationManager()
 {
 	eo = new ExcelObject;
 	_bSetBr = true;
@@ -18,7 +18,7 @@ CExcelFormat::CExcelFormat()
 }
 
 
-CExcelFormat::~CExcelFormat()
+ExcelAutomationManager::~ExcelAutomationManager()
 {
 	if (eo)
 	{
@@ -27,7 +27,7 @@ CExcelFormat::~CExcelFormat()
 	}
 }
  
-std::vector<char> CExcelFormat::SetLoopCnt(int nLoopNum)
+std::vector<char> ExcelAutomationManager::SetLoopCnt(int nLoopNum)
 {
 	std::vector<char> vectorSeqeunce;
 	const int ASC_IDX_CNT = 26;
@@ -58,7 +58,7 @@ std::vector<char> CExcelFormat::SetLoopCnt(int nLoopNum)
 	return vectorSeqeunce;
 }
 
-bool CExcelFormat::SetFix(CString& fix, std::vector<char> loopVector)
+bool ExcelAutomationManager::SetFix(CString& fix, std::vector<char> loopVector)
 {
 	bool bResult = true;
 	CString strFix = _T("");
@@ -81,7 +81,7 @@ bool CExcelFormat::SetFix(CString& fix, std::vector<char> loopVector)
 	return bResult;
 }
 
-bool CExcelFormat::SetRangeData(int nLoopNum, CString& fixStr)
+bool ExcelAutomationManager::SetRangeData(int nLoopNum, CString& fixStr)
 {
 	bool bResult = true;
 	std::vector<char> loopVector = SetLoopCnt(nLoopNum);
@@ -93,7 +93,7 @@ bool CExcelFormat::SetRangeData(int nLoopNum, CString& fixStr)
 	return bResult;
 }
 
-bool CExcelFormat::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int nWidth, unsigned int nHeight, bool bParent /* = true*/)
+bool ExcelAutomationManager::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int nWidth, unsigned int nHeight, bool bParent /* = true*/)
 {
 	bool bResult = false;
 	_bSetRange = false;
@@ -146,7 +146,7 @@ bool CExcelFormat::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int
 	return bResult;
 }
 
-void CExcelFormat::DataSwapping(LONG* nTargetData1, LONG* nTargetData2)
+void ExcelAutomationManager::DataSwapping(LONG* nTargetData1, LONG* nTargetData2)
 {
 	LONG nSwap = 0;
 	if (*nTargetData1 > *nTargetData2)
@@ -157,7 +157,7 @@ void CExcelFormat::DataSwapping(LONG* nTargetData1, LONG* nTargetData2)
 	}
 }
 
-void CExcelFormat::BorderReset(bool bReset)
+void ExcelAutomationManager::BorderReset(bool bReset)
 {
 	_bSetBr = bReset;
 	_bSetBl = bReset;
@@ -165,7 +165,7 @@ void CExcelFormat::BorderReset(bool bReset)
 	_bSetBt = bReset;
 }
 
-void CExcelFormat::SetFontColor(Color FontColor)
+void ExcelAutomationManager::SetFontColor(Color FontColor)
 {
 	if (_bSetRange)
 	{
@@ -174,7 +174,7 @@ void CExcelFormat::SetFontColor(Color FontColor)
 	}
 }
 
-void CExcelFormat::SetFontColor(CPoint startPoint, CPoint endPoint, Color FontColor)
+void ExcelAutomationManager::SetFontColor(CPoint startPoint, CPoint endPoint, Color FontColor)
 {
 	if (startPoint.x < 1 || startPoint.y < 1 || endPoint.x < 1 || endPoint.y < 1) return;
 
@@ -193,7 +193,7 @@ void CExcelFormat::SetFontColor(CPoint startPoint, CPoint endPoint, Color FontCo
 	}
 }
 
-void CExcelFormat::SetFontStyle(CString strFontStyle)
+void ExcelAutomationManager::SetFontStyle(CString strFontStyle)
 {
 	if (_bSetRange)
 	{
@@ -202,7 +202,7 @@ void CExcelFormat::SetFontStyle(CString strFontStyle)
 	}
 }
 
-void CExcelFormat::SetFontBold(bool FontBold)
+void ExcelAutomationManager::SetFontBold(bool FontBold)
 {
 	if (_bSetRange)
 	{
@@ -214,7 +214,7 @@ void CExcelFormat::SetFontBold(bool FontBold)
 	}
 }
 
-void CExcelFormat::SetFontSize(int nFontSize)
+void ExcelAutomationManager::SetFontSize(int nFontSize)
 {
 	if (_bSetRange)
 	{
@@ -223,7 +223,7 @@ void CExcelFormat::SetFontSize(int nFontSize)
 	}
 }
 
-void CExcelFormat::SetBkColor(Color CellColor)
+void ExcelAutomationManager::SetBkColor(Color CellColor)
 {
 	if (_bSetRange)
 	{
@@ -232,7 +232,7 @@ void CExcelFormat::SetBkColor(Color CellColor)
 	}
 }
 
-void CExcelFormat::SetBkColor(CPoint startPoint, CPoint endPoint, Color CellColor)
+void ExcelAutomationManager::SetBkColor(CPoint startPoint, CPoint endPoint, Color CellColor)
 {
 	if (startPoint.x < 1 || startPoint.y < 1 || endPoint.x < 1 || endPoint.y < 1) return;
 
@@ -251,7 +251,7 @@ void CExcelFormat::SetBkColor(CPoint startPoint, CPoint endPoint, Color CellColo
 	}
 }
 
-void CExcelFormat::SetBoxBorder(BoldWeight BoxBoldWeight)
+void ExcelAutomationManager::SetBoxBorder(BoldWeight BoxBoldWeight)
 {
 	if (_bSetRange)
 	{
@@ -260,12 +260,12 @@ void CExcelFormat::SetBoxBorder(BoldWeight BoxBoldWeight)
 	}
 }
 
-void CExcelFormat::SetBoxBorderLeft(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
+void ExcelAutomationManager::SetBoxBorderLeft(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
 	if (_bSetRange)
 	{
 		eo->_borders = eo->_range.get_Borders();
-		eo->_bl = eo->_borders.get_Item(CExcelFormat::BORDER_STYLE_LEFT);
+		eo->_bl = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_LEFT);
 		eo->_bl.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
@@ -274,12 +274,12 @@ void CExcelFormat::SetBoxBorderLeft(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWe
 	}
 }
 
-void CExcelFormat::SetBoxBorderRight(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
+void ExcelAutomationManager::SetBoxBorderRight(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
 	if (_bSetRange)
 	{
 		eo->_borders = eo->_range.get_Borders();
-		eo->_br = eo->_borders.get_Item(CExcelFormat::BORDER_STYLE_RIGHT);
+		eo->_br = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_RIGHT);
 		eo->_br.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
@@ -288,12 +288,12 @@ void CExcelFormat::SetBoxBorderRight(BoldStyle BoxBoldStyle, BoldWeight BoxBoldW
 	}
 }
 
-void CExcelFormat::SetBoxBorderTop(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
+void ExcelAutomationManager::SetBoxBorderTop(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
 	if (_bSetRange)
 	{
 		eo->_borders = eo->_range.get_Borders();
-		eo->_bt = eo->_borders.get_Item(CExcelFormat::BORDER_STYLE_TOP);
+		eo->_bt = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_TOP);
 		eo->_bt.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
@@ -302,12 +302,12 @@ void CExcelFormat::SetBoxBorderTop(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWei
 	}
 }
 
-void CExcelFormat::SetBoxBorderBottom(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
+void ExcelAutomationManager::SetBoxBorderBottom(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
 	if (_bSetRange)
 	{
 		eo->_borders = eo->_range.get_Borders();
-		eo->_bb = eo->_borders.get_Item(CExcelFormat::BORDER_STYLE_BOTTOM);
+		eo->_bb = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_BOTTOM);
 		eo->_bb.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
@@ -316,7 +316,7 @@ void CExcelFormat::SetBoxBorderBottom(BoldStyle BoxBoldStyle, BoldWeight BoxBold
 	}
 }
 
-void CExcelFormat::SetRangeStyle(Color CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
+void ExcelAutomationManager::SetRangeStyle(Color CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
 {
 	SetBkColor(CellColor);
 	SetFontBold(FontBold);
@@ -330,7 +330,7 @@ void CExcelFormat::SetRangeStyle(Color CellColor, Align TextAlign, bool BoxBorde
 	SetHorizonTextAlign(TextAlign);
 }
 
-void CExcelFormat::SetBoxStyle(bool BoxBorder, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
+void ExcelAutomationManager::SetBoxStyle(bool BoxBorder, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
 {
 	if (BoxBorder)
 	{
@@ -342,27 +342,27 @@ void CExcelFormat::SetBoxStyle(bool BoxBorder, BoldStyle BoxBoldStyle /* = BOLD_
 	if (_bSetBb) SetBoxBorderBottom(BoxBoldStyle, BoxBoldWeight);
 }
 
-void CExcelFormat::SetBlOn(bool setBl)
+void ExcelAutomationManager::SetBlOn(bool setBl)
 {
 	this->_bSetBl = setBl;
 }
 
-void CExcelFormat::SetBtOn(bool setBt)
+void ExcelAutomationManager::SetBtOn(bool setBt)
 {
 	this->_bSetBt = setBt;
 }
 
-void CExcelFormat::SetBbOn(bool setBb)
+void ExcelAutomationManager::SetBbOn(bool setBb)
 {
 	this->_bSetBb = setBb;
 }
 
-void CExcelFormat::SetBrOn(bool setBr)
+void ExcelAutomationManager::SetBrOn(bool setBr)
 {
 	this->_bSetBr = setBr;
 }
 
-double CExcelFormat::GetColumnFixelValue()
+double ExcelAutomationManager::GetColumnFixelValue()
 {
 	double dColumnWidth = 0;
 	if (_bSetRange)
@@ -374,7 +374,7 @@ double CExcelFormat::GetColumnFixelValue()
 	return dColumnWidth;
 }
 
-double CExcelFormat::GetRowFixelValue()
+double ExcelAutomationManager::GetRowFixelValue()
 {
 	double dRowHeight = 0;
 	if (_bSetRange)
@@ -387,7 +387,7 @@ double CExcelFormat::GetRowFixelValue()
 }
 
 
-void CExcelFormat::SetAutoFit(bool bEntireType)
+void ExcelAutomationManager::SetAutoFit(bool bEntireType)
 {
 	if (_bSetRange)
 	{
@@ -404,7 +404,7 @@ void CExcelFormat::SetAutoFit(bool bEntireType)
 	}
 }
 
-void CExcelFormat::VisibleWorkSheet(int nWorkSheetIndex, bool bVisible)
+void ExcelAutomationManager::VisibleWorkSheet(int nWorkSheetIndex, bool bVisible)
 {
 	CWorksheet ws = eo->_ws;
 	eo->_ws = eo->_wss.get_Item(COleVariant(short(nWorkSheetIndex + 1)));
@@ -412,7 +412,7 @@ void CExcelFormat::VisibleWorkSheet(int nWorkSheetIndex, bool bVisible)
 	eo->_ws = ws;
 }
 
-void CExcelFormat::AddWorkSheet(CString WorkSheetName)
+void ExcelAutomationManager::AddWorkSheet(CString WorkSheetName)
 {
 	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
 	covOptional.vt = VT_DISPATCH;
@@ -429,7 +429,7 @@ void CExcelFormat::AddWorkSheet(CString WorkSheetName)
 }
 
 
-bool CExcelFormat::StartExcel(CString WorkSheetName)
+bool ExcelAutomationManager::StartExcel(CString WorkSheetName)
 {
 	if (!eo->_app.CreateDispatch("Excel.Application"))
 	{
@@ -451,7 +451,7 @@ bool CExcelFormat::StartExcel(CString WorkSheetName)
 	return true;
 }
 
-void CExcelFormat::SaveWorkBook(CString strFilePath)
+void ExcelAutomationManager::SaveWorkBook(CString strFilePath)
 {
 	eo->_app.put_DisplayAlerts(FALSE);
 	eo->_wb._SaveAs(COleVariant(strFilePath), _colOption, _colOption, _colOption, _colOption, _colOption, 0, _colOption, _colOption, _colOption, _colOption, _colOption);
@@ -460,7 +460,7 @@ void CExcelFormat::SaveWorkBook(CString strFilePath)
 	_nCpyDepth = 0;
 }
 
-void CExcelFormat::CloseExcel(CString strFilePath)
+void ExcelAutomationManager::CloseExcel(CString strFilePath)
 {
 	if (_bAttach)
 	{
@@ -502,7 +502,7 @@ void CExcelFormat::CloseExcel(CString strFilePath)
 	CloseProcess(strFilePath);
 }
 
-void CExcelFormat::SetPageBreak(bool bUseVerticalBreak, bool bUseHorizonBreak)
+void ExcelAutomationManager::SetPageBreak(bool bUseVerticalBreak, bool bUseHorizonBreak)
 {
 	eo->_wnds = eo->_wb.get_Windows();
 	eo->_wnd = eo->_wnds.get_Item(COleVariant((long)1));
@@ -533,7 +533,7 @@ void CExcelFormat::SetPageBreak(bool bUseVerticalBreak, bool bUseHorizonBreak)
 	eo->_wnd.put_View(1);
 }
 
-void CExcelFormat::SetHorizonTextAlign(Align TextAlign)
+void ExcelAutomationManager::SetHorizonTextAlign(Align TextAlign)
 {
 	if (_bSetRange)
 	{
@@ -542,7 +542,7 @@ void CExcelFormat::SetHorizonTextAlign(Align TextAlign)
 	}
 }
 
-void CExcelFormat::SetVerticalTextAlign(Align TextAlign)
+void ExcelAutomationManager::SetVerticalTextAlign(Align TextAlign)
 {
 	if (_bSetRange)
 	{
@@ -551,7 +551,7 @@ void CExcelFormat::SetVerticalTextAlign(Align TextAlign)
 	}
 }
 
-void CExcelFormat::SetAutoLineChange(BOOL setLineEnd)
+void ExcelAutomationManager::SetAutoLineChange(BOOL setLineEnd)
 {
 	if (_bSetRange)
 	{
@@ -559,7 +559,7 @@ void CExcelFormat::SetAutoLineChange(BOOL setLineEnd)
 	}
 }
 
-void CExcelFormat::SetIndent(int nIndentValue)
+void ExcelAutomationManager::SetIndent(int nIndentValue)
 {
 	if (_bSetRange)
 	{
@@ -568,13 +568,13 @@ void CExcelFormat::SetIndent(int nIndentValue)
 	}
 }
 
-void CExcelFormat::SaveDepth()
+void ExcelAutomationManager::SaveDepth()
 {
 	this->_nDepth += _nSaveHeight;
 	_nSaveHeight = 0;
 }
 
-void CExcelFormat::SetItem(int nWidth, int nHeight, CString strText)
+void ExcelAutomationManager::SetItem(int nWidth, int nHeight, CString strText)
 {
 	if (_bSetRange)
 	{
@@ -582,7 +582,7 @@ void CExcelFormat::SetItem(int nWidth, int nHeight, CString strText)
 	}
 }
 
-void CExcelFormat::SetItem(CString strText)
+void ExcelAutomationManager::SetItem(CString strText)
 {
 	if (_bSetRange)
 	{
@@ -590,7 +590,7 @@ void CExcelFormat::SetItem(CString strText)
 	}
 }
 
-void CExcelFormat::SetMerge()
+void ExcelAutomationManager::SetMerge()
 {
 	if (_bSetRange)
 	{
@@ -598,7 +598,7 @@ void CExcelFormat::SetMerge()
 	}
 }
 
-void CExcelFormat::SetMerge(CPoint startPoint, CPoint endPoint)
+void ExcelAutomationManager::SetMerge(CPoint startPoint, CPoint endPoint)
 {
 	if (startPoint.x < 1 || startPoint.y < 1 || endPoint.x < 1 || endPoint.y < 1) return;
 
@@ -617,38 +617,38 @@ void CExcelFormat::SetMerge(CPoint startPoint, CPoint endPoint)
 	}
 }
 
-void CExcelFormat::SetLineEnd(unsigned int nLineEnd /* = 1*/)
+void ExcelAutomationManager::SetLineEnd(unsigned int nLineEnd /* = 1*/)
 {
 	this->_nDepth += nLineEnd;
 }
 
-void CExcelFormat::SetDepth(int nDepth)
+void ExcelAutomationManager::SetDepth(int nDepth)
 {
 	this->_nDepth = nDepth;
 }
 
-int CExcelFormat::GetDepth() const
+int ExcelAutomationManager::GetDepth() const
 {
 	return this->_nDepth;
 }
 
-int CExcelFormat::GetCpyDepth() const
+int ExcelAutomationManager::GetCpyDepth() const
 {
 	return this->_nCpyDepth;
 }
 
-void CExcelFormat::ResetDepth()
+void ExcelAutomationManager::ResetDepth()
 {
 	_nCpyDepth = _nDepth;
 	_nDepth = 0;
 }
 
-void CExcelFormat::RevertDepth()
+void ExcelAutomationManager::RevertDepth()
 {
 	_nDepth = _nCpyDepth;
 }
 
-void CExcelFormat::SetAutoRowSize()
+void ExcelAutomationManager::SetAutoRowSize()
 {
 	double dRowFixelValue = GetRowFixelValue();
 	if (dRowFixelValue > HEADER_ROW_VALUE)
@@ -661,7 +661,7 @@ void CExcelFormat::SetAutoRowSize()
 	}
 }
 
-void CExcelFormat::SetCellWidth(double dWidth)
+void ExcelAutomationManager::SetCellWidth(double dWidth)
 {
 	if (_bSetRange)
 	{
@@ -669,7 +669,7 @@ void CExcelFormat::SetCellWidth(double dWidth)
 	}
 }
 
-void CExcelFormat::SetCellHeight(double dHeight)
+void ExcelAutomationManager::SetCellHeight(double dHeight)
 {
 	if (_bSetRange)
 	{
@@ -677,14 +677,14 @@ void CExcelFormat::SetCellHeight(double dHeight)
 	}
 }
 
-CString CExcelFormat::SetVisibleTime(CString strTime)
+CString ExcelAutomationManager::SetVisibleTime(CString strTime)
 {
 	CString formatTime;
 	formatTime.Format(_T("'%s"), strTime);
 	return formatTime;
 }
 
-void CExcelFormat::InsertChartData(int whichChart, std::map<CString, CString> chartPairData)
+void ExcelAutomationManager::InsertChartData(int whichChart, std::map<CString, CString> chartPairData)
 {
 	AddWorkSheet("통계 데이터");
 	if (SetRange(1, GetDepth(), (int)chartPairData.size(), 1))
@@ -724,7 +724,7 @@ void CExcelFormat::InsertChartData(int whichChart, std::map<CString, CString> ch
 	}
 }
 
-void CExcelFormat::SetChart(ChartData chartData)
+void ExcelAutomationManager::SetChart(ChartData chartData)
 {
 	InsertChartData(chartData.kindOfChart, chartData.chartPairData);
 
@@ -760,20 +760,20 @@ void CExcelFormat::SetChart(ChartData chartData)
 	SetActiveWorkSheet(0);
 }
 
-void CExcelFormat::SetActiveWorkSheet(int nWorkSheetIndex)
+void ExcelAutomationManager::SetActiveWorkSheet(int nWorkSheetIndex)
 {
 	eo->_ws = eo->_wss.get_Item(COleVariant(long(nWorkSheetIndex + 1)));
 	eo->_ws.Activate();
 }
 
-void CExcelFormat::SetStickChart()
+void ExcelAutomationManager::SetStickChart()
 {
 	eo->_chart.SetElement(2);	//상단에 차트제목표시		(title)
 	eo->_chart.SetElement(101);	//오른쪽에 범례표시			(legend)
 	eo->_chart.SetElement(201);	//중앙에 데이터레이블표시
 }
 
-void CExcelFormat::SetPieChart()
+void ExcelAutomationManager::SetPieChart()
 {
 	// https://docs.microsoft.com/ko-kr/office/vba/api/office.msochartelementtype 차트 엘레먼트값
 	eo->_chart.SetElement(2);	//상단에 차트제목표시		(title)
@@ -791,13 +791,13 @@ void CExcelFormat::SetPieChart()
 	eo->_chart.ApplyDataLabels(5, _colTrue, _colTrue, _colFalse, _colFalse, _colTrue, _colFalse, _colTrue, _colFalse, COleVariant(_T("\n")));
 }
 
-void CExcelFormat::SetLineChart()
+void ExcelAutomationManager::SetLineChart()
 {
 	eo->_chart.SetElement(2);
 	eo->_chart.SetElement(101);
 }
 
-void CExcelFormat::SetChartTitle(CString chartTitle)
+void ExcelAutomationManager::SetChartTitle(CString chartTitle)
 {
 	if (eo->_chart.get_HasTitle())
 	{
@@ -806,7 +806,7 @@ void CExcelFormat::SetChartTitle(CString chartTitle)
 	}
 }
 
-void CExcelFormat::SetLineChartColor(int whichChart, int legendSize, std::vector<int> legendColors)
+void ExcelAutomationManager::SetLineChartColor(int whichChart, int legendSize, std::vector<int> legendColors)
 {
 	if (eo->_chart.get_HasLegend())
 	{
@@ -842,7 +842,7 @@ void CExcelFormat::SetLineChartColor(int whichChart, int legendSize, std::vector
 	}
 }
 
-void CExcelFormat::SetPieChartColor(int legendSize, std::vector<int> legendColors)
+void ExcelAutomationManager::SetPieChartColor(int legendSize, std::vector<int> legendColors)
 {
 	if (eo->_chart.get_HasLegend())
 	{
@@ -865,7 +865,7 @@ void CExcelFormat::SetPieChartColor(int legendSize, std::vector<int> legendColor
 	}
 }
 
-void CExcelFormat::SetStickChartColor(int legendSize, std::vector<int> legendColors)
+void ExcelAutomationManager::SetStickChartColor(int legendSize, std::vector<int> legendColors)
 {
 	if (eo->_chart.get_HasLegend())
 	{

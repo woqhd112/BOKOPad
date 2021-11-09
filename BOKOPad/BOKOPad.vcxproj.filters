@@ -5,9 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Util">
-      <UniqueIdentifier>{019e9355-1abf-495f-b6c1-aa73affcbd16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{515e5719-c128-49ec-814c-77cdd58a51a0}</UniqueIdentifier>
     </Filter>
@@ -50,17 +47,20 @@
     <Filter Include="UI\Log">
       <UniqueIdentifier>{b60f0481-0659-49fc-90ba-93748a6b3f1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util\Excel">
-      <UniqueIdentifier>{2171625f-0157-44f4-aaa8-939a21bc1e4c}</UniqueIdentifier>
+    <Filter Include="OfficeAutomation">
+      <UniqueIdentifier>{b3ab130e-a551-4e13-ba40-0483ef8e982f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util\Excel\include">
-      <UniqueIdentifier>{4c856984-c0bf-4339-a270-6c34bf175a31}</UniqueIdentifier>
+    <Filter Include="OfficeAutomation\Manager">
+      <UniqueIdentifier>{b493068a-4223-4163-9144-58a7b7c42816}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util\Word">
-      <UniqueIdentifier>{24ab305a-dbb8-4313-9ee8-bb04b3b710cc}</UniqueIdentifier>
+    <Filter Include="OfficeAutomation\include">
+      <UniqueIdentifier>{e1af447d-6026-4d3d-985c-b2d2713a823d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Util\Word\include">
-      <UniqueIdentifier>{98879c69-76a5-4e61-86a2-2218d6832bb2}</UniqueIdentifier>
+    <Filter Include="OfficeAutomation\include\Excel">
+      <UniqueIdentifier>{bceb4b76-4a26-449e-96a6-7c4304e4d144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OfficeAutomation\include\Word">
+      <UniqueIdentifier>{5e0f1214-bf21-44fd-aa07-6cefe7fecdf2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -148,137 +148,137 @@
     <ClInclude Include="BOKOLogViewDlg.h">
       <Filter>UI\Log</Filter>
     </ClInclude>
-    <ClInclude Include="CExcel\CWindow0.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CWindows.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CWorkbook.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CWorkbooks.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CWorksheet.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CWorksheets.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CApplication.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CBorder.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CBorders.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CCellFormat.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CChart.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CChartColorFormat.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CChartFillFormat.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CCharts.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CChartTitle.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CFont0.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CHPageBreak.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CHPageBreaks.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CLegend.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CLegendEntry.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CLegendKey.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\Cnterior.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CPoint0.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CRange.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CSeries.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CStyle.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CStyles.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CVPageBreak.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CExcel\CVPageBreaks.h">
-      <Filter>Util\Excel\include</Filter>
-    </ClInclude>
-    <ClInclude Include="ExcelFormat.h">
-      <Filter>Util\Excel</Filter>
-    </ClInclude>
     <ClInclude Include="BOKOProgressPopup.h">
       <Filter>UI\Log</Filter>
     </ClInclude>
-    <ClInclude Include="OfficeAutomationInterface.h">
-      <Filter>Util</Filter>
+    <ClInclude Include="OfficeAutomation\Manager\OfficeAutomationInterface.h">
+      <Filter>OfficeAutomation\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="WordFormat.h">
-      <Filter>Util\Word</Filter>
+    <ClInclude Include="OfficeAutomation\Manager\ExcelAutomationManager.h">
+      <Filter>OfficeAutomation\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CApplication0.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\Manager\WordAutomationManager.h">
+      <Filter>OfficeAutomation\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CDocument0.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CApplication.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CDocuments.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CBorder.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CFont1.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CBorders.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CRange0.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CCellFormat.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CSection.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CChart.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CShape.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CChartColorFormat.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CShapes.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CChartFillFormat.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CTable0.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CCharts.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CTables0.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CChartTitle.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
     </ClInclude>
-    <ClInclude Include="CWord\CSelection.h">
-      <Filter>Util\Word\include</Filter>
+    <ClInclude Include="OfficeAutomation\CExcel\CFont0.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CHPageBreak.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CHPageBreaks.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CLegend.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CLegendEntry.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CLegendKey.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\Cnterior.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CPoint0.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CRange.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CSeries.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CStyle.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CStyles.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CVPageBreak.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CVPageBreaks.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWindow0.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWindows.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWorkbook.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWorkbooks.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWorksheet.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CExcel\CWorksheets.h">
+      <Filter>OfficeAutomation\include\Excel</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CApplication0.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CDocument0.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CDocuments.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CFont1.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CRange0.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CSection.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CSelection.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CShape.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CShapes.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CTable0.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
+    </ClInclude>
+    <ClInclude Include="OfficeAutomation\CWord\CTables0.h">
+      <Filter>OfficeAutomation\include\Word</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -351,14 +351,14 @@
     <ClCompile Include="BOKOLogViewDlg.cpp">
       <Filter>UI\Log</Filter>
     </ClCompile>
-    <ClCompile Include="ExcelFormat.cpp">
-      <Filter>Util\Excel</Filter>
-    </ClCompile>
     <ClCompile Include="BOKOProgressPopup.cpp">
       <Filter>UI\Log</Filter>
     </ClCompile>
-    <ClCompile Include="WordFormat.cpp">
-      <Filter>Util\Word</Filter>
+    <ClCompile Include="OfficeAutomation\Manager\ExcelAutomationManager.cpp">
+      <Filter>OfficeAutomation\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="OfficeAutomation\Manager\WordAutomationManager.cpp">
+      <Filter>OfficeAutomation\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

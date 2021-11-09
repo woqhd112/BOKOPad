@@ -1,25 +1,25 @@
 #pragma once
-#include "CWord/CApplication0.h"
-#include "CWord/CDocument0.h"
-#include "CWord/CDocuments.h"
-#include "CWord/CFont1.h"
-#include "CWord/CRange0.h"
-#include "CWord/CSection.h"
-#include "CWord/CSelection.h"
-#include "CWord/CShape.h"
-#include "CWord/CShapes.h"
-#include "CWord/CTable0.h"
-#include "CWord/CTables0.h"
+#include "..\CWord/CApplication0.h"
+#include "..\CWord/CDocument0.h"
+#include "..\CWord/CDocuments.h"
+#include "..\CWord/CFont1.h"
+#include "..\CWord/CRange0.h"
+#include "..\CWord/CSection.h"
+#include "..\CWord/CSelection.h"
+#include "..\CWord/CShape.h"
+#include "..\CWord/CShapes.h"
+#include "..\CWord/CTable0.h"
+#include "..\CWord/CTables0.h"
 #include "OfficeAutomationInterface.h"
 
 //https://docs.microsoft.com/en-us/dotnet/api/microsoft.office.interop.word._document?view=word-pia ms word api (.net ver)
 
-class WordFormat : public OAInterface
+class WordAutomationManager : public OAInterface
 {
 public:
 
-	WordFormat();
-	virtual ~WordFormat();
+	WordAutomationManager();
+	virtual ~WordAutomationManager();
 
 	bool StartWord(CString WorkSheetName);
 

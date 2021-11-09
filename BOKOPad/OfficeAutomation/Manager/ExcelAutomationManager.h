@@ -1,32 +1,32 @@
 #pragma once
   
-#include "CExcel\CApplication.h"
-#include "CExcel\CRange.h"
-#include "CExcel\CWorkbook.h"
-#include "CExcel\CWorkbooks.h"
-#include "CExcel\CWorksheet.h"
-#include "CExcel\CWorksheets.h"
-#include "CExcel\CFont0.h"
-#include "CExcel\CBorder.h"
-#include "CExcel\CBorders.h"
-#include "CExcel\CCellFormat.h"
-#include "CExcel\Cnterior.h"
-#include "CExcel\CChart.h"
-#include "CExcel\CCharts.h"
-#include "CExcel\CChartTitle.h"
-#include "CExcel\CChartColorFormat.h"	
-#include "CExcel\CChartFillFormat.h"	
-#include "CExcel\CLegend.h"
-#include "CExcel\CLegendEntry.h"
-#include "CExcel\CLegendKey.h"
-#include "CExcel\CHPageBreaks.h"
-#include "CExcel\CHPageBreak.h"
-#include "CExcel\CVPageBreaks.h"
-#include "CExcel\CVPageBreak.h"
-#include "CExcel\CWindows.h"
-#include "CExcel\CWindow0.h"
-#include "CExcel\CSeries.h"
-#include "CExcel\CPoint0.h"
+#include "..\CExcel\CApplication.h"
+#include "..\CExcel\CRange.h"
+#include "..\CExcel\CWorkbook.h"
+#include "..\CExcel\CWorkbooks.h"
+#include "..\CExcel\CWorksheet.h"
+#include "..\CExcel\CWorksheets.h"
+#include "..\CExcel\CFont0.h"
+#include "..\CExcel\CBorder.h"
+#include "..\CExcel\CBorders.h"
+#include "..\CExcel\CCellFormat.h"
+#include "..\CExcel\Cnterior.h"
+#include "..\CExcel\CChart.h"
+#include "..\CExcel\CCharts.h"
+#include "..\CExcel\CChartTitle.h"
+#include "..\CExcel\CChartColorFormat.h"	
+#include "..\CExcel\CChartFillFormat.h"	
+#include "..\CExcel\CLegend.h"
+#include "..\CExcel\CLegendEntry.h"
+#include "..\CExcel\CLegendKey.h"
+#include "..\CExcel\CHPageBreaks.h"
+#include "..\CExcel\CHPageBreak.h"
+#include "..\CExcel\CVPageBreaks.h"
+#include "..\CExcel\CVPageBreak.h"
+#include "..\CExcel\CWindows.h"
+#include "..\CExcel\CWindow0.h"
+#include "..\CExcel\CSeries.h"
+#include "..\CExcel\CPoint0.h"
 #include <vector> 
 #include <map>
 #include "OfficeAutomationInterface.h"
@@ -44,15 +44,15 @@
 //https://gusrealworld.tistory.com/47 vba colorindex 표
 
 // ms office의 엑셀 클래스를 사용하기 편하게 처리하는 클래스
-class CExcelFormat : public OAInterface
+class ExcelAutomationManager : public OAInterface
 {
 public:
 
 	// 생성자
-	CExcelFormat();
+	ExcelAutomationManager();
 
 	// 소멸자
-	virtual ~CExcelFormat();
+	virtual ~ExcelAutomationManager();
 
 public:
 

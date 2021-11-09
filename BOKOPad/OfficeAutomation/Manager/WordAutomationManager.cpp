@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "WordFormat.h"
+#include "WordAutomationManager.h"
 
-WordFormat::WordFormat()
+WordAutomationManager::WordAutomationManager()
 {
 	m_wo = new WordObject;
 	_bAttach = false;
@@ -10,7 +10,7 @@ WordFormat::WordFormat()
 	_type = OAT_WORD;
 }
 
-WordFormat::~WordFormat()
+WordAutomationManager::~WordAutomationManager()
 {
 	if (m_wo)
 	{
@@ -19,7 +19,7 @@ WordFormat::~WordFormat()
 	}
 }
 
-bool WordFormat::StartWord(CString WorkSheetName)
+bool WordAutomationManager::StartWord(CString WorkSheetName)
 {
 	if (!m_wo->_app.CreateDispatch("Word.Application"))
 	{
@@ -36,7 +36,7 @@ bool WordFormat::StartWord(CString WorkSheetName)
 	return true;
 }
 
-void WordFormat::CloseWord(CString strFilePath)
+void WordAutomationManager::CloseWord(CString strFilePath)
 {
 	if (_bAttach)
 	{
@@ -60,7 +60,7 @@ void WordFormat::CloseWord(CString strFilePath)
 	CloseProcess(strFilePath);
 }
 
-void WordFormat::SaveDocument(CString strFilePath)
+void WordAutomationManager::SaveDocument(CString strFilePath)
 {
 	COleVariant change((short)WSA_WD_DO_NOT_SAVE_CHANGES, VT_I2);
 	COleVariant format((short)WOF_WD_WORD_DOCUMENT, VT_I2);
@@ -76,7 +76,7 @@ void WordFormat::SaveDocument(CString strFilePath)
 	m_wo->_app.Quit(change, format, reject);
 }
 
-void WordFormat::AppendText(CString strText)
+void WordAutomationManager::AppendText(CString strText)
 {
 	if (_bAttach && !_bAddTable)
 	{
@@ -86,7 +86,7 @@ void WordFormat::AppendText(CString strText)
 	}
 }
 
-void WordFormat::SetFontBold(bool FontBold)
+void WordAutomationManager::SetFontBold(bool FontBold)
 {
 	if (_bAttach)
 	{
@@ -95,16 +95,16 @@ void WordFormat::SetFontBold(bool FontBold)
 	}
 }
 
-void WordFormat::SetFontSize(int nFontSize)
+void WordAutomationManager::SetFontSize(int nFontSize)
 {
 	if (_bAttach)
 	{
 		m_wo->_font = m_wo->_selection.get_Font();
-		m_wo->_font.put_Size(nFontSize);
+		m_wo->_font.put_Size((float)nFontSize);
 	}
 }
 
-void WordFormat::SetFontStyle(CString strFontStyle)
+void WordAutomationManager::SetFontStyle(CString strFontStyle)
 {
 	if (_bAttach)
 	{
@@ -113,7 +113,7 @@ void WordFormat::SetFontStyle(CString strFontStyle)
 	}
 }
 
-void WordFormat::SetFontColor(Color color)
+void WordAutomationManager::SetFontColor(Color color)
 {
 	if (_bAttach)
 	{
@@ -122,7 +122,7 @@ void WordFormat::SetFontColor(Color color)
 	}
 }
 
-void WordFormat::AddTable(CPoint tableCoordinate)
+void WordAutomationManager::AddTable(CPoint tableCoordinate)
 {
 	if (_bAttach)
 	{
@@ -148,7 +148,7 @@ void WordFormat::AddTable(CPoint tableCoordinate)
 	}
 }
 
-void WordFormat::AppendTableText(CPoint textCoordinate, CString strText)
+void WordAutomationManager::AppendTableText(CPoint textCoordinate, CString strText)
 {
 	// x, y 좌표는 1 부터 시작하고 range에 설정한 범위만큼
 	if (textCoordinate.x <= 0 || textCoordinate.y <= 0)
