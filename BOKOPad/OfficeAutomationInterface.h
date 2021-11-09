@@ -47,7 +47,7 @@ public:
 	OAInterface() {}
 	~OAInterface() {}
 
-	bool OnReady(CString* strFileName, CString* strFilePath)
+	bool OnReadyProcess(CString* strFileName, CString* strFilePath)
 	{
 		if (_type == OAT_WORD)
 		{
@@ -109,19 +109,31 @@ public:
 		return true;
 	}
 
-	bool Start(CString WorkSheetName)
-	{
-	
-	}
-
-	void Close(CString strFilePath)
-	{
-	
-	}
 
 private:
 
 protected:
+
+	void StartProcess()
+	{
+		_colTrue = (short)TRUE;
+		_colFalse = (short)FALSE;
+		COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
+		memcpy(_colOption, covOptional, sizeof(covOptional));
+		_bAttach = true;
+	}
+
+	void CloseProcess(CString strFilePath)
+	{
+		if (!_bAttach)
+		{
+			::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
+		}
+		else
+		{
+			AfxMessageBox("엑셀 저장에 실패하였습니다.");
+		}
+	}
 
 	enum OAType
 	{

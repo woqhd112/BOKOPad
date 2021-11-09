@@ -5,6 +5,7 @@ WordFormat::WordFormat()
 {
 	m_wo = new WordObject;
 	_bAttach = false;
+	_bAddTable = false;
 	_nEndTextPos = 0;
 	_type = OAT_WORD;
 }
@@ -18,37 +19,6 @@ WordFormat::~WordFormat()
 	}
 }
 
-bool WordFormat::OnReadyWord(CString* strFileName, CString* strFilePath)
-{
-	CFileDialog fileDlg(FALSE, "docx", "*.docx", OFN_LONGNAMES | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "REPORT file (*.docx) | *.docx |");
-
-	if (IDOK != fileDlg.DoModal())
-	{
-		return false;
-	}
-
-	CString strProcedure = _T("");
-	*strFileName = fileDlg.GetFileName();
-	*strFilePath = fileDlg.GetPathName();
-	CFile cFile;
-	if (cFile.Open(*strFilePath, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary, NULL))
-	{
-		USHORT nShort = 0xfeff;
-		int nSize = -1;
-		nSize = sizeof(nShort);
-		cFile.Write(&nShort, nSize);
-		cFile.Write((LPTSTR)(LPCTSTR)strProcedure, strProcedure.GetLength() * sizeof(TCHAR));
-		cFile.Close();
-	}
-	else
-	{
-		AfxMessageBox("저장에 실패했습니다.");
-		return false;
-	}
-
-	return true;
-}
-
 bool WordFormat::StartWord(CString WorkSheetName)
 {
 	if (!m_wo->_app.CreateDispatch("Word.Application"))
@@ -57,16 +27,11 @@ bool WordFormat::StartWord(CString WorkSheetName)
 	}
 	m_wo->_app.put_Visible(false);
 
-	_colTrue = (short)TRUE;
-	_colFalse = (short)FALSE;
-	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
-	memcpy(_colOption, covOptional, sizeof(covOptional));
+	StartProcess();
 
 	m_wo->_docs.AttachDispatch(m_wo->_app.get_Documents());
-	m_wo->_doc.AttachDispatch(m_wo->_docs.Add(covOptional, covOptional, covOptional, covOptional));
+	m_wo->_doc.AttachDispatch(m_wo->_docs.Add(_colOption, _colOption, _colOption, _colOption));
 	m_wo->_selection = m_wo->_app.get_Selection();
-
-	_bAttach = true;
 
 	return true;
 }
@@ -92,14 +57,7 @@ void WordFormat::CloseWord(CString strFilePath)
 		_bAttach = false;
 	}
 
-	if (!_bAttach)
-	{
-		::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
-	}
-	else
-	{
-		AfxMessageBox("워드 저장에 실패하였습니다.");
-	}
+	CloseProcess(strFilePath);
 }
 
 void WordFormat::SaveDocument(CString strFilePath)
@@ -120,7 +78,7 @@ void WordFormat::SaveDocument(CString strFilePath)
 
 void WordFormat::AppendText(CString strText)
 {
-	if (_bAttach)
+	if (_bAttach && !_bAddTable)
 	{
 		_nEndTextPos = m_wo->_selection.get_End();
 		m_wo->_selection.put_Start(_nEndTextPos + 1);
@@ -161,5 +119,45 @@ void WordFormat::SetFontColor(Color color)
 	{
 		m_wo->_font = m_wo->_selection.get_Font();
 		m_wo->_font.put_Color((long)color);
+	}
+}
+
+void WordFormat::AddTable(CPoint tableCoordinate)
+{
+	if (_bAttach)
+	{
+		_nEndTextPos = m_wo->_selection.get_End();
+		m_wo->_selection.put_Start(_nEndTextPos + 1);
+		m_wo->_range = m_wo->_selection.get_Range();
+
+		m_wo->_tables = m_wo->_doc.get_Tables();
+		m_wo->_table = m_wo->_tables.AddOld(m_wo->_range, tableCoordinate.x, tableCoordinate.y);
+
+		COleVariant sCmt("표 구분선");
+
+		m_wo->_table.put_Style(&sCmt.Detach());
+
+		m_wo->_table.put_ApplyStyleHeadingRows(TRUE);
+		m_wo->_table.put_ApplyStyleLastRow(FALSE);
+		m_wo->_table.put_ApplyStyleFirstColumn(TRUE);
+		m_wo->_table.put_ApplyStyleLastColumn(FALSE);
+		m_wo->_table.put_ApplyStyleRowBands(TRUE);
+		m_wo->_table.put_ApplyStyleColumnBands(FALSE);
+
+		_bAddTable = true;
+	}
+}
+
+void WordFormat::AppendTableText(CPoint textCoordinate, CString strText)
+{
+	// x, y 좌표는 1 부터 시작하고 range에 설정한 범위만큼
+	if (textCoordinate.x <= 0 || textCoordinate.y <= 0)
+		return;
+
+	if (_bAttach && _bAddTable)
+	{
+		_nEndTextPos = m_wo->_selection.get_End();
+		m_wo->_selection.put_Start(_nEndTextPos + textCoordinate.x);
+		m_wo->_selection.put_Text(strText);
 	}
 }

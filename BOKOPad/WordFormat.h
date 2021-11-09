@@ -21,8 +21,6 @@ public:
 	WordFormat();
 	virtual ~WordFormat();
 
-	bool OnReadyWord(CString* strFileName, CString* strFilePath);
-
 	bool StartWord(CString WorkSheetName);
 
 	void CloseWord(CString strFilePath);
@@ -39,6 +37,9 @@ public:
 
 	void SetFontColor(Color color);
 
+	void AddTable(CPoint tableCoordinate);
+
+	void AppendTableText(CPoint textCoordinate, CString strText);
 
 private:
 
@@ -75,6 +76,8 @@ private:
 	WordObject* m_wo;
 
 	int _nEndTextPos;
+
+	bool _bAddTable;
 
 };
 

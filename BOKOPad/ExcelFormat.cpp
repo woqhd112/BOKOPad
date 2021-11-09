@@ -439,10 +439,7 @@ bool CExcelFormat::StartExcel(CString WorkSheetName)
 
 	eo->_app.put_SheetsInNewWorkbook(1);
 
-	_colTrue = (short)TRUE;
-	_colFalse = (short)FALSE;
-	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
-	memcpy(_colOption, covOptional, sizeof(covOptional));
+	StartProcess();
 
 	eo->_wbs.AttachDispatch(eo->_app.get_Workbooks());
 	eo->_wb.AttachDispatch(eo->_wbs.Add(_colOption));
@@ -451,8 +448,6 @@ bool CExcelFormat::StartExcel(CString WorkSheetName)
 	eo->_ws.put_Name(WorkSheetName);
 	eo->_range.AttachDispatch(eo->_ws.get_Cells(), true);
 	
-	_bAttach = true;
-
 	return true;
 }
 
@@ -504,14 +499,7 @@ void CExcelFormat::CloseExcel(CString strFilePath)
 		_bAttach = false;
 	}
 
-	if (!_bAttach) 
-	{
-		::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
-	}
-	else
-	{
-		AfxMessageBox("엑셀 저장에 실패하였습니다.");
-	}
+	CloseProcess(strFilePath);
 }
 
 void CExcelFormat::SetPageBreak(bool bUseVerticalBreak, bool bUseHorizonBreak)
