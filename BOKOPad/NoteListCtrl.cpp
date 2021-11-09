@@ -4,8 +4,8 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "NoteListCtrl.h"
-#include "NoteUIManager.h"
-#include "NoteDBManager.h"
+#include "BOKOManager/UIManager/NoteUIManager.h"
+#include "BOKOManager/DBManager/NoteDBManager.h"
 #include "afxdialogex.h"
 
 // NoteListCtrl 대화 상자\

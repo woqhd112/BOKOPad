@@ -163,51 +163,51 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="commonInclude.h" />
-    <ClInclude Include="DataScope.h" />
-    <ClInclude Include="DBDataKernel.h" />
-    <ClInclude Include="DlgController.h" />
-    <ClInclude Include="DlgModel.h" />
+    <ClInclude Include="Control\DlgController.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="MainDlgModelImp.h" />
-    <ClInclude Include="MainDlgService.h" />
-    <ClInclude Include="NoteInformationDlgModelImp.h" />
-    <ClInclude Include="NoteInformationDlgService.h" />
-    <ClInclude Include="NoteInformationVO.h" />
-    <ClInclude Include="PadOptionVO.h" />
+    <ClInclude Include="Model\DAO\MainDlgModelImp.h" />
+    <ClInclude Include="Model\DAO\NoteInformationDlgModelImp.h" />
+    <ClInclude Include="Model\DAO\ScenarioListDlgModelImp.h" />
+    <ClInclude Include="Model\DAO\TimelineDlgModelImp.h" />
+    <ClInclude Include="Model\DataScope\DataScope.h" />
+    <ClInclude Include="Model\DataScope\DBDataKernel.h" />
+    <ClInclude Include="Model\DataScope\RequestAttribute.h" />
+    <ClInclude Include="Model\DataScope\SessionAttribute.h" />
+    <ClInclude Include="Model\DlgModel.h" />
+    <ClInclude Include="Model\QueryDefine.h" />
+    <ClInclude Include="Model\VO\NoteInformationVO.h" />
+    <ClInclude Include="Model\VO\PadOptionVO.h" />
+    <ClInclude Include="Model\VO\ScenarioListVO.h" />
+    <ClInclude Include="Model\VO\TimelineVO.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="QueryDefine.h" />
-    <ClInclude Include="RequestAttribute.h" />
-    <ClInclude Include="ScenarioListDlgModelImp.h" />
-    <ClInclude Include="ScenarioListDlgService.h" />
-    <ClInclude Include="ScenarioListVO.h" />
-    <ClInclude Include="SessionAttribute.h" />
-    <ClInclude Include="TimelineDlgModelImp.h" />
-    <ClInclude Include="TimelineDlgService.h" />
-    <ClInclude Include="TimelineVO.h" />
-    <ClInclude Include="TransactionProcess.h" />
-    <ClInclude Include="TransactionManager.h" />
+    <ClInclude Include="Service\MainDlgService.h" />
+    <ClInclude Include="Service\NoteInformationDlgService.h" />
+    <ClInclude Include="Service\ScenarioListDlgService.h" />
+    <ClInclude Include="Service\TimelineDlgService.h" />
+    <ClInclude Include="Transaction\TransactionManager.h" />
+    <ClInclude Include="Transaction\TransactionProcess.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DataScope.cpp" />
-    <ClCompile Include="DBDataKernel.cpp" />
-    <ClCompile Include="DlgController.cpp" />
-    <ClCompile Include="DlgModel.cpp" />
+    <ClCompile Include="Control\DlgController.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MainDlgModelImp.cpp" />
-    <ClCompile Include="MainDlgService.cpp" />
-    <ClCompile Include="NoteInformationDlgModelImp.cpp" />
-    <ClCompile Include="NoteInformationDlgService.cpp" />
+    <ClCompile Include="Model\DAO\MainDlgModelImp.cpp" />
+    <ClCompile Include="Model\DAO\NoteInformationDlgModelImp.cpp" />
+    <ClCompile Include="Model\DAO\ScenarioListDlgModelImp.cpp" />
+    <ClCompile Include="Model\DAO\TimelineDlgModelImp.cpp" />
+    <ClCompile Include="Model\DataScope\DataScope.cpp" />
+    <ClCompile Include="Model\DataScope\DBDataKernel.cpp" />
+    <ClCompile Include="Model\DlgModel.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ScenarioListDlgModelImp.cpp" />
-    <ClCompile Include="ScenarioListDlgService.cpp" />
-    <ClCompile Include="TimelineDlgModelImp.cpp" />
-    <ClCompile Include="TimelineDlgService.cpp" />
-    <ClCompile Include="TransactionProcess.cpp" />
+    <ClCompile Include="Service\MainDlgService.cpp" />
+    <ClCompile Include="Service\NoteInformationDlgService.cpp" />
+    <ClCompile Include="Service\ScenarioListDlgService.cpp" />
+    <ClCompile Include="Service\TimelineDlgService.cpp" />
+    <ClCompile Include="Transaction\TransactionProcess.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

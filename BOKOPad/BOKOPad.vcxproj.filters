@@ -109,41 +109,11 @@
     <ClInclude Include="TimelineDetail.h">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClInclude>
-    <ClInclude Include="TransactionNameDefine.h">
-      <Filter>Manager\DBManager\TransactionNameDefine</Filter>
-    </ClInclude>
-    <ClInclude Include="NoteDBManager.h">
-      <Filter>Manager\DBManager</Filter>
-    </ClInclude>
-    <ClInclude Include="NoteUIManager.h">
-      <Filter>Manager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="TimelineUIManager.h">
-      <Filter>Manager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ScenarioUIManager.h">
-      <Filter>Manager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ScenarioDBManager.h">
-      <Filter>Manager\DBManager</Filter>
-    </ClInclude>
-    <ClInclude Include="TimelineDBManager.h">
-      <Filter>Manager\DBManager</Filter>
-    </ClInclude>
-    <ClInclude Include="UIManagerManagement.h">
-      <Filter>Manager\UI Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="DBManagerManagement.h">
-      <Filter>Manager\DBManager</Filter>
-    </ClInclude>
     <ClInclude Include="BOKOTimelineOneViewDlg.h">
       <Filter>UI\Scenario\OneView</Filter>
     </ClInclude>
     <ClInclude Include="OneViewList.h">
       <Filter>UI\Scenario\OneView</Filter>
-    </ClInclude>
-    <ClInclude Include="LogManager.h">
-      <Filter>Manager\LOGManager</Filter>
     </ClInclude>
     <ClInclude Include="BOKOLogViewDlg.h">
       <Filter>UI\Log</Filter>
@@ -280,6 +250,36 @@
     <ClInclude Include="OfficeAutomation\CWord\CTables0.h">
       <Filter>OfficeAutomation\include\Word</Filter>
     </ClInclude>
+    <ClInclude Include="BOKOManager\DBManager\TransactionNameDefine.h">
+      <Filter>Manager\DBManager\TransactionNameDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\DBManager\DBManagerManagement.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\DBManager\NoteDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\DBManager\ScenarioDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\DBManager\TimelineDBManager.h">
+      <Filter>Manager\DBManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\LOGManager\LogManager.h">
+      <Filter>Manager\LOGManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\UIManager\ScenarioUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\UIManager\TimelineUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\UIManager\UIManagerManagement.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOManager\UIManager\NoteUIManager.h">
+      <Filter>Manager\UI Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -315,38 +315,11 @@
     <ClCompile Include="TimelineDetail.cpp">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClCompile>
-    <ClCompile Include="NoteDBManager.cpp">
-      <Filter>Manager\DBManager</Filter>
-    </ClCompile>
-    <ClCompile Include="NoteUIManager.cpp">
-      <Filter>Manager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="TimelineUIManager.cpp">
-      <Filter>Manager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ScenarioUIManager.cpp">
-      <Filter>Manager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ScenarioDBManager.cpp">
-      <Filter>Manager\DBManager</Filter>
-    </ClCompile>
-    <ClCompile Include="TimelineDBManager.cpp">
-      <Filter>Manager\DBManager</Filter>
-    </ClCompile>
-    <ClCompile Include="UIManagerManagement.cpp">
-      <Filter>Manager\UI Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="DBManagerManagement.cpp">
-      <Filter>Manager\DBManager</Filter>
-    </ClCompile>
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp">
       <Filter>UI\Scenario\OneView</Filter>
     </ClCompile>
     <ClCompile Include="OneViewList.cpp">
       <Filter>UI\Scenario\OneView</Filter>
-    </ClCompile>
-    <ClCompile Include="LogManager.cpp">
-      <Filter>Manager\LOGManager</Filter>
     </ClCompile>
     <ClCompile Include="BOKOLogViewDlg.cpp">
       <Filter>UI\Log</Filter>
@@ -359,6 +332,33 @@
     </ClCompile>
     <ClCompile Include="OfficeAutomation\Manager\WordAutomationManager.cpp">
       <Filter>OfficeAutomation\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\DBManager\DBManagerManagement.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\DBManager\NoteDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\DBManager\ScenarioDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\DBManager\TimelineDBManager.cpp">
+      <Filter>Manager\DBManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\LOGManager\LogManager.cpp">
+      <Filter>Manager\LOGManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\UIManager\ScenarioUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\UIManager\TimelineUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\UIManager\UIManagerManagement.cpp">
+      <Filter>Manager\UI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOManager\UIManager\NoteUIManager.cpp">
+      <Filter>Manager\UI Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

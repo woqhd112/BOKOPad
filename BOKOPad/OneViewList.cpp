@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "OneViewList.h"
-#include "NoteDBManager.h"
+#include "BOKOManager/DBManager/NoteDBManager.h"
 #include "BOKOTimelineOneViewDlg.h"
 #include "afxdialogex.h"
 
@@ -280,7 +280,7 @@ void OneViewList::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	else if (nSBCode == SB_LINEDOWN || nSBCode == SB_PAGEDOWN)
 	{
 		nPos = scroll.GetScrollCount() * scroll.GetWheelSize() + scroll.GetWheelSize();
-		if (nPos >= scroll.GetLineCount() * scroll.GetWheelSize())
+		if (int(nPos) >= scroll.GetLineCount() * scroll.GetWheelSize())
 			nPos = scroll.GetLineCount() * scroll.GetWheelSize() - scroll.GetWheelSize();
 	}
 	else if (nSBCode == SB_LINEUP || nSBCode == SB_PAGEUP)

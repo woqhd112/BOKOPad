@@ -4,10 +4,10 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "Timeline.h"
-#include "TimelineUIManager.h"
-#include "NoteUIManager.h"
-#include "NoteDBManager.h"
-#include "TimelineDBManager.h"
+#include "BOKOManager/UIManager/TimelineUIManager.h"
+#include "BOKOManager/UIManager/NoteUIManager.h"
+#include "BOKOManager/DBManager/NoteDBManager.h"
+#include "BOKOManager/DBManager/TimelineDBManager.h"
 #include "afxdialogex.h"
 
 

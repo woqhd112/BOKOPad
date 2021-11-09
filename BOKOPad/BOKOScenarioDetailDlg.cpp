@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "BOKOScenarioDetailDlg.h"
-#include "NoteUIManager.h"
+#include "BOKOManager/UIManager/NoteUIManager.h"
 #include "afxdialogex.h"
 
 

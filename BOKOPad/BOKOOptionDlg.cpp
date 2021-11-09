@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "BOKOOptionDlg.h"
-#include "FileProcess.h"
+#include "File/FileProcess.h"
 #include "BOKOOptionScenarioExportDlg.h"
 #include "afxdialogex.h"
 

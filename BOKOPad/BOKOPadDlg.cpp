@@ -6,7 +6,7 @@
 #include "framework.h"
 #include "BOKOPad.h"
 #include "BOKOPadDlg.h"
-#include "FileProcess.h"
+#include "File/FileProcess.h"
 #include "BOKOOptionScenarioExportDlg.h"
 #include "BOKOLogViewDlg.h"
 #include "afxdialogex.h"

@@ -18,9 +18,9 @@
 #pragma comment(lib, "ComplexLibrary.lib")
 //#pragma comment(lib, "ComplexUtilProcess.lib")
 #endif
-#include "ScenarioDBManager.h"
-#include "ScenarioUIManager.h"
-#include "LogManager.h"
+#include "BOKOManager/DBManager/ScenarioDBManager.h"
+#include "BOKOManager/UIManager/ScenarioUIManager.h"
+#include "BOKOManager/LOGManager/LogManager.h"
 
 // CBOKOPadApp:
 // 이 클래스의 구현에 대해서는 BOKOPad.cpp을(를) 참조하세요.

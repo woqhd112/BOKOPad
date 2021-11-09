@@ -163,15 +163,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="commonInclude.h" />
-    <ClInclude Include="FileProcess.h" />
+    <ClInclude Include="File\FileProcess.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="LogProcess.h" />
+    <ClInclude Include="Log\LogProcess.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FileProcess.cpp" />
-    <ClCompile Include="LogProcess.cpp" />
+    <ClCompile Include="File\FileProcess.cpp" />
+    <ClCompile Include="Log\LogProcess.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -27,13 +27,13 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="FileProcess.h">
-      <Filter>FileProcess</Filter>
-    </ClInclude>
     <ClInclude Include="commonInclude.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LogProcess.h">
+    <ClInclude Include="File\FileProcess.h">
+      <Filter>FileProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Log\LogProcess.h">
       <Filter>LogProcess</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="FileProcess.cpp">
+    <ClCompile Include="File\FileProcess.cpp">
       <Filter>FileProcess</Filter>
     </ClCompile>
-    <ClCompile Include="LogProcess.cpp">
+    <ClCompile Include="Log\LogProcess.cpp">
       <Filter>LogProcess</Filter>
     </ClCompile>
   </ItemGroup>

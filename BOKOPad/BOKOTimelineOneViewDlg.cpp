@@ -4,10 +4,10 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "BOKOTimelineOneViewDlg.h"
-#include "TimelineUIManager.h"
-#include "TimelineDBManager.h"
+#include "BOKOManager/UIManager/TimelineUIManager.h"
+#include "BOKOManager/DBManager/TimelineDBManager.h"
 #include "afxdialogex.h"
-#include "FileProcess.h"
+#include "File/FileProcess.h"
 
 
 // BOKOTimelineOneViewDlg 대화 상자

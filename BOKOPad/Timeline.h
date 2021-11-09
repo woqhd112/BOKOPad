@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Resource.h"
-#include "TimelineVO.h"
 #include "TimelineDetail.h"
 #include "BOKOTimelineOneViewDlg.h"
 #include "NoteListInterface.h"
