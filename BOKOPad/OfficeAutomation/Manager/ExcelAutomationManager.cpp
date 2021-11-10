@@ -3,27 +3,27 @@
  
 ExcelAutomationManager::ExcelAutomationManager()
 {
-	eo = new ExcelObject;
-	_bSetBr = true;
-	_bSetBl = true;
-	_bSetBb = true;
-	_bSetBt = true;
-	_bAttach = false;
-	_bSetRange = false;
-	_nDepth = 0;
-	_nCpyDepth = 0;
-	_nSaveHeight = 0;
-	_nSaveTab = 0;
-	_type = OAT_EXCEL;
+	m_eo = new ExcelObject;
+	m_bSetBr = true;
+	m_bSetBl = true;
+	m_bSetBb = true;
+	m_bSetBt = true;
+	im_bAttach = false;
+	m_bSetRange = false;
+	m_nDepth = 0;
+	m_nCpyDepth = 0;
+	m_nSaveHeight = 0;
+	m_nSaveTab = 0;
+	im_type = OAT_EXCEL;
 }
 
 
 ExcelAutomationManager::~ExcelAutomationManager()
 {
-	if (eo)
+	if (m_eo)
 	{
-		delete eo;
-		eo = (ExcelObject*)nullptr;
+		delete m_eo;
+		m_eo = (ExcelObject*)nullptr;
 	}
 }
  
@@ -96,7 +96,7 @@ bool ExcelAutomationManager::SetRangeData(int nLoopNum, CString& fixStr)
 bool ExcelAutomationManager::SetRange(unsigned int nTab, unsigned int nDepth, unsigned int nWidth, unsigned int nHeight, bool bParent /* = true*/)
 {
 	bool bResult = false;
-	_bSetRange = false;
+	m_bSetRange = false;
 	BorderReset(false);
 
 	if (nTab < 1)
@@ -133,13 +133,13 @@ bool ExcelAutomationManager::SetRange(unsigned int nTab, unsigned int nDepth, un
 		prefixNum.Format("%d", startCellNum);	
 		sufixNum.Format("%d", endCellNum);		
 		
-		eo->_range = eo->_ws.get_Range(COleVariant(prefixStr + prefixNum), COleVariant(suffixStr + sufixNum));
-		_bSetRange = true;
+		m_eo->range = m_eo->ws.get_Range(COleVariant(prefixStr + prefixNum), COleVariant(suffixStr + sufixNum));
+		m_bSetRange = true;
 		bResult = true;
 		if (bParent)
 		{
-			_nSaveHeight = nHeight;
-			_nSaveTab = nTab;
+			m_nSaveHeight = nHeight;
+			m_nSaveTab = nTab;
 		}
 	}
 
@@ -159,164 +159,164 @@ void ExcelAutomationManager::DataSwapping(LONG* nTargetData1, LONG* nTargetData2
 
 void ExcelAutomationManager::BorderReset(bool bReset)
 {
-	_bSetBr = bReset;
-	_bSetBl = bReset;
-	_bSetBb = bReset;
-	_bSetBt = bReset;
+	m_bSetBr = bReset;
+	m_bSetBl = bReset;
+	m_bSetBb = bReset;
+	m_bSetBt = bReset;
 }
 
-void ExcelAutomationManager::SetFontColor(Color FontColor)
+void ExcelAutomationManager::SetFontColor(OAColor FontColor)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_font = eo->_range.get_Font();
-		eo->_font.put_Color(COleVariant((DOUBLE)FontColor));
+		m_eo->font = m_eo->range.get_Font();
+		m_eo->font.put_Color(COleVariant((DOUBLE)FontColor));
 	}
 }
 
-void ExcelAutomationManager::SetFontColor(CPoint startPoint, CPoint endPoint, Color FontColor)
+void ExcelAutomationManager::SetFontColor(CPoint startPoint, CPoint endPoint, OAColor FontColor)
 {
 	if (startPoint.x < 1 || startPoint.y < 1 || endPoint.x < 1 || endPoint.y < 1) return;
 
 	DataSwapping(&startPoint.x, &endPoint.x);
 	DataSwapping(&startPoint.y, &endPoint.y);
 
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		CRange copyRange = eo->_range;
+		CRange copyRange = m_eo->range;
 
-		if (SetRange(_nSaveTab + startPoint.x - 1, _nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
+		if (SetRange(m_nSaveTab + startPoint.x - 1, m_nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
 		{
 			SetFontColor(FontColor);
-			eo->_range = copyRange;
+			m_eo->range = copyRange;
 		}
 	}
 }
 
 void ExcelAutomationManager::SetFontStyle(CString strFontStyle)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_font = eo->_range.get_Font();
-		eo->_font.put_Name(COleVariant(strFontStyle));
+		m_eo->font = m_eo->range.get_Font();
+		m_eo->font.put_Name(COleVariant(strFontStyle));
 	}
 }
 
 void ExcelAutomationManager::SetFontBold(bool FontBold)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		if (FontBold)
 		{
-			eo->_font = eo->_range.get_Font();
-			eo->_font.put_Bold(COleVariant((short)TRUE));
+			m_eo->font = m_eo->range.get_Font();
+			m_eo->font.put_Bold(COleVariant((short)TRUE));
 		}
 	}
 }
 
 void ExcelAutomationManager::SetFontSize(int nFontSize)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_font = eo->_range.get_Font();
-		eo->_font.put_Size(COleVariant(long(nFontSize)));
+		m_eo->font = m_eo->range.get_Font();
+		m_eo->font.put_Size(COleVariant(long(nFontSize)));
 	}
 }
 
-void ExcelAutomationManager::SetBkColor(Color CellColor)
+void ExcelAutomationManager::SetBkColor(OAColor CellColor)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_interior = eo->_range.get_Interior();
-		eo->_interior.put_Color(COleVariant((DOUBLE)CellColor));
+		m_eo->interior = m_eo->range.get_Interior();
+		m_eo->interior.put_Color(COleVariant((DOUBLE)CellColor));
 	}
 }
 
-void ExcelAutomationManager::SetBkColor(CPoint startPoint, CPoint endPoint, Color CellColor)
+void ExcelAutomationManager::SetBkColor(CPoint startPoint, CPoint endPoint, OAColor CellColor)
 {
 	if (startPoint.x < 1 || startPoint.y < 1 || endPoint.x < 1 || endPoint.y < 1) return;
 
 	DataSwapping(&startPoint.x, &endPoint.x);
 	DataSwapping(&startPoint.y, &endPoint.y);
 
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		CRange copyRange = eo->_range;
+		CRange copyRange = m_eo->range;
 
-		if (SetRange(_nSaveTab + startPoint.x - 1, _nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
+		if (SetRange(m_nSaveTab + startPoint.x - 1, m_nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
 		{
 			SetBkColor(CellColor);
-			eo->_range = copyRange;
+			m_eo->range = copyRange;
 		}
 	}
 }
 
 void ExcelAutomationManager::SetBoxBorder(BoldWeight BoxBoldWeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_borders = eo->_range.get_Borders();
-		eo->_borders.put_LineStyle(COleVariant((short)BoxBoldWeight));
+		m_eo->borders = m_eo->range.get_Borders();
+		m_eo->borders.put_LineStyle(COleVariant((short)BoxBoldWeight));
 	}
 }
 
 void ExcelAutomationManager::SetBoxBorderLeft(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_borders = eo->_range.get_Borders();
-		eo->_bl = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_LEFT);
-		eo->_bl.put_LineStyle(COleVariant((short)BoxBoldStyle));
+		m_eo->borders = m_eo->range.get_Borders();
+		m_eo->bl = m_eo->borders.get_Item(ExcelAutomationManager::BORDER_STYLE_LEFT);
+		m_eo->bl.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
-			eo->_bl.put_Weight(COleVariant((short)BoxBoldWeight));
+			m_eo->bl.put_Weight(COleVariant((short)BoxBoldWeight));
 		}
 	}
 }
 
 void ExcelAutomationManager::SetBoxBorderRight(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_borders = eo->_range.get_Borders();
-		eo->_br = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_RIGHT);
-		eo->_br.put_LineStyle(COleVariant((short)BoxBoldStyle));
+		m_eo->borders = m_eo->range.get_Borders();
+		m_eo->br = m_eo->borders.get_Item(ExcelAutomationManager::BORDER_STYLE_RIGHT);
+		m_eo->br.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
-			eo->_br.put_Weight(COleVariant((short)BoxBoldWeight));
+			m_eo->br.put_Weight(COleVariant((short)BoxBoldWeight));
 		}
 	}
 }
 
 void ExcelAutomationManager::SetBoxBorderTop(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_borders = eo->_range.get_Borders();
-		eo->_bt = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_TOP);
-		eo->_bt.put_LineStyle(COleVariant((short)BoxBoldStyle));
+		m_eo->borders = m_eo->range.get_Borders();
+		m_eo->bt = m_eo->borders.get_Item(ExcelAutomationManager::BORDER_STYLE_TOP);
+		m_eo->bt.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
-			eo->_bt.put_Weight(COleVariant((short)BoxBoldWeight));
+			m_eo->bt.put_Weight(COleVariant((short)BoxBoldWeight));
 		}
 	}
 }
 
 void ExcelAutomationManager::SetBoxBorderBottom(BoldStyle BoxBoldStyle, BoldWeight BoxBoldWeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_borders = eo->_range.get_Borders();
-		eo->_bb = eo->_borders.get_Item(ExcelAutomationManager::BORDER_STYLE_BOTTOM);
-		eo->_bb.put_LineStyle(COleVariant((short)BoxBoldStyle));
+		m_eo->borders = m_eo->range.get_Borders();
+		m_eo->bb = m_eo->borders.get_Item(ExcelAutomationManager::BORDER_STYLE_BOTTOM);
+		m_eo->bb.put_LineStyle(COleVariant((short)BoxBoldStyle));
 		if (BoxBoldStyle != BOLD_STYLE_LINESTYLENONE)
 		{
-			eo->_bb.put_Weight(COleVariant((short)BoxBoldWeight));
+			m_eo->bb.put_Weight(COleVariant((short)BoxBoldWeight));
 		}
 	}
 }
 
-void ExcelAutomationManager::SetRangeStyle(Color CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
+void ExcelAutomationManager::SetRangeStyle(OAColor CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle /* = BOLD_CONTINOUS*/, BoldWeight BoxBoldWeight /* = BOLD_THICK*/, BoldWeight CellBorderBold /* = BOLD_THIN*/)
 {
 	SetBkColor(CellColor);
 	SetFontBold(FontBold);
@@ -336,39 +336,39 @@ void ExcelAutomationManager::SetBoxStyle(bool BoxBorder, BoldStyle BoxBoldStyle 
 	{
 		SetBoxBorder(CellBorderBold);
 	}
-	if (_bSetBl) SetBoxBorderLeft(BoxBoldStyle, BoxBoldWeight);
-	if (_bSetBt) SetBoxBorderTop(BoxBoldStyle, BoxBoldWeight);
-	if (_bSetBr) SetBoxBorderRight(BoxBoldStyle, BoxBoldWeight);
-	if (_bSetBb) SetBoxBorderBottom(BoxBoldStyle, BoxBoldWeight);
+	if (m_bSetBl) SetBoxBorderLeft(BoxBoldStyle, BoxBoldWeight);
+	if (m_bSetBt) SetBoxBorderTop(BoxBoldStyle, BoxBoldWeight);
+	if (m_bSetBr) SetBoxBorderRight(BoxBoldStyle, BoxBoldWeight);
+	if (m_bSetBb) SetBoxBorderBottom(BoxBoldStyle, BoxBoldWeight);
 }
 
 void ExcelAutomationManager::SetBlOn(bool setBl)
 {
-	this->_bSetBl = setBl;
+	this->m_bSetBl = setBl;
 }
 
 void ExcelAutomationManager::SetBtOn(bool setBt)
 {
-	this->_bSetBt = setBt;
+	this->m_bSetBt = setBt;
 }
 
 void ExcelAutomationManager::SetBbOn(bool setBb)
 {
-	this->_bSetBb = setBb;
+	this->m_bSetBb = setBb;
 }
 
 void ExcelAutomationManager::SetBrOn(bool setBr)
 {
-	this->_bSetBr = setBr;
+	this->m_bSetBr = setBr;
 }
 
 double ExcelAutomationManager::GetColumnFixelValue()
 {
 	double dColumnWidth = 0;
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		COleVariant cols;
-		cols = eo->_range.get_ColumnWidth();
+		cols = m_eo->range.get_ColumnWidth();
 		dColumnWidth = cols.dblVal;
 	}
 	return dColumnWidth;
@@ -377,10 +377,10 @@ double ExcelAutomationManager::GetColumnFixelValue()
 double ExcelAutomationManager::GetRowFixelValue()
 {
 	double dRowHeight = 0;
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		COleVariant cols;
-		cols = eo->_range.get_RowHeight();
+		cols = m_eo->range.get_RowHeight();
 		dRowHeight = cols.dblVal;
 	}
 	return dRowHeight;
@@ -389,16 +389,16 @@ double ExcelAutomationManager::GetRowFixelValue()
 
 void ExcelAutomationManager::SetAutoFit(bool bEntireType)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		CRange cols;
 		if (bEntireType)
 		{
-			cols = eo->_range.get_EntireRow();
+			cols = m_eo->range.get_EntireRow();
 		}
 		else
 		{
-			cols = eo->_range.get_EntireColumn();
+			cols = m_eo->range.get_EntireColumn();
 		}
 		cols.AutoFit();
 	}
@@ -406,195 +406,195 @@ void ExcelAutomationManager::SetAutoFit(bool bEntireType)
 
 void ExcelAutomationManager::VisibleWorkSheet(int nWorkSheetIndex, bool bVisible)
 {
-	CWorksheet ws = eo->_ws;
-	eo->_ws = eo->_wss.get_Item(COleVariant(short(nWorkSheetIndex + 1)));
-	eo->_ws.put_Visible(bVisible ? -1 : 0);	// -1 -> 시트 표시   0 -> 시트 숨김
-	eo->_ws = ws;
+	CWorksheet ws = m_eo->ws;
+	m_eo->ws = m_eo->wss.get_Item(COleVariant(short(nWorkSheetIndex + 1)));
+	m_eo->ws.put_Visible(bVisible ? -1 : 0);	// -1 -> 시트 표시   0 -> 시트 숨김
+	m_eo->ws = ws;
 }
 
 void ExcelAutomationManager::AddWorkSheet(CString WorkSheetName)
 {
 	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
 	covOptional.vt = VT_DISPATCH;
-	covOptional.pdispVal = eo->_ws.m_lpDispatch;
-	eo->_ws.m_lpDispatch->AddRef();
-	eo->_ws = eo->_wss.Add(_colOption, covOptional, COleVariant((short)1), _colOption);
-	eo->_ws.put_Name(WorkSheetName);
-	_nDepth = 0;
-	_nCpyDepth = 0;
-	_bSetRange = false;
-	_nSaveHeight = 0;
-	_nSaveTab = 0;
+	covOptional.pdispVal = m_eo->ws.m_lpDispatch;
+	m_eo->ws.m_lpDispatch->AddRef();
+	m_eo->ws = m_eo->wss.Add(im_colOption, covOptional, COleVariant((short)1), im_colOption);
+	m_eo->ws.put_Name(WorkSheetName);
+	m_nDepth = 0;
+	m_nCpyDepth = 0;
+	m_bSetRange = false;
+	m_nSaveHeight = 0;
+	m_nSaveTab = 0;
 	BorderReset(false);
 }
 
 
 bool ExcelAutomationManager::StartExcel(CString WorkSheetName)
 {
-	if (!eo->_app.CreateDispatch("Excel.Application"))
+	if (!m_eo->app.CreateDispatch("Excel.Application"))
 	{
 		return false;
 	}
-	eo->_app.put_Visible(false);
+	m_eo->app.put_Visible(false);
 
-	eo->_app.put_SheetsInNewWorkbook(1);
+	m_eo->app.put_SheetsInNewWorkbook(1);
 
 	StartProcess();
 
-	eo->_wbs.AttachDispatch(eo->_app.get_Workbooks());
-	eo->_wb.AttachDispatch(eo->_wbs.Add(_colOption));
-	eo->_wss = eo->_wb.get_Sheets();
-	eo->_ws = eo->_wss.get_Item(COleVariant((short)1));
-	eo->_ws.put_Name(WorkSheetName);
-	eo->_range.AttachDispatch(eo->_ws.get_Cells(), true);
+	m_eo->wbs.AttachDispatch(m_eo->app.get_Workbooks());
+	m_eo->wb.AttachDispatch(m_eo->wbs.Add(im_colOption));
+	m_eo->wss = m_eo->wb.get_Sheets();
+	m_eo->ws = m_eo->wss.get_Item(COleVariant((short)1));
+	m_eo->ws.put_Name(WorkSheetName);
+	m_eo->range.AttachDispatch(m_eo->ws.get_Cells(), true);
 	
 	return true;
 }
 
 void ExcelAutomationManager::SaveWorkBook(CString strFilePath)
 {
-	eo->_app.put_DisplayAlerts(FALSE);
-	eo->_wb._SaveAs(COleVariant(strFilePath), _colOption, _colOption, _colOption, _colOption, _colOption, 0, _colOption, _colOption, _colOption, _colOption, _colOption);
-	eo->_app.Quit();
-	_nDepth = 0;
-	_nCpyDepth = 0;
+	m_eo->app.put_DisplayAlerts(FALSE);
+	m_eo->wb._SaveAs(COleVariant(strFilePath), im_colOption, im_colOption, im_colOption, im_colOption, im_colOption, 0, im_colOption, im_colOption, im_colOption, im_colOption, im_colOption);
+	m_eo->app.Quit();
+	m_nDepth = 0;
+	m_nCpyDepth = 0;
 }
 
-void ExcelAutomationManager::CloseExcel(CString strFilePath)
+void ExcelAutomationManager::CloseExcel(CString strFilePath, bool executeShell)
 {
-	if (_bAttach)
+	if (im_bAttach)
 	{
 		SaveWorkBook(strFilePath);
 
-		eo->_hpb.ReleaseDispatch();
-		eo->_hpbs.ReleaseDispatch();
-		eo->_vpb.ReleaseDispatch();
-		eo->_vpbs.ReleaseDispatch();
-		eo->_wnd.ReleaseDispatch();
-		eo->_wnds.ReleaseDispatch();
-		eo->_cform.ReleaseDispatch();
-		eo->_fform.ReleaseDispatch();
-		eo->_point.ReleaseDispatch();
-		eo->_srs.ReleaseDispatch();
-		eo->_key.ReleaseDispatch();
-		eo->_entry.ReleaseDispatch();
-		eo->_legend.ReleaseDispatch();
-		eo->_title.ReleaseDispatch();
-		eo->_chart.ReleaseDispatch();
-		eo->_charts.ReleaseDispatch();
-		eo->_bt.ReleaseDispatch();
-		eo->_bb.ReleaseDispatch();
-		eo->_br.ReleaseDispatch();
-		eo->_bl.ReleaseDispatch();
-		eo->_borders.ReleaseDispatch();
-		eo->_font.ReleaseDispatch();
-		eo->_interior.ReleaseDispatch();
-		eo->_range.ReleaseDispatch();
-		eo->_ws.ReleaseDispatch();
-		eo->_wss.ReleaseDispatch();
-		eo->_wb.ReleaseDispatch();
-		eo->_wbs.ReleaseDispatch();
-		eo->_app.ReleaseDispatch();
+		m_eo->hpb.ReleaseDispatch();
+		m_eo->hpbs.ReleaseDispatch();
+		m_eo->vpb.ReleaseDispatch();
+		m_eo->vpbs.ReleaseDispatch();
+		m_eo->wnd.ReleaseDispatch();
+		m_eo->wnds.ReleaseDispatch();
+		m_eo->cform.ReleaseDispatch();
+		m_eo->fform.ReleaseDispatch();
+		m_eo->point.ReleaseDispatch();
+		m_eo->srs.ReleaseDispatch();
+		m_eo->key.ReleaseDispatch();
+		m_eo->entry.ReleaseDispatch();
+		m_eo->legend.ReleaseDispatch();
+		m_eo->title.ReleaseDispatch();
+		m_eo->chart.ReleaseDispatch();
+		m_eo->charts.ReleaseDispatch();
+		m_eo->bt.ReleaseDispatch();
+		m_eo->bb.ReleaseDispatch();
+		m_eo->br.ReleaseDispatch();
+		m_eo->bl.ReleaseDispatch();
+		m_eo->borders.ReleaseDispatch();
+		m_eo->font.ReleaseDispatch();
+		m_eo->interior.ReleaseDispatch();
+		m_eo->range.ReleaseDispatch();
+		m_eo->ws.ReleaseDispatch();
+		m_eo->wss.ReleaseDispatch();
+		m_eo->wb.ReleaseDispatch();
+		m_eo->wbs.ReleaseDispatch();
+		m_eo->app.ReleaseDispatch();
 
-		_bAttach = false;
+		im_bAttach = false;
 	}
 
-	CloseProcess(strFilePath);
+	CloseProcess(strFilePath, executeShell);
 }
 
 void ExcelAutomationManager::SetPageBreak(bool bUseVerticalBreak, bool bUseHorizonBreak)
 {
-	eo->_wnds = eo->_wb.get_Windows();
-	eo->_wnd = eo->_wnds.get_Item(COleVariant((long)1));
-	eo->_wnd.put_View(2);
+	m_eo->wnds = m_eo->wb.get_Windows();
+	m_eo->wnd = m_eo->wnds.get_Item(COleVariant((long)1));
+	m_eo->wnd.put_View(2);
 
 	if (bUseVerticalBreak)
 	{
-		eo->_vpbs = eo->_ws.get_VPageBreaks();
+		m_eo->vpbs = m_eo->ws.get_VPageBreaks();
 
-		for (int i = 0; i < (int)eo->_vpbs.get_Count(); i++)
+		for (int i = 0; i < (int)m_eo->vpbs.get_Count(); i++)
 		{
-			eo->_vpb = eo->_vpbs.get_Item(i + 1);
-			eo->_vpb.DragOff(-4161, 1);
+			m_eo->vpb = m_eo->vpbs.get_Item(i + 1);
+			m_eo->vpb.DragOff(-4161, 1);
 		}
 	}
 
 	if (bUseHorizonBreak)
 	{
-		eo->_hpbs = eo->_ws.get_HPageBreaks();
+		m_eo->hpbs = m_eo->ws.get_HPageBreaks();
 
-		for (int i = 0; i < (int)eo->_hpbs.get_Count(); i++)
+		for (int i = 0; i < (int)m_eo->hpbs.get_Count(); i++)
 		{
-			eo->_hpb = eo->_hpbs.get_Item(i + 1);
-			eo->_hpb.DragOff(-4121, 1);
+			m_eo->hpb = m_eo->hpbs.get_Item(i + 1);
+			m_eo->hpb.DragOff(-4121, 1);
 		}
 	}
 
-	eo->_wnd.put_View(1);
+	m_eo->wnd.put_View(1);
 }
 
 void ExcelAutomationManager::SetHorizonTextAlign(Align TextAlign)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		if (TextAlign == TEXT_ALIGN_LEFT || TextAlign == TEXT_ALIGN_CENTER || TextAlign == TEXT_ALIGN_RIGHT)
-			eo->_range.put_HorizontalAlignment(COleVariant((short)TextAlign));
+			m_eo->range.put_HorizontalAlignment(COleVariant((short)TextAlign));
 	}
 }
 
 void ExcelAutomationManager::SetVerticalTextAlign(Align TextAlign)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		if (TextAlign == TEXT_ALIGN_TOP || TextAlign == TEXT_ALIGN_CENTER || TextAlign == TEXT_ALIGN_BOTTOM)
-			eo->_range.put_VerticalAlignment(COleVariant((short)TextAlign));
+			m_eo->range.put_VerticalAlignment(COleVariant((short)TextAlign));
 	}
 }
 
 void ExcelAutomationManager::SetAutoLineChange(BOOL setLineEnd)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.put_WrapText(COleVariant((short)setLineEnd));
+		m_eo->range.put_WrapText(COleVariant((short)setLineEnd));
 	}
 }
 
 void ExcelAutomationManager::SetIndent(int nIndentValue)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
 		if (nIndentValue >= 0 && nIndentValue <= 15)
-			eo->_range.put_IndentLevel(COleVariant((long)nIndentValue));
+			m_eo->range.put_IndentLevel(COleVariant((long)nIndentValue));
 	}
 }
 
 void ExcelAutomationManager::SaveDepth()
 {
-	this->_nDepth += _nSaveHeight;
-	_nSaveHeight = 0;
+	this->m_nDepth += m_nSaveHeight;
+	m_nSaveHeight = 0;
 }
 
 void ExcelAutomationManager::SetItem(int nWidth, int nHeight, CString strText)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.put_Item(COleVariant((long)nHeight), COleVariant((long)nWidth), COleVariant(strText));
+		m_eo->range.put_Item(COleVariant((long)nHeight), COleVariant((long)nWidth), COleVariant(strText));
 	}
 }
 
 void ExcelAutomationManager::SetItem(CString strText)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.put_Value2(COleVariant(strText));
+		m_eo->range.put_Value2(COleVariant(strText));
 	}
 }
 
 void ExcelAutomationManager::SetMerge()
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.Merge(COleVariant(0L));
+		m_eo->range.Merge(COleVariant(0L));
 	}
 }
 
@@ -605,47 +605,47 @@ void ExcelAutomationManager::SetMerge(CPoint startPoint, CPoint endPoint)
 	DataSwapping(&startPoint.x, &endPoint.x);
 	DataSwapping(&startPoint.y, &endPoint.y);
 
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		CRange copyRange = eo->_range;
+		CRange copyRange = m_eo->range;
 
-		if (SetRange(_nSaveTab + startPoint.x - 1, _nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
+		if (SetRange(m_nSaveTab + startPoint.x - 1, m_nDepth + startPoint.y - 1, endPoint.x - startPoint.x + 1, endPoint.y - startPoint.y + 1, false))
 		{
 			SetMerge();
-			eo->_range = copyRange;
+			m_eo->range = copyRange;
 		}
 	}
 }
 
 void ExcelAutomationManager::SetLineEnd(unsigned int nLineEnd /* = 1*/)
 {
-	this->_nDepth += nLineEnd;
+	this->m_nDepth += nLineEnd;
 }
 
 void ExcelAutomationManager::SetDepth(int nDepth)
 {
-	this->_nDepth = nDepth;
+	this->m_nDepth = nDepth;
 }
 
 int ExcelAutomationManager::GetDepth() const
 {
-	return this->_nDepth;
+	return this->m_nDepth;
 }
 
 int ExcelAutomationManager::GetCpyDepth() const
 {
-	return this->_nCpyDepth;
+	return this->m_nCpyDepth;
 }
 
 void ExcelAutomationManager::ResetDepth()
 {
-	_nCpyDepth = _nDepth;
-	_nDepth = 0;
+	m_nCpyDepth = m_nDepth;
+	m_nDepth = 0;
 }
 
 void ExcelAutomationManager::RevertDepth()
 {
-	_nDepth = _nCpyDepth;
+	m_nDepth = m_nCpyDepth;
 }
 
 void ExcelAutomationManager::SetAutoRowSize()
@@ -663,17 +663,17 @@ void ExcelAutomationManager::SetAutoRowSize()
 
 void ExcelAutomationManager::SetCellWidth(double dWidth)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.put_ColumnWidth(COleVariant(dWidth));
+		m_eo->range.put_ColumnWidth(COleVariant(dWidth));
 	}
 }
 
 void ExcelAutomationManager::SetCellHeight(double dHeight)
 {
-	if (_bSetRange)
+	if (m_bSetRange)
 	{
-		eo->_range.put_RowHeight(COleVariant(dHeight));
+		m_eo->range.put_RowHeight(COleVariant(dHeight));
 	}
 }
 
@@ -730,14 +730,14 @@ void ExcelAutomationManager::SetChart(ChartData chartData)
 
 	COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
 	covOptional.vt = VT_DISPATCH;
-	covOptional.pdispVal = eo->_ws.m_lpDispatch;
-	eo->_ws.m_lpDispatch->AddRef();
+	covOptional.pdispVal = m_eo->ws.m_lpDispatch;
+	m_eo->ws.m_lpDispatch->AddRef();
 
-	eo->_charts = eo->_wb.get_Charts();
-	eo->_chart = eo->_charts.Add(_colOption, covOptional, _colOption);
-	eo->_chart.put_Name("통계 그래프");
+	m_eo->charts = m_eo->wb.get_Charts();
+	m_eo->chart = m_eo->charts.Add(im_colOption, covOptional, im_colOption);
+	m_eo->chart.put_Name("통계 그래프");
 	
-	eo->_chart.put_ChartType(chartData.kindOfChart);
+	m_eo->chart.put_ChartType(chartData.kindOfChart);
 
 	if (chartData.kindOfChart == CHART_PIE || chartData.kindOfChart == CHART_DONUT)
 	{
@@ -756,29 +756,29 @@ void ExcelAutomationManager::SetChart(ChartData chartData)
 	}
 	
 	SetChartTitle(chartData.strChartTitle);
-	VisibleWorkSheet(eo->_ws.get_Index() - 1, false);
+	VisibleWorkSheet(m_eo->ws.get_Index() - 1, false);
 	SetActiveWorkSheet(0);
 }
 
 void ExcelAutomationManager::SetActiveWorkSheet(int nWorkSheetIndex)
 {
-	eo->_ws = eo->_wss.get_Item(COleVariant(long(nWorkSheetIndex + 1)));
-	eo->_ws.Activate();
+	m_eo->ws = m_eo->wss.get_Item(COleVariant(long(nWorkSheetIndex + 1)));
+	m_eo->ws.Activate();
 }
 
 void ExcelAutomationManager::SetStickChart()
 {
-	eo->_chart.SetElement(2);	//상단에 차트제목표시		(title)
-	eo->_chart.SetElement(101);	//오른쪽에 범례표시			(legend)
-	eo->_chart.SetElement(201);	//중앙에 데이터레이블표시
+	m_eo->chart.SetElement(2);	//상단에 차트제목표시		(title)
+	m_eo->chart.SetElement(101);	//오른쪽에 범례표시			(legend)
+	m_eo->chart.SetElement(201);	//중앙에 데이터레이블표시
 }
 
 void ExcelAutomationManager::SetPieChart()
 {
 	// https://docs.microsoft.com/ko-kr/office/vba/api/office.msochartelementtype 차트 엘레먼트값
-	eo->_chart.SetElement(2);	//상단에 차트제목표시		(title)
-	eo->_chart.SetElement(101);	//오른쪽에 범례표시			(legend)
-	eo->_chart.SetElement(201);	//중앙에 데이터레이블표시
+	m_eo->chart.SetElement(2);	//상단에 차트제목표시		(title)
+	m_eo->chart.SetElement(101);	//오른쪽에 범례표시			(legend)
+	m_eo->chart.SetElement(201);	//중앙에 데이터레이블표시
 
 	//첫번째 인자 데이터레이블유형 //https://docs.microsoft.com/en-us/dotnet/api/microsoft.office.interop.excel.xldatalabelstype?view=excel-pia
 	//두번째 인자 범례사용
@@ -788,76 +788,76 @@ void ExcelAutomationManager::SetPieChart()
 	//여섯번째 인자 데이터 바디텍스트 출력(값)
 	//일곱번째 인자 데이터 퍼센테이지 출력
 	//여덟번째 인자 출력텍스트 간 구분자설정
-	eo->_chart.ApplyDataLabels(5, _colTrue, _colTrue, _colFalse, _colFalse, _colTrue, _colFalse, _colTrue, _colFalse, COleVariant(_T("\n")));
+	m_eo->chart.ApplyDataLabels(5, im_colTrue, im_colTrue, im_colFalse, im_colFalse, im_colTrue, im_colFalse, im_colTrue, im_colFalse, COleVariant(_T("\n")));
 }
 
 void ExcelAutomationManager::SetLineChart()
 {
-	eo->_chart.SetElement(2);
-	eo->_chart.SetElement(101);
+	m_eo->chart.SetElement(2);
+	m_eo->chart.SetElement(101);
 }
 
 void ExcelAutomationManager::SetChartTitle(CString chartTitle)
 {
-	if (eo->_chart.get_HasTitle())
+	if (m_eo->chart.get_HasTitle())
 	{
-		eo->_title = eo->_chart.get_ChartTitle();
-		eo->_title.put_Caption(chartTitle);
+		m_eo->title = m_eo->chart.get_ChartTitle();
+		m_eo->title.put_Caption(chartTitle);
 	}
 }
 
 void ExcelAutomationManager::SetLineChartColor(int whichChart, int legendSize, std::vector<int> legendColors)
 {
-	if (eo->_chart.get_HasLegend())
+	if (m_eo->chart.get_HasLegend())
 	{
-		eo->_legend = eo->_chart.get_Legend();
-		eo->_entry = eo->_legend.LegendEntries(COleVariant((short)1));
-		eo->_key = eo->_entry.get_LegendKey();
-		eo->_borders = eo->_key.get_Border();
-		eo->_borders.put_Color(COleVariant((DOUBLE)COLOR_THICK_GREY));
+		m_eo->legend = m_eo->chart.get_Legend();
+		m_eo->entry = m_eo->legend.LegendEntries(COleVariant((short)1));
+		m_eo->key = m_eo->entry.get_LegendKey();
+		m_eo->borders = m_eo->key.get_Border();
+		m_eo->borders.put_Color(COleVariant((DOUBLE)COLOR_THICK_GREY));
 
 		if (whichChart == CHART_POINTLINE)
 		{
-			eo->_srs = eo->_chart.SeriesCollection(COleVariant(long(1)));
-			eo->_interior = eo->_range.get_Interior();
+			m_eo->srs = m_eo->chart.SeriesCollection(COleVariant(long(1)));
+			m_eo->interior = m_eo->range.get_Interior();
 			for (int i = 1; i <= legendSize; i++)
 			{
-				eo->_interior.put_ColorIndex(COleVariant(long(legendColors.at(i - 1))));
-				eo->_point = eo->_srs.Points(COleVariant(long(i)));
-				eo->_point.put_MarkerStyle(8);
-				eo->_point.put_MarkerSize(8);
+				m_eo->interior.put_ColorIndex(COleVariant(long(legendColors.at(i - 1))));
+				m_eo->point = m_eo->srs.Points(COleVariant(long(i)));
+				m_eo->point.put_MarkerStyle(8);
+				m_eo->point.put_MarkerSize(8);
 				for (int j = 1; j <= legendSize; j++)
 				{
 					if (i == j)
 					{	
-						eo->_point.put_MarkerBackgroundColor(long(eo->_interior.get_Color().dblVal));
-						eo->_point.put_MarkerForegroundColor(COLOR_WHITE);
+						m_eo->point.put_MarkerBackgroundColor(long(m_eo->interior.get_Color().dblVal));
+						m_eo->point.put_MarkerForegroundColor(COLOR_WHITE);
 						break;
 					}
 				}
 			}
 		}
 
-		eo->_chart.put_HasLegend(FALSE);
+		m_eo->chart.put_HasLegend(FALSE);
 	}
 }
 
 void ExcelAutomationManager::SetPieChartColor(int legendSize, std::vector<int> legendColors)
 {
-	if (eo->_chart.get_HasLegend())
+	if (m_eo->chart.get_HasLegend())
 	{
 		for (int i = 1; i <= legendSize; i++)
 		{
-			eo->_legend = eo->_chart.get_Legend();
-			eo->_entry = eo->_legend.LegendEntries(COleVariant((short)i));
-			eo->_key = eo->_entry.get_LegendKey();
-			eo->_fform = eo->_key.get_Fill();
-			eo->_cform = eo->_fform.get_ForeColor();
+			m_eo->legend = m_eo->chart.get_Legend();
+			m_eo->entry = m_eo->legend.LegendEntries(COleVariant((short)i));
+			m_eo->key = m_eo->entry.get_LegendKey();
+			m_eo->fform = m_eo->key.get_Fill();
+			m_eo->cform = m_eo->fform.get_ForeColor();
 			for (int j = 1; j <= legendSize; j++)
 			{
 				if (i == j)
 				{
-					eo->_cform.put_SchemeColor(legendColors.at(i - 1));
+					m_eo->cform.put_SchemeColor(legendColors.at(i - 1));
 					break;
 				}
 			}
@@ -867,19 +867,19 @@ void ExcelAutomationManager::SetPieChartColor(int legendSize, std::vector<int> l
 
 void ExcelAutomationManager::SetStickChartColor(int legendSize, std::vector<int> legendColors)
 {
-	if (eo->_chart.get_HasLegend())
+	if (m_eo->chart.get_HasLegend())
 	{
-		eo->_srs = eo->_chart.SeriesCollection(COleVariant(long(1)));
+		m_eo->srs = m_eo->chart.SeriesCollection(COleVariant(long(1)));
 		for (int i = 1; i <= legendSize; i++)
 		{
-			eo->_point = eo->_srs.Points(COleVariant(long(i)));
-			eo->_fform = eo->_point.get_Fill();
-			eo->_cform = eo->_fform.get_ForeColor();
+			m_eo->point = m_eo->srs.Points(COleVariant(long(i)));
+			m_eo->fform = m_eo->point.get_Fill();
+			m_eo->cform = m_eo->fform.get_ForeColor();
 			for (int j = 1; j <= legendSize; j++)
 			{
 				if (i == j)
 				{
-					eo->_cform.put_SchemeColor(legendColors.at(i - 1));
+					m_eo->cform.put_SchemeColor(legendColors.at(i - 1));
 					break;
 				}
 			}

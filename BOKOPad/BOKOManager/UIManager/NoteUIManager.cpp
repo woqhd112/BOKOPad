@@ -13,7 +13,7 @@ NoteUIManager::NoteUIManager()
 	, m_bCursorAttach(false)
 	, m_bCursorDetach(true)
 {
-
+	
 }
 
 NoteUIManager::~NoteUIManager()
@@ -40,7 +40,6 @@ NoteUIManager::~NoteUIManager()
 	}
 
 	m_notePadManager.clear();
-
 }
 
 bool NoteUIManager::SendMessages(PerformanceMessage message)
@@ -176,10 +175,13 @@ bool NoteUIManager::Insert()
 	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE | BS_CENTER | BS_PUSHBUTTON, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 	bCreate3 = (bool)noteInputCheckBox->Create("", WS_VISIBLE | BS_AUTOCHECKBOX, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 
+
 	if (bCreate1 && bCreate2)
 	{
 		try
 		{
+			noteInputEdit->SetFont(&m_setFont);
+
 			NotePadStruct padStruct;
 			padStruct.noteButton = noteInputButton;
 			padStruct.noteEdit = noteInputEdit;

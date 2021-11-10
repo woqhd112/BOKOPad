@@ -16,6 +16,8 @@ class BOKODragDlg;
 #define CURSOR_CROSS SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS))
 #define CURSOR_HAND SetCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND))
 #define CURSOR_WAIT SetCursor(AfxGetApp()->LoadStandardCursor(IDC_WAIT))
+#define EDIT_WIDTH 120
+#define EDIT_HEIGHT 100
 
 
 enum DragUpState
@@ -193,8 +195,7 @@ protected:
 	ComplexMap<int, NotePadStruct> m_notePadManager;
 	ComplexMap<int, int> m_noteSeqMap;
 
-	const int EDIT_WIDTH = 80;
-	const int EDIT_HEIGHT = 60;
+	CFont m_setFont;
 	const int DRAG_DLG_WIDTH = 30;
 	const int DRAG_DLG_HEIGHT = 30;
 

@@ -157,7 +157,7 @@ namespace ComplexLibrary
 			preFindString = tmp1;
 			//sufFindString = tmp2;
 			sufFindString = buf;
-			sufFindString.Remove(preFindString + ",");
+			sufFindString.Remove(preFindString + ComplexString(div));
 			delete[] tmp1;
 			//delete[] tmp2;
 

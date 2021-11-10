@@ -119,6 +119,8 @@ void OneViewList::InsertItem(ComplexString strText, int notSEQ)
 
 	if (m_size > 14)
 		scroll.ExecuteScroll(SCROLL_LINE_ADD);
+
+	Log_Manager->OnPutLog("OneViewList 아이템 등록 완료", LogType::LT_PROCESS);
 }
 
 void OneViewList::SetItem(int index, ComplexString strText)
@@ -153,6 +155,8 @@ void OneViewList::DeleteAllItems()
 	m_size = 0;
 	m_variableItemStart_Y = 0;
 	scroll.ResetScroll();
+
+	Log_Manager->OnPutLog("OneViewList 아이템 모두 삭제 완료", LogType::LT_PROCESS);
 }
 
 int OneViewList::GetItemCount() const
@@ -245,6 +249,7 @@ void OneViewList::ExpandAll(bool bExpand)
 		i++;
 		iter++;
 	}
+	Log_Manager->OnPutLog("OneViewList 아이템 모두 펼치기 완료", LogType::LT_PROCESS);
 }
 
 
@@ -443,6 +448,8 @@ BOOL OneViewList::OnCommand(WPARAM wParam, LPARAM lParam)
 			//m_prePos -= 60;
 		}
 
+		Log_Manager->OnPutLog("OneViewList 아이템 클릭", LogType::LT_EVENT);
+
 		return 1;
 	}
 
@@ -496,6 +503,7 @@ void OneViewList::Run()
 
 						Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
 						Scenario_UI_Manager->SendMessages(PM_TIMELINE_ONEVIEW_EXPANDALL_CLOSE);
+						Log_Manager->OnPutLog("드래그 버튼 다운", LogType::LT_EVENT);
 					}
 
 					m_bDragTimer = false;
@@ -620,6 +628,7 @@ bool OneViewList::DragUp(MSG* pMsg)
 	m_mprps = MPRPS_BUTTON_NONE;
 	m_downButtonKey = -1;
 	m_focusButtonKey = -1;
+	Log_Manager->OnPutLog("드래그 버튼 다운", LogType::LT_EVENT);
 
 	return true;
 }

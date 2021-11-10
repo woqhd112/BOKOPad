@@ -29,4 +29,5 @@ protected:
 public:
 	CEdit m_edit_drag;
 	CStatic m_stt_drag;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

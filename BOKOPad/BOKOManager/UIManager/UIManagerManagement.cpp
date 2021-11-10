@@ -19,6 +19,7 @@ UIManagerManagement::UIManagerManagement()
 	, m_dragDlg(new BOKODragDlg)
 {
 	m_dragState = DUS_NOTHING;
+	m_setFont.CreatePointFont(120, TEXT("±¼¸²"));
 }
 
 UIManagerManagement::~UIManagerManagement()
@@ -28,6 +29,7 @@ UIManagerManagement::~UIManagerManagement()
 		delete m_dragDlg;
 		m_dragDlg = nullptr;
 	}
+	m_setFont.DeleteObject();
 }
 
 void UIManagerManagement::AttachManager(CWnd* dlgAttachPointer)

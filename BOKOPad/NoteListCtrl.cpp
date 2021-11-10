@@ -75,7 +75,7 @@ BOOL NoteListCtrl::OnInitDialog()
 
 	ScrollProcess::ScrollInfo info;
 	info.scrollExecuteCtrl = this;
-	info.wheelSize = 70;
+	info.wheelSize = EDIT_HEIGHT + 10;
 	scroll.Init(info);
 	scroll.ExecuteScroll(SCROLL_LINE_NOTHING);
 
@@ -759,13 +759,18 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
-		// 음.. 시나리오디테일에서 컨트롤 누른상태에서 클릭이벤트 처리되면 다시 키업으로 안돌아감..
 		// 노트매니저에 체크박스 클릭 이벤트 날리기
 		m_defaultDragData.buttonID = LOWORD(wParam);
 		m_noteUIManager->InputDragStruct(&m_defaultDragData);
 		m_noteUIManager->SendMessages(PM_NOTE_CLICK);
 		Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
 		return 1;
+	}
+	else if (HIWORD(wParam) == EN_CHANGE)
+	{
+		int editID = LOWORD(wParam);
+		// 여기다가 에딧 변경작업 추가하기
+		// 음 컨트롤러하나 상속받아서 스레드 추가해서 작업할까..
 	}
 
 	return CDialogEx::OnCommand(wParam, lParam);

@@ -49,7 +49,6 @@ private:
 	int m_variableCtrlPos_y;
 
 
-
 	bool m_bCursorAttach;
 	bool m_bCursorDetach;
 	/*ComplexMap<int, NotePadStruct> m_notePadManager;

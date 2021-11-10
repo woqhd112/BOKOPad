@@ -19,6 +19,10 @@
 #define IDR_MENU_MAIN                   153
 #define IDD_DIALOG_LOG_VIEW             154
 #define IDD_DIALOG_PROGRESS_POPUP       156
+#define IDB_PNG_EXCEL                   158
+#define IDB_PNG_NOTEPAD                 159
+#define IDB_PNG_WORD                    160
+#define IDD_DIALOG_SELECT_EXPORT_TIMELINE_EXTENTION 161
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -51,6 +55,12 @@
 #define IDC_BUTTON_EXECUTE_LOG          1039
 #define IDC_PROGRESS_STATUS             1040
 #define IDC_STATIC_PROGRESS_FILE_NAME   1041
+#define IDC_BUTTON_SELECT_NOTEPAD       1042
+#define IDC_BUTTON_SELECT_WORD          1043
+#define IDC_BUTTON_SELECT_EXCEL         1044
+#define IDC_MFCBUTTON_NOTEPAD           1045
+#define IDC_MFCBUTTON_EXCEL             1046
+#define IDC_MFCBUTTON_WORD              1047
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -68,9 +78,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_RESOURCE_VALUE        164
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

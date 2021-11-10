@@ -212,7 +212,11 @@
     <ClInclude Include="BOKOPadDlg.h" />
     <ClInclude Include="BOKOProgressPopup.h" />
     <ClInclude Include="BOKOScenarioDetailDlg.h" />
+    <ClInclude Include="BOKOSelectExtentionDlg.h" />
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
+    <ClInclude Include="DrawButton\CGdiPlusBitmap.h" />
+    <ClInclude Include="DrawButton\GdipButton.h" />
+    <ClInclude Include="DrawButton\MemDC.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OfficeAutomation\CExcel\CApplication.h" />
     <ClInclude Include="OfficeAutomation\CExcel\CBorder.h" />
@@ -244,6 +248,8 @@
     <ClInclude Include="OfficeAutomation\CExcel\CWorksheet.h" />
     <ClInclude Include="OfficeAutomation\CExcel\CWorksheets.h" />
     <ClInclude Include="OfficeAutomation\CWord\CApplication0.h" />
+    <ClInclude Include="OfficeAutomation\CWord\CCell.h" />
+    <ClInclude Include="OfficeAutomation\CWord\CCells.h" />
     <ClInclude Include="OfficeAutomation\CWord\CDocument0.h" />
     <ClInclude Include="OfficeAutomation\CWord\CDocuments.h" />
     <ClInclude Include="OfficeAutomation\CWord\CFont1.h" />
@@ -285,7 +291,9 @@
     <ClCompile Include="BOKOPadDlg.cpp" />
     <ClCompile Include="BOKOProgressPopup.cpp" />
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
+    <ClCompile Include="BOKOSelectExtentionDlg.cpp" />
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
+    <ClCompile Include="DrawButton\GdipButton.cpp" />
     <ClCompile Include="OfficeAutomation\Manager\ExcelAutomationManager.cpp" />
     <ClCompile Include="OfficeAutomation\Manager\WordAutomationManager.cpp" />
     <ClCompile Include="OneViewList.cpp" />
@@ -309,6 +317,9 @@
   <ItemGroup>
     <Image Include="res\BOKOPad.ico" />
     <Image Include="res\Cal.ico" />
+    <Image Include="res\Excel.png" />
+    <Image Include="res\Notepad.png" />
+    <Image Include="res\Word.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

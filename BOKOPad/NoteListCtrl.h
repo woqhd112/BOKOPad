@@ -62,9 +62,6 @@ private:
 
 	CRect m_calculateItemPos;
 
-	const int EDIT_WIDTH = 80;
-	const int EDIT_HEIGHT = 60;
-
 	int m_viewNoteSize;
 	ScenarioManagerStruct m_thisDataStruct;
 	DragDataStruct m_defaultDragData;

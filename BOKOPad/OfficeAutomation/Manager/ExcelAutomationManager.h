@@ -144,104 +144,104 @@ private:
 	struct ExcelObject
 	{
 		// 엑셀데이터의 최상위 객체
-		CApplication		_app;	
+		CApplication		app;	
 
 		// 워크북들을 담고있는 콜렉션 객체
-		CWorkbooks			_wbs;			
+		CWorkbooks			wbs;			
 
 		// 단일 워크북 객체
-		CWorkbook			_wb;		
+		CWorkbook			wb;		
 
 		// 워크시트를 담고있는 콜렉션 객체
-		CWorksheets			_wss;		
+		CWorksheets			wss;		
 
 		// 단일 워크시트 객체
-		CWorksheet			_ws;		
+		CWorksheet			ws;		
 
 		// 워크시트 안에 존재하는 셀 범위를 담당하는 객체
-		CRange				_range;				
+		CRange				range;				
 
 		// 해당 범위안에 있는 데이터의 폰트를 지정하는 객체
-		CFont0				_font;	
+		CFont0				font;	
 
 		// 해당 범위안에 있는 셀의 보더값들을 담고있는 객체
-		CBorders			_borders;	
+		CBorders			borders;	
 
 		// 보더값의 단일 객체
-		CBorder				_bl, _bt, _bb, _br;	
+		CBorder				bl, bt, bb, br;	
 
 		// 해당 범위를 디자인할수있는 객체
-		Cnterior			_interior;	
+		Cnterior			interior;	
 
 		// 워크북에 존재하는 차트 콜렉션 객체
-		CCharts				_charts;	
+		CCharts				charts;	
 
 		// 차트콜렉션에서 추가한 단일 차트객체
-		CChart				_chart;				
+		CChart				chart;				
 
 		// 차트객체의 타이틀을 담고있는 객체
-		CChartTitle			_title;		
+		CChartTitle			title;		
 
 		// 차트객체의 데이터의 색을 입힐수있는 객체
-		CChartColorFormat	_cform;	
+		CChartColorFormat	cform;	
 
 		// 차트객체의 데이터의 채우기기능을 사용할수 있는 객체
-		CChartFillFormat	_fform;
+		CChartFillFormat	fform;
 
 		// 차트객체의 계열값을 담고있는 객체
-		CSeries				_srs;				
+		CSeries				srs;				
 
 		// 계열값의 데이터와 그래프를 연결해주는 객체
-		CPoint0				_point;	
+		CPoint0				point;	
 
 		// 차트객체의 범례값을 가지고있는 객체
-		CLegend				_legend;	
+		CLegend				legend;	
 
 		// 단일 범례값을 담고있는 객체
-		CLegendEntry		_entry;	
+		CLegendEntry		entry;	
 
 		// 범례값의 데이터와 그래프를 연결해주는 객체
-		CLegendKey			_key;			
+		CLegendKey			key;			
 
 		// 엑셀의 가로 페이지나누기값을 담고있는 콜렉션 객체
-		CHPageBreaks		_hpbs;		
+		CHPageBreaks		hpbs;		
 
 		// 단일 가로 페이지나누기 객체
-		CHPageBreak			_hpb;
+		CHPageBreak			hpb;
 
 		// 엑셀의 세로 페이지나누기값을 담고있는 콜렉션 객체
-		CVPageBreaks		_vpbs;				
+		CVPageBreaks		vpbs;				
 
 		// 단일 세로 페이지나누기 객체
-		CVPageBreak			_vpb;
+		CVPageBreak			vpb;
 
 		// 엑셀의 전체 창을 나타내는 콜렉션 객체
-		CWindows			_wnds;
+		CWindows			wnds;
 
 		// 단일 창객체
-		CWindow0			_wnd;					
+		CWindow0			wnd;					
 	};
 
 	// 엑셀의 기능들의 객체 집합 구조체 포인터
-	ExcelObject* eo;
+	ExcelObject* m_eo;
 
 	// 현재 워크시트의 가로축 위치값
-	int _nDepth;			
+	int m_nDepth;			
 
 	// 복사한 워크시트의 가로축 위치값
-	int _nCpyDepth;
+	int m_nCpyDepth;
 
 	// 사방면 보더값 사용 유무
-	bool _bSetBl, _bSetBr, _bSetBb, _bSetBt;	
+	bool m_bSetBl, m_bSetBr, m_bSetBb, m_bSetBt;	
 
 	// 셀의 범위가 설정되었는지 유무
-	bool _bSetRange;
+	bool m_bSetRange;
 
 	// 셀의 높이값이 저장되는 변수
-	int _nSaveHeight;
+	int m_nSaveHeight;
 
 	// 셀의 tab이 저장되는 변수
-	int _nSaveTab;
+	int m_nSaveTab;
 
 public:
 
@@ -256,7 +256,7 @@ public:
 	* @ param7	:	셀의 전체 범위의 모든 셀의 테두리 두께 설정
 	* @ see		:	엑셀 범위안에 있는 셀의 스타일을 설정하는 함수
 	*/
-	void SetRangeStyle(Color CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle = BOLD_STYLE_CONTINOUS, BoldWeight BoxBorderBold = BOLD_WEIGHT_THICK, BoldWeight CellBorderBold = BOLD_WEIGHT_THIN);
+	void SetRangeStyle(OAColor CellColor, Align TextAlign, bool BoxBorder, bool FontBold, BoldStyle BoxBoldStyle = BOLD_STYLE_CONTINOUS, BoldWeight BoxBorderBold = BOLD_WEIGHT_THICK, BoldWeight CellBorderBold = BOLD_WEIGHT_THIN);
 
 	/**
 	* SetBoxStyle
@@ -300,7 +300,7 @@ public:
 	* @ param	:	엑셀을 저장할 경로명
 	* @ see		:	엑셀을 저장하기 하고 종료하기위한 함수
 	*/
-	void CloseExcel(CString strFilePath);
+	void CloseExcel(CString strFilePath, bool executeShell = true);
 
 	/**
 	* SetItem
@@ -523,7 +523,7 @@ public:
 	* @ param	:	설정할 색상값
 	* @ see		:	현재 설정된 범위의 글자의 색상을 설정
 	*/
-	void SetFontColor(Color FontColor);
+	void SetFontColor(OAColor FontColor);
 
 	/**
 	* SetFontColor
@@ -532,7 +532,7 @@ public:
 	* @ param3	:	설정할 색상값
 	* @ see		:	지정한 범위의 글자의 색상을 설정
 	*/
-	void SetFontColor(CPoint startPoint, CPoint endPoint, Color FontColor);
+	void SetFontColor(CPoint startPoint, CPoint endPoint, OAColor FontColor);
 
 	/**
 	* SetAutoRowSize
@@ -551,7 +551,7 @@ public:
 	* @ param	:	설정할 색상
 	* @ see		:	설정한 범위의 셀의 배경색을 설정하는 함수
 	*/
-	void SetBkColor(Color CellColor);
+	void SetBkColor(OAColor CellColor);
 
 	/**
 	* SetBkColor
@@ -560,7 +560,7 @@ public:
 	* @ param3	:	설정할 색상
 	* @ see		:	지정한 범위의 셀의 배경색을 설정하는 함수
 	*/
-	void SetBkColor(CPoint startPoint, CPoint endPoint, Color CellColor);
+	void SetBkColor(CPoint startPoint, CPoint endPoint, OAColor CellColor);
 
 	/**
 	* SetBoxBorder

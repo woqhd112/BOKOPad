@@ -6,8 +6,11 @@
 #include "BOKOTimelineOneViewDlg.h"
 #include "BOKOManager/UIManager/TimelineUIManager.h"
 #include "BOKOManager/DBManager/TimelineDBManager.h"
+#include "BOKOSelectExtentionDlg.h"
 #include "afxdialogex.h"
 #include "File/FileProcess.h"
+#include "OfficeAutomation/Manager/ExcelAutomationManager.h"
+#include "OfficeAutomation/Manager/WordAutomationManager.h"
 
 
 // BOKOTimelineOneViewDlg 대화 상자
@@ -71,6 +74,9 @@ void BOKOTimelineOneViewDlg::SetTimelineText(ComplexString& strText, int noteSEQ
 void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	CURSOR_WAIT;
+
 	Log_Manager->OnPutLog("타임라인 내보내기 버튼 클릭", LogType::LT_EVENT);
 	char dir_[2048] = { 0 };
 	::GetModuleFileNameA(NULL, dir_, 2048);
@@ -79,18 +85,79 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 	path = dir_;
 	path.Remove(DB_MODULE_NANE);
 
-	CFolderPickerDialog fd(path.GetBuffer(), OFN_FILEMUSTEXIST, NULL, 0);
-	if (fd.DoModal() != IDOK)
+	int selectExtentionType = -1;
+	// 확장자 선택
+	Log_Manager->OnPutLog("확장자 선택 화면 생성 완료", LogType::LT_OPERATE);
+	BOKOSelectExtentionDlg extentionSelect(&selectExtentionType);
+	extentionSelect.DoModal();
+
+	if (selectExtentionType == -1)
 		return;
 
-	CString strFullPath = fd.GetPathName();
-
+	
 	ComplexString strWriteAnsiContent, strConvertUTF8Content;
 	m_list_one_view.GetFullItemText(&strWriteAnsiContent);
 
-	// 이거 pc별로 포맷팅이 다른데 구분하는법있나.. BOKOOptionDlg도 처리해야함..
-	//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
-	ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+	// 엑셀
+	if (selectExtentionType == 1)
+	{
+		ExcelAutomationManager eam;
+
+		CString name, path;
+		if (eam.OnReadyProcess(&name, &path) == false)
+			return;
+
+		if (eam.StartExcel("시나리오") == false)
+			return;
+
+		ComplexStringTokenizer tokens;
+
+		strWriteAnsiContent.ReplaceAll("\r\n", "+");
+		tokens.ApplyStringTokenize(strWriteAnsiContent, '+');
+
+		while (tokens.HasNextToken())
+		{
+			if (eam.SetRange(1, eam.GetDepth(), 1, 1))
+			{
+				eam.SetItem(tokens.NextToken().GetBuffer());
+				eam.SaveDepth();
+			}
+		}
+
+		eam.CloseExcel(path, false);
+	}
+	// 워드
+	else if (selectExtentionType == 2)
+	{
+		WordAutomationManager wam;
+
+		CString name, path;
+		if (wam.OnReadyProcess(&name, &path) == false)
+			return;
+
+		if (wam.StartWord("시나리오") == false)
+			return;
+
+		wam.AppendText(strWriteAnsiContent.GetBuffer());
+
+		wam.CloseWord(path, false);
+	}
+	// 메모장
+	else if (selectExtentionType == 3)
+	{
+		CFolderPickerDialog fd(path.GetBuffer(), OFN_FILEMUSTEXIST, NULL, 0);
+		if (fd.DoModal() != IDOK)
+			return;
+
+		CString strFullPath = fd.GetPathName();
+
+		// 이거 pc별로 포맷팅이 다른데 구분하는법있나.. BOKOOptionDlg도 처리해야함..
+		//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
+		ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+	}
+
+	CURSOR_ARROW;
+
 	Log_Manager->OnPutLog("타임라인 내보내기 성공", LogType::LT_PROCESS);
 	MessageBox("타임라인 내보내기에 성공하였습니다.");
 }

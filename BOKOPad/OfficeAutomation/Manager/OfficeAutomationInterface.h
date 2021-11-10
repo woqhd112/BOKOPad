@@ -12,7 +12,7 @@
 #include <afxcmn.h>             // Windows 공용 컨트롤에 대한 MFC 지원입니다.
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-enum Color
+enum OAColor
 {
 	COLOR_THICK_GREY = RGB(128, 128, 128),
 	COLOR_LESS_THICK_GREY = RGB(166, 166, 166),
@@ -49,7 +49,7 @@ public:
 
 	bool OnReadyProcess(CString* strFileName, CString* strFilePath)
 	{
-		if (_type == OAT_WORD)
+		if (im_type == OAT_WORD)
 		{
 			CFileDialog fileDlg(FALSE, "docx", "*.docx", OFN_LONGNAMES | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "REPORT file (*.docx) | *.docx |");
 
@@ -77,7 +77,7 @@ public:
 				return false;
 			}
 		}
-		else if (_type == OAT_EXCEL)
+		else if (im_type == OAT_EXCEL)
 		{
 			CFileDialog fileDlg(FALSE, "xlsx", "*.xlsx", OFN_LONGNAMES | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "REPORT file (*.xlsx) | *.xlsx |");
 
@@ -116,18 +116,19 @@ protected:
 
 	void StartProcess()
 	{
-		_colTrue = (short)TRUE;
-		_colFalse = (short)FALSE;
+		im_colTrue = (short)TRUE;
+		im_colFalse = (short)FALSE;
 		COleVariant covOptional((long)DISP_E_PARAMNOTFOUND, VT_ERROR);
-		memcpy(_colOption, covOptional, sizeof(covOptional));
-		_bAttach = true;
+		memcpy(im_colOption, covOptional, sizeof(covOptional));
+		im_bAttach = true;
 	}
 
-	void CloseProcess(CString strFilePath)
+	void CloseProcess(CString strFilePath, bool executeShell = true)
 	{
-		if (!_bAttach)
+		if (!im_bAttach)
 		{
-			::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
+			if (executeShell)
+				::ShellExecute(NULL, "open", strFilePath, NULL, NULL, SW_SHOW);
 		}
 		else
 		{
@@ -141,14 +142,14 @@ protected:
 		OAT_EXCEL = 1,
 	};
 
-	COleVariant _colTrue;
+	COleVariant im_colTrue;
 
-	COleVariant _colFalse;
+	COleVariant im_colFalse;
 
-	COleVariant _colOption;
+	COleVariant im_colOption;
 
-	OAType _type;
+	OAType im_type;
 
-	bool _bAttach;
+	bool im_bAttach;
 
 };

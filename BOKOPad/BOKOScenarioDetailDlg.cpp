@@ -134,8 +134,8 @@ void BOKOScenarioDetailDlg::Initialize()
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
-	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.05), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.2));
-	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.3), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.3));
+	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.05), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.13));
+	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.23), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.37));
 	m_edit_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.65), CAST_INT(thisRect.Width() * 0.85), CAST_INT(thisRect.Height() * 0.15));
 	m_stt_note_limit_size.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.8), 100, 30);
 	m_btn_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.9 - 80), CAST_INT(thisRect.Height() * 0.8), 80, 25);
@@ -210,6 +210,7 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 BOOL BOKOScenarioDetailDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	
 
 	return CDialogEx::OnCommand(wParam, lParam);
 }
