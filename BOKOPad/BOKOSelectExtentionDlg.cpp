@@ -72,9 +72,9 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 
 	m_btn_excel2.SetFocus();
 
-	SetClassLong(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
-	SetClassLong(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
-	SetClassLong(m_btn_notepad.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+	//SetClassLongA(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+	//SetClassLongA(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+	//SetClassLongA(m_btn_notepad.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
 
 	/*m_btn_notepad.ShowWindow(SW_HIDE);
 	m_btn_excel.ShowWindow(SW_HIDE);
@@ -157,6 +157,23 @@ BOOL BOKOSelectExtentionDlg::PreTranslateMessage(MSG* pMsg)
 			Log_Manager->OnPutLog("메모장 내보내기 선택", LogType::LT_EVENT);
 			SendMessage(WM_CLOSE);
 		}
+	}
+	else if (pMsg->message == WM_MOUSEMOVE)
+	{
+		if (pMsg->hwnd == m_btn_excel)
+		{
+			CURSOR_HAND;
+		}
+		else if (pMsg->hwnd == m_btn_word)
+		{
+			CURSOR_HAND;
+		}
+		else if (pMsg->hwnd == m_btn_notepad)
+		{
+			CURSOR_HAND;
+		}
+		else
+			CURSOR_ARROW;
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);

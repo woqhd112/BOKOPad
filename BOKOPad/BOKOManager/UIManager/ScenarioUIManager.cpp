@@ -29,10 +29,10 @@ bool ScenarioUIManager::SendMessages(PerformanceMessage message)
 	if (!m_bAttach)
 		return false;
 
-	return HelpInvoker(message);
+	return InvokeHelper(message);
 }
 
-bool ScenarioUIManager::HelpInvoker(PerformanceMessage message)
+bool ScenarioUIManager::InvokeHelper(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 

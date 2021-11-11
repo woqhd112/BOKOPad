@@ -30,6 +30,7 @@ void BOKODragDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(BOKODragDlg, CDialogEx)
+	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
 
 
@@ -46,4 +47,12 @@ BOOL BOKODragDlg::PreTranslateMessage(MSG* pMsg)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void BOKODragDlg::OnNcPaint()
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	// 그리기 메시지에 대해서는 CDialogEx::OnNcPaint()을(를) 호출하지 마십시오.
+	
 }

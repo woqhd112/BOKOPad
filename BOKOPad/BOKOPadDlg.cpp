@@ -56,7 +56,9 @@ END_MESSAGE_MAP()
 
 CBOKOPadDlg::CBOKOPadDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_BOKOPAD_DIALOG, pParent)
+	, DlgInterface(this)
 {
+	CreateFrame();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	Log_Manager->OnPutLog("BOKOPadDlg 생성자 호출", LogType::LT_PROCESS);
 }
@@ -94,6 +96,8 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_COMMAND(ID_PROGRAM_CLOSE, &CBOKOPadDlg::OnProgramClose)
 	ON_COMMAND(ID_LOG_VIEW, &CBOKOPadDlg::OnLogView)
 	ON_COMMAND(ID_EXPLANATION_VIEW, &CBOKOPadDlg::OnExplanationView)
+	ON_WM_SIZE()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -122,13 +126,16 @@ BOOL CBOKOPadDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-
+	SetMenu(NULL);
+	
 	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+
+	//SetBackgroundColor(RGB(68, 68, 68));
 
 	Initialize();
 	Log_Manager->OnPutLog("메인 화면 초기화", LogType::LT_PROCESS);
@@ -161,6 +168,11 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 	Scenario_UI_Manager->AttachManager(this);
 	Log_Manager->OnPutLog("시나리오 UI 매니저 연결", LogType::LT_PROCESS);
+
+	CRect rect;
+	GetWindowRect(rect);
+
+	Init("BOKOPad");
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -231,9 +243,12 @@ void CBOKOPadDlg::OnPaint()
 
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
+
 	}
 	else
 	{
+		CPaintDC dc(this);
+		DrawBackground(&dc);
 		CDialogEx::OnPaint();
 	}
 }
@@ -310,6 +325,7 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 		{
 			m_list_scenario_list.SetSelectionMark(-1);
 			m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+			TitleBarActiveMove(pMsg);
 		}
 	}
 
@@ -608,4 +624,26 @@ void CBOKOPadDlg::OnExplanationView()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 
+}
+
+void CBOKOPadDlg::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	Sizing(nType);
+}
+
+
+HBRUSH CBOKOPadDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
+	if (returnHBR != NULL)
+		hbr = returnHBR;
+
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+	return hbr;
 }

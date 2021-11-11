@@ -2,13 +2,14 @@
 #include "resource.h"
 #include "NoteListCtrl.h"
 #include "Timeline.h"
+#include "DlgInterface.h"
 
 // BOKOScenarioDetailDlg 대화 상자
 
 #define LIMIT_TEXT_FORMAT "%d / 500"
 #define CAST_INT(x) int((x)) 
 
-class BOKOScenarioDetailDlg : public CDialogEx
+class BOKOScenarioDetailDlg : public CDialogEx, public DlgInterface
 {
 	// 타임라인 접근권한
 	friend class TimelineUIManager;
@@ -45,9 +46,9 @@ private:
 private:
 
 	CEdit m_edit_note_input;
-	CButton m_btn_note_input;
+	CustomButton m_btn_note_input;
 	CButton m_btn_drag_mode;
-	CButton m_btn_note_delete;
+	CustomButton m_btn_note_delete;
 	CStatic m_stt_note_limit_size;
 	NoteListCtrl m_list_notePad;
 	Timeline m_timeline;
@@ -71,4 +72,7 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedCheckDragMode();
 	afx_msg void OnBnClickedButtonNoteDelete();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
 };

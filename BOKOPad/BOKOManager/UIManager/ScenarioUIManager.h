@@ -13,7 +13,7 @@ public:
 
 private:
 
-	virtual bool HelpInvoker(PerformanceMessage message);
+	virtual bool InvokeHelper(PerformanceMessage message);
 
 	bool Create();
 	bool Destroy();

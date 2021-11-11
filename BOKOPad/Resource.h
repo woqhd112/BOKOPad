@@ -23,6 +23,12 @@
 #define IDB_PNG_NOTEPAD                 159
 #define IDB_PNG_WORD                    160
 #define IDD_DIALOG_SELECT_EXPORT_TIMELINE_EXTENTION 161
+#define IDB_PNG_ICON                    165
+#define IDB_PNG_ICON2                   166
+#define IDB_PNG_BK_BOTTOM               167
+#define IDB_PNG_BK_LEFT                 168
+#define IDB_PNG_BK_RIGHT                169
+#define IDB_PNG_BK_TITLE                170
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -78,9 +84,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        164
+#define _APS_NEXT_RESOURCE_VALUE        171
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_CONTROL_VALUE         1049
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

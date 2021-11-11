@@ -21,10 +21,10 @@ bool TimelineUIManager::SendMessages(PerformanceMessage message)
 	if (!m_bAttach)
 		return false;
 
-	return HelpInvoker(message);
+	return InvokeHelper(message);
 }
 
-bool TimelineUIManager::HelpInvoker(PerformanceMessage message)
+bool TimelineUIManager::InvokeHelper(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 

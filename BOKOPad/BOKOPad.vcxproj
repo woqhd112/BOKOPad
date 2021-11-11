@@ -214,6 +214,10 @@
     <ClInclude Include="BOKOScenarioDetailDlg.h" />
     <ClInclude Include="BOKOSelectExtentionDlg.h" />
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
+    <ClInclude Include="CustomButton.h" />
+    <ClInclude Include="CustomEdit.h" />
+    <ClInclude Include="CustomStatic.h" />
+    <ClInclude Include="DlgInterface.h" />
     <ClInclude Include="DrawButton\CGdiPlusBitmap.h" />
     <ClInclude Include="DrawButton\GdipButton.h" />
     <ClInclude Include="DrawButton\MemDC.h" />
@@ -293,6 +297,10 @@
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
     <ClCompile Include="BOKOSelectExtentionDlg.cpp" />
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
+    <ClCompile Include="CustomButton.cpp" />
+    <ClCompile Include="CustomEdit.cpp" />
+    <ClCompile Include="CustomStatic.cpp" />
+    <ClCompile Include="DlgInterface.cpp" />
     <ClCompile Include="DrawButton\GdipButton.cpp" />
     <ClCompile Include="OfficeAutomation\Manager\ExcelAutomationManager.cpp" />
     <ClCompile Include="OfficeAutomation\Manager\WordAutomationManager.cpp" />
@@ -316,9 +324,15 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\BOKOPad.ico" />
+    <Image Include="res\bottom.png" />
+    <Image Include="res\Cal-5.png" />
+    <Image Include="res\Cal-6.png" />
     <Image Include="res\Cal.ico" />
     <Image Include="res\Excel.png" />
+    <Image Include="res\left.png" />
     <Image Include="res\Notepad.png" />
+    <Image Include="res\right.png" />
+    <Image Include="res\title.png" />
     <Image Include="res\Word.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

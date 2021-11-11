@@ -62,14 +62,14 @@
     <Filter Include="OfficeAutomation\include\Word">
       <UniqueIdentifier>{5e0f1214-bf21-44fd-aa07-6cefe7fecdf2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Button">
-      <UniqueIdentifier>{7a578e25-f525-4521-997a-755e283ef635}</UniqueIdentifier>
-    </Filter>
     <Filter Include="리소스 파일\이미지">
       <UniqueIdentifier>{4f4e47bd-1f2b-4527-b9c6-a51046183e92}</UniqueIdentifier>
     </Filter>
     <Filter Include="UI\ETC">
       <UniqueIdentifier>{2e13e3fb-2cd0-441e-9a04-e6f15fbdda68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\CustomControl">
+      <UniqueIdentifier>{5bec8b1c-58ab-4ff6-8221-4a44650b6159}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -295,17 +295,27 @@
     <ClInclude Include="OfficeAutomation\CWord\CCells.h">
       <Filter>OfficeAutomation\include\Word</Filter>
     </ClInclude>
-    <ClInclude Include="DrawButton\CGdiPlusBitmap.h">
-      <Filter>UI\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawButton\GdipButton.h">
-      <Filter>UI\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawButton\MemDC.h">
-      <Filter>UI\Button</Filter>
-    </ClInclude>
     <ClInclude Include="BOKOSelectExtentionDlg.h">
       <Filter>UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawButton\CGdiPlusBitmap.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawButton\GdipButton.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawButton\MemDC.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomEdit.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgInterface.h" />
+    <ClInclude Include="CustomButton.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomStatic.h">
+      <Filter>UI\CustomControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -387,11 +397,21 @@
     <ClCompile Include="BOKOManager\UIManager\NoteUIManager.cpp">
       <Filter>Manager\UI Manager</Filter>
     </ClCompile>
-    <ClCompile Include="DrawButton\GdipButton.cpp">
-      <Filter>UI\Button</Filter>
-    </ClCompile>
     <ClCompile Include="BOKOSelectExtentionDlg.cpp">
       <Filter>UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawButton\GdipButton.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomEdit.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgInterface.cpp" />
+    <ClCompile Include="CustomButton.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomStatic.cpp">
+      <Filter>UI\CustomControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -419,6 +439,24 @@
     </Image>
     <Image Include="res\Word.png">
       <Filter>리소스 파일\이미지</Filter>
+    </Image>
+    <Image Include="res\Cal-5.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Cal-6.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\bottom.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\left.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\right.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\title.png">
+      <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>
 </Project>

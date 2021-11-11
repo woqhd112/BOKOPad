@@ -2,6 +2,7 @@
 #include "ComplexMap.h"
 #include "ScrollProcess.h"
 #include "NoteListInterface.h"
+#include "DlgInterface.h"
 
 class NoteDBManager;
 class NoteUIManager;
@@ -67,7 +68,7 @@ private:
 	DragDataStruct m_defaultDragData;
 
 	CButton* m_downButton;
-
+	CBrush m_editBrush;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -80,4 +81,5 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

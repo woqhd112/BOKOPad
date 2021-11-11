@@ -27,6 +27,9 @@
 
 #include <gdiplus.h>
 #include <afxcontrolbars.h>
+#include <afxwin.h>
+#include <afxcontrolbars.h>
+#include <afxwin.h>
 #pragma comment(lib, "gdiplus.lib")
 using namespace Gdiplus;
 

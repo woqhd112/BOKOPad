@@ -3,6 +3,8 @@
 #include "Model/VO/ScenarioListVO.h"
 #include "Model/VO/NoteInformationVO.h"
 #include "Model/VO/TimelineVO.h"
+#include "..\..\CustomEdit.h"
+#include "..\..\CustomButton.h"
 //#include <memory>
 
 using namespace ComplexLibrary;
@@ -160,13 +162,13 @@ protected:
 
 	struct NotePadStruct
 	{
-		CEdit* noteEdit;
-		CButton* noteButton;
+		CustomEdit* noteEdit;
+		CustomButton* noteButton;
 		CButton* noteCheckBox;
 	};
 
 	virtual bool SendMessages(PerformanceMessage message) = 0;
-	virtual bool HelpInvoker(PerformanceMessage message) = 0;
+	virtual bool InvokeHelper(PerformanceMessage message) = 0;
 
 	ScenarioManagerStruct* BringScenarioStruct() const;
 	void ReleaseScenarioStruct();

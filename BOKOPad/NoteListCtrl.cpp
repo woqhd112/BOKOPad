@@ -24,6 +24,7 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	Log_Manager->OnPutLog("노트 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("노트 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("NoteListCtrl 생성자 호출", LogType::LT_PROCESS);
+	m_editBrush.CreateSolidBrush(DI_SUB_BK_COLOR);
 }
 
 NoteListCtrl::~NoteListCtrl()
@@ -45,6 +46,8 @@ NoteListCtrl::~NoteListCtrl()
 		delete m_noteInformationContainer;
 		m_noteInformationContainer = nullptr;
 	}
+
+	m_editBrush.DeleteObject();
 	Log_Manager->OnPutLog("NoteListCtrl 소멸자 호출", LogType::LT_PROCESS);
 }
 
@@ -58,6 +61,7 @@ BEGIN_MESSAGE_MAP(NoteListCtrl, CDialogEx)
 	ON_WM_VSCROLL()
 	ON_WM_MOUSEWHEEL()
 	ON_WM_SIZE()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -452,9 +456,10 @@ bool NoteListCtrl::DragDown(MSG* pMsg)
 		return false;
 
 	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
-	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
+	//if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
+	if (nButtonStyle == BS_OWNERDRAW)
 	{
-		m_downButton = (CButton*)FromHandle(pMsg->hwnd);
+		m_downButton = (CustomButton*)FromHandle(pMsg->hwnd);
 		m_defaultDragData.mousePos_X = pMsg->pt.x;
 		m_defaultDragData.mousePos_Y = pMsg->pt.y;
 		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
@@ -766,12 +771,27 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 		Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
 		return 1;
 	}
-	else if (HIWORD(wParam) == EN_CHANGE)
-	{
-		int editID = LOWORD(wParam);
-		// 여기다가 에딧 변경작업 추가하기
-		// 음 컨트롤러하나 상속받아서 스레드 추가해서 작업할까..
-	}
+	//else if (HIWORD(wParam) == EN_CHANGE)
+	//{
+	//	int editID = LOWORD(wParam);
+	//	// 여기다가 에딧 변경작업 추가하기
+	//	// 음 컨트롤러하나 상속받아서 스레드 추가해서 작업할까..
+	//}
 
 	return CDialogEx::OnCommand(wParam, lParam);
+}
+
+
+HBRUSH NoteListCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	if (nCtlColor == CTLCOLOR_EDIT)
+	{
+		pDC->SetBkColor(DI_SUB_BK_COLOR);
+		return m_editBrush;
+	}
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+	return hbr;
 }

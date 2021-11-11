@@ -3,9 +3,10 @@
 //
 
 #pragma once
+#include "DlgInterface.h"
 
 // CBOKOPadDlg 대화 상자
-class CBOKOPadDlg : public CDialogEx
+class CBOKOPadDlg : public CDialogEx, public DlgInterface
 {
 // 생성입니다.
 public:
@@ -36,6 +37,7 @@ private:
 	CButton m_btn_input_scenario;
 	CButton m_btn_scenario_title_modify;
 	CButton m_btn_scenario_delete;
+
 
 // 구현입니다.
 
@@ -68,5 +70,7 @@ public:
 	afx_msg void OnProgramClose();
 	afx_msg void OnLogView();
 	afx_msg void OnExplanationView();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 

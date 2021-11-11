@@ -23,8 +23,8 @@ NoteUIManager::~NoteUIManager()
 	while (iter != m_notePadManager.end())
 	{
 		NotePadStruct noteStruct = iter->value.value;
-		CEdit* noteEdit = noteStruct.noteEdit;
-		CButton* noteButton = noteStruct.noteButton;
+		CustomEdit* noteEdit = noteStruct.noteEdit;
+		CustomButton* noteButton = noteStruct.noteButton;
 		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
 		delete noteEdit;
@@ -47,11 +47,11 @@ bool NoteUIManager::SendMessages(PerformanceMessage message)
 	if (!m_bAttach)
 		return false;
 
-	return HelpInvoker(message);
+	return InvokeHelper(message);
 }
 
 
-bool NoteUIManager::HelpInvoker(PerformanceMessage message)
+bool NoteUIManager::InvokeHelper(PerformanceMessage message)
 {
 	bool bHelpSuccess = false;
 
@@ -166,13 +166,13 @@ bool NoteUIManager::Insert()
 	noteManagerStruct.noteIndex = noteDataStruct->noteIndex;
 	noteManagerStruct.noteRect = noteDataStruct->noteRect;
 
-	CEdit* noteInputEdit = new CEdit;
-	CButton* noteInputButton = new CButton;
+	CustomEdit* noteInputEdit = new CustomEdit(noteManagerStruct.noteData->GetNotSEQ());
+	CustomButton* noteInputButton = new CustomButton;
 	CButton* noteInputCheckBox = new CButton;
 	
 	bool bCreate1 = false, bCreate2 = false, bCreate3 = false;
 	bCreate1 = (bool)noteInputEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
-	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE | BS_CENTER | BS_PUSHBUTTON, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
+	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE | BS_CENTER | BS_OWNERDRAW, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 	bCreate3 = (bool)noteInputCheckBox->Create("", WS_VISIBLE | BS_AUTOCHECKBOX, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 
 
@@ -181,6 +181,8 @@ bool NoteUIManager::Insert()
 		try
 		{
 			noteInputEdit->SetFont(&m_setFont);
+			noteInputEdit->ExecuteTimer();
+			noteInputButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("°íµñ"), 16, FW_BOLD);
 
 			NotePadStruct padStruct;
 			padStruct.noteButton = noteInputButton;
@@ -298,9 +300,9 @@ bool NoteUIManager::Delete()
 		return false;
 	}
 
-	CButton* deleteButton = iter2->value.value.noteButton;
+	CustomButton* deleteButton = iter2->value.value.noteButton;
 	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
-	CEdit* deleteEdit = iter2->value.value.noteEdit;
+	CustomEdit* deleteEdit = iter2->value.value.noteEdit;
 	
 	delete deleteButton;
 	delete deleteCheckBox;
@@ -325,8 +327,8 @@ bool NoteUIManager::Clear()
 	while (iter != m_notePadManager.end())
 	{
 		NotePadStruct noteStruct = iter->value.value;
-		CEdit* noteEdit = noteStruct.noteEdit;
-		CButton* noteButton = noteStruct.noteButton;
+		CustomEdit* noteEdit = noteStruct.noteEdit;
+		CustomButton* noteButton = noteStruct.noteButton;
 		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
 		delete noteEdit;
@@ -536,9 +538,9 @@ bool NoteUIManager::NoteCheckDelete()
 		return false;
 	}
 
-	CButton* deleteButton = iter2->value.value.noteButton;
+	CustomButton* deleteButton = iter2->value.value.noteButton;
 	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
-	CEdit* deleteEdit = iter2->value.value.noteEdit;
+	CustomEdit* deleteEdit = iter2->value.value.noteEdit;
 
 	delete deleteButton;
 	delete deleteCheckBox;
