@@ -13,9 +13,11 @@ IMPLEMENT_DYNAMIC(BOKOSelectExtentionDlg, CDialogEx)
 
 BOKOSelectExtentionDlg::BOKOSelectExtentionDlg(int* selectExtentionType, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_SELECT_EXPORT_TIMELINE_EXTENTION, pParent)
+	, DlgInterface(this, true)
 {
 	m_nSelectExtentionType = selectExtentionType;
 	Log_Manager->OnPutLog("BOKOSelectExtentionDlg 생성자 호출", LogType::LT_PROCESS);
+	CreateFrame();
 }
 
 BOKOSelectExtentionDlg::~BOKOSelectExtentionDlg()
@@ -36,6 +38,9 @@ void BOKOSelectExtentionDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(BOKOSelectExtentionDlg, CDialogEx)
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -62,15 +67,17 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 	m_btn_word.LoadHovImage(IDB_PNG_WORD, "PNG");
 	m_btn_word.LoadAltImage(IDB_PNG_WORD, "PNG");
 
-	m_btn_excel.MoveWindow(20, 20, 64, 64);
-	m_btn_word.MoveWindow(140, 20, 64, 64);
-	m_btn_notepad.MoveWindow(260, 20, 64, 64);
+	m_btn_excel.MoveWindow(20, 40, 64, 64);
+	m_btn_word.MoveWindow(140, 40, 64, 64);
+	m_btn_notepad.MoveWindow(260, 40, 64, 64);
 
 	m_btn_notepad2.ShowWindow(SW_HIDE);
 	m_btn_excel2.ShowWindow(SW_HIDE);
 	m_btn_word2.ShowWindow(SW_HIDE);
 
 	m_btn_excel2.SetFocus();
+
+	InitFrame("확장자 선택");
 
 	//SetClassLongA(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
 	//SetClassLongA(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
@@ -175,6 +182,10 @@ BOOL BOKOSelectExtentionDlg::PreTranslateMessage(MSG* pMsg)
 		else
 			CURSOR_ARROW;
 	}
+	else if (WM_LBUTTONDOWN == pMsg->message)
+	{
+		TitleBarActiveMove(pMsg);
+	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
@@ -185,4 +196,36 @@ void BOKOSelectExtentionDlg::OnOK()
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
 	//CDialogEx::OnOK();
+}
+
+
+HBRUSH BOKOSelectExtentionDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
+	if (returnHBR != NULL)
+		return returnHBR;
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+	return hbr;
+}
+
+
+void BOKOSelectExtentionDlg::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
+					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
+
+	DrawFrame(&dc);
+}
+
+
+void BOKOSelectExtentionDlg::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	Sizing(nType);
 }

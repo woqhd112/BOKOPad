@@ -1,9 +1,9 @@
 ﻿#pragma once
-
+#include "DlgInterface.h"
 
 // BOKOLogViewDlg 대화 상자
 
-class BOKOLogViewDlg : public CDialogEx
+class BOKOLogViewDlg : public CDialogEx, public DlgInterface
 {
 	DECLARE_DYNAMIC(BOKOLogViewDlg)
 
@@ -21,7 +21,7 @@ private:
 	CComboBox m_combo_log_divide;
 	CDateTimeCtrl m_date_start_date;
 	CDateTimeCtrl m_date_last_date;
-	CButton m_btn_execute;
+	CustomButton m_btn_execute;
 
 	CString m_startDate;
 	CString m_endDate;
@@ -53,4 +53,8 @@ public:
 	afx_msg void OnCbnSelchangeComboLogDivide();
 	afx_msg void OnCbnDropdownComboLogDivide();
 	afx_msg void OnBnClickedButtonExecuteLog();
+	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

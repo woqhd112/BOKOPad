@@ -806,7 +806,7 @@ namespace ComplexLibrary
 
 	private:
 
-		bool loopFind(ComplexString findbuf, int& find_index, int index)
+		bool loopFind(ComplexString& findbuf, int& find_index, int index)
 		{
 			bool bNotFind = true;
 

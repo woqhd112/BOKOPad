@@ -14,7 +14,7 @@ CustomButton::CustomButton()
 {
 	m_bTrackMouse = false;
 	m_bUseMouseBkGroundColorEvent = true;
-	m_bCloseButton = false;
+	m_buttonType = CBT_DEFAULT;
 	m_defaultColor = RGB(68, 68, 68);
 	m_hoverColor = RGB(58, 58, 58);
 	m_downColor = RGB(48, 48, 48);
@@ -38,7 +38,7 @@ END_MESSAGE_MAP()
 // CustomButton 메시지 처리기
 
 
-void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontName /*= _T("고딕")*/, int nFontSize /*= 10*/, int nFontFlags /*= FW_NORMAL*/, bool bClose)
+void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontName /*= _T("고딕")*/, int nFontSize /*= 10*/, int nFontFlags /*= FW_NORMAL*/, CustomButtonType buttonType)
 {
 	this->EnableWindowsTheming(FALSE);
 	this->SetFaceColor(color);
@@ -58,7 +58,7 @@ void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontNa
 
 	this->SetFont(&m_thisFont);
 	this->m_nFlatStyle = style;
-	this->m_bCloseButton = bClose;
+	this->m_buttonType = buttonType;
 }
 
 void CustomButton::OnMouseHover(UINT nFlags, CPoint point)
@@ -127,11 +127,18 @@ void CustomButton::OnLButtonUp(UINT nFlags, CPoint point)
 		this->SetFaceColor(m_hoverColor);
 	}
 
-	if (m_bCloseButton)
+	if (m_buttonType == CBT_CLOSE)
 	{
 		GetParent()->SendMessage(WM_CLOSE);
 		return;
 	}
-
+	else if (m_buttonType == CBT_MINIMIZE)
+	{
+		//GetParent()->GetSystemMenu(NULL)->EnableMenuItem(SC_MINIMIZE, MF_ENABLED);
+		//GetParent()->PostMessage(WM_SYSCOMMAND, SC_MINIMIZE);
+		//GetParent()->GetSystemMenu(NULL)->EnableMenuItem(SC_MINIMIZE, MF_DISABLED);
+		return;
+	}
+	
 	CMFCButton::OnLButtonUp(nFlags, point);
 }

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "LogManager.h"
 #include "..\..\BOKOProgressPopup.h"
+#include "..\..\BOKOPad.h"
 
 LogManager::LogManager()
 {
@@ -67,6 +68,8 @@ bool LogManager::OnLoadLogData()
 	BOKOProgressPopup progress(fileCount);
 	progress.Create(BOKOProgressPopup::IDD);
 	progress.ShowWindow(SW_SHOW);
+	CPaintDC dc(&progress);
+	progress.DrawFrame(&dc);
 
 	BOOL bWorking = finder.FindFile(fullPath.GetBuffer());
 	
@@ -95,8 +98,7 @@ bool LogManager::OnLoadLogData()
 			return false;
 	}
 
-	progress.ShowWindow(SW_HIDE);
-	progress.DestroyWindow();
+	progress.SendMessageA(WM_CLOSE);
 
 	return true;
 }

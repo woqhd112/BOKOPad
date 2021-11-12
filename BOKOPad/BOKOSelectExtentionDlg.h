@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "DrawButton\GdipButton.h"
+#include "DlgInterface.h"
 
 // BOKOSelectExtentionDlg 대화 상자
 
-class BOKOSelectExtentionDlg : public CDialogEx
+class BOKOSelectExtentionDlg : public CDialogEx, public DlgInterface
 {
 	DECLARE_DYNAMIC(BOKOSelectExtentionDlg)
 
@@ -40,4 +40,7 @@ public:
 	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual void OnOK();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

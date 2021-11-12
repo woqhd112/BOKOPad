@@ -3,6 +3,7 @@
 #include "TimelineDetail.h"
 #include "BOKOTimelineOneViewDlg.h"
 #include "NoteListInterface.h"
+#include "DlgInterface.h"
 
 class NoteUIManager;
 class NoteDBManager;
@@ -11,8 +12,10 @@ class TimelineUIManager;
 // Timeline 대화 상자
 
 #define LINE_COLOR RGB(0, 0, 0)
+#define LIMIT_TIMELINE_COUNT 50
+#define LIMIT_TIMELINE_COUNT_TEXT "50"
 
-class Timeline : public CDialogEx, public NoteListInterface
+class Timeline : public CDialogEx, public NoteListInterface, public DlgInterface
 {
 	friend class TimelineUIManager;
 	friend class NoteUIManager;
@@ -54,6 +57,7 @@ private:
 	bool ThickEventTimeline(int notSEQ, POINT pt, TimelineThickApproch timelineThickApprochState);
 	bool ReloadTimeline();
 	void HideTimelineDetail();
+	int GetTimelineCount() const;
 
 	// 내부 함수
 	bool TimelineOneViewProcess();

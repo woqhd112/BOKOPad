@@ -3,6 +3,13 @@
 
 // CustomButton
 
+enum CustomButtonType
+{
+	CBT_DEFAULT = 0,
+	CBT_CLOSE,
+	CBT_MINIMIZE
+};
+
 class CustomButton : public CMFCButton
 {
 	DECLARE_DYNAMIC(CustomButton)
@@ -11,13 +18,13 @@ public:
 	CustomButton();
 	virtual ~CustomButton();
 
-	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, bool bClose = false);
+	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, CustomButtonType buttonType = CBT_DEFAULT);
 
 private:
 
 	bool m_bTrackMouse;
 	bool m_bUseMouseBkGroundColorEvent;
-	bool m_bCloseButton;
+	CustomButtonType m_buttonType;
 
 	CFont m_thisFont;
 	COLORREF m_defaultColor;

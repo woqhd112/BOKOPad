@@ -2,11 +2,14 @@
 #include "CustomButton.h"
 #include "CustomStatic.h"
 #include "DrawButton/GdipButton.h"
+#include "ScrollProcess.h"
 
 #define DI_TEXT_COLOR RGB(255, 255, 255)
 #define DI_BK_COLOR RGB(68, 68, 68)
 #define DI_BUTTON_COLOR RGB(110, 110, 110)
 #define DI_SUB_BK_COLOR RGB(140, 140, 140)
+#define DI_EDIT_COLOR RGB(160, 160, 160)
+#define DI_BLACK_COLOR RGB(0, 0, 0)
 
 
 /*
@@ -18,35 +21,35 @@ init 순서
 
 3. OninitDialog 에서 Init(); 호출
 
-4. OnSize 재정의 하고 Sizing(nType); 호출
+4. OnSize 재정의 하고 Sizing(nType); 호출 (생략가능 다이얼로그 상단 타이틀 각진부분 둥그렇게 만드는것)
 
-5. OnCtlColor 재정의 하고 
+5. OnCtlColor 재정의 하고 (mainDlg 아니면 생략가능)
 	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
 	if (returnHBR != NULL)
-		hbr = returnHBR;
-	입력
+		return returnHBR;
+	최상단에 입력
 
-6. PreTranslateMessage 재정의 하고 
+6. PreTranslateMessage 재정의 하고  (mainDlg 아니면 생략가능)
 	if (WM_LBUTTONDOWN == pMsg->message) 조건 안에 TitleBarActiveMove(pMsg); 호출
 
 7. OnPaint 재정의 하고 
 	DrawBackground(&dc);
 	호출
 
-8. 다이얼로그 속성에서 Border none 으로 설정
+8. 다이얼로그 속성에서 Border none 으로 설정 (Sizing 안하면 생략가능)
 */
 
 class DlgInterface
 {
 public:
 
-	DlgInterface(CWnd* activeDlg);
+	DlgInterface(CWnd* activeDlg, bool bMain);
 	~DlgInterface();
 
-	void Init(CString strTitleText);
+	void InitFrame(CString strTitleText = "");
 	void CreateFrame();
-	void DrawFrame();
-	void DrawBackground(CPaintDC* in_pDC);
+	//void DrawFrame();
+	void DrawFrame(CPaintDC* in_pDC);
 	void Sizing(UINT nType);
 	HBRUSH CtlColors(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
@@ -61,21 +64,24 @@ protected:
 
 	CRgn m_rgnWnd;
 
-	CImage m_pngBackground;
+	CImage m_pngBackground1;
+	CImage m_pngBackground2;
 	
-	CImage m_pngTitlebar;
+	/*CImage m_pngTitlebar;
 	CImage m_pngLeftbar;
 	CImage m_pngRightbar;
-	CImage m_pngBottombar;
+	CImage m_pngBottombar;*/
 
 	CGdipButton m_iconButton;
 	CGdipButton m_titleButton;
 	CustomButton m_closeButton;
+	CustomButton m_minimizeButton;
 	CustomStatic m_titleTextStatic;
 
 
 	CFont m_ctlFont;
 	CBrush m_staticBrush;
+	CBrush m_subBKBrush;
 	CBrush m_editBrush;
 
 	COLORREF m_staticTextColor;
@@ -84,5 +90,7 @@ protected:
 	CRect titleRect;
 
 	bool m_bDrawing;
+
+	bool m_bMainDlg;
 };
 

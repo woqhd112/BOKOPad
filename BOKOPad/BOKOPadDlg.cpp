@@ -56,7 +56,7 @@ END_MESSAGE_MAP()
 
 CBOKOPadDlg::CBOKOPadDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_BOKOPAD_DIALOG, pParent)
-	, DlgInterface(this)
+	, DlgInterface(this, true)
 {
 	CreateFrame();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -98,6 +98,7 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_COMMAND(ID_EXPLANATION_VIEW, &CBOKOPadDlg::OnExplanationView)
 	ON_WM_SIZE()
 	ON_WM_CTLCOLOR()
+	ON_WM_RBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -172,7 +173,14 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	CRect rect;
 	GetWindowRect(rect);
 
-	Init("BOKOPad");
+	InitFrame("BOKOPad");
+
+	m_menu.Create(CustomMenu::IDD, this);
+	m_menu.ShowWindow(SW_HIDE);
+	m_menu.AddMenu("로그 확인", OnLogViewCallBackFunc);
+	m_menu.AddMenu("설명 확인", OnExplanationViewCallBackFunc);
+
+	m_menu.Init(true);
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -248,7 +256,7 @@ void CBOKOPadDlg::OnPaint()
 	else
 	{
 		CPaintDC dc(this);
-		DrawBackground(&dc);
+		DrawFrame(&dc);
 		CDialogEx::OnPaint();
 	}
 }
@@ -611,6 +619,17 @@ void CBOKOPadDlg::OnProgramClose()
 	this->PostMessageA(WM_CLOSE);
 }
 
+void OnLogViewCallBackFunc()
+{
+	CBOKOPadDlg* dlg = (CBOKOPadDlg*)theApp.GetMainWnd();
+	dlg->OnLogView();
+}
+
+void OnExplanationViewCallBackFunc()
+{
+	CBOKOPadDlg* dlg = (CBOKOPadDlg*)theApp.GetMainWnd();
+	dlg->OnExplanationView();
+}
 
 void CBOKOPadDlg::OnLogView()
 {
@@ -642,8 +661,27 @@ HBRUSH CBOKOPadDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// TODO:  여기서 DC의 특성을 변경합니다.
 	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
 	if (returnHBR != NULL)
-		hbr = returnHBR;
+		return returnHBR;
 
 	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
 	return hbr;
+}
+
+
+void CBOKOPadDlg::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	m_menu.Open(point);
+
+	__super::OnRButtonDown(nFlags, point);
+}
+
+
+BOOL CBOKOPadDlg::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+
+	return __super::OnCommand(wParam, lParam);
 }

@@ -52,6 +52,7 @@ private:
 	CStatic m_stt_note_limit_size;
 	NoteListCtrl m_list_notePad;
 	Timeline m_timeline;
+	CStatic m_stt_timeline_count;
 
 	bool m_bDragModeCheck;
 	bool m_bKeyDownEvent;

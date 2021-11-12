@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(BOKOScenarioDetailDlg, CDialogEx)
  
 BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruct, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_SCENARIO_TIMELINE, pParent)
-	, DlgInterface(this)
+	, DlgInterface(this, true)
 {
 	CreateFrame();
 	m_thisDataStruct = thisDataStruct;
@@ -37,6 +37,7 @@ void BOKOScenarioDetailDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NOTE_LIMIT_SIZE, m_stt_note_limit_size);
 	DDX_Control(pDX, IDC_CHECK_DRAG_MODE, m_btn_drag_mode);
 	DDX_Control(pDX, IDC_BUTTON_NOTE_DELETE, m_btn_note_delete);
+	DDX_Control(pDX, IDC_STATIC_TIMELINE_COUNT, m_stt_timeline_count);
 }
 
 
@@ -127,8 +128,10 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 
 	GotoDlgCtrl(&m_edit_note_input);
 
-	Init("타임라인");
+	InitFrame("타임라인");
 	
+	m_stt_timeline_count.SetWindowTextA("0 / 100");
+
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -146,11 +149,12 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_btn_note_input.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_btn_note_delete.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 
-	m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
-	m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
+	//m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
+	//m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
+	m_stt_timeline_count.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 50), CAST_INT(thisRect.Height() * 0.07), 50, 20);
 	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.1), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.13));
 	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.28), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.37));
 	m_edit_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.7), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.15));
@@ -238,6 +242,11 @@ bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 	if (m_timeline.SetScenarioManagerStruct(m_thisDataStruct) == false)
 		return false;
 
+	int timelineCount = m_timeline.GetTimelineCount();
+	CString strTimelineCount;
+	strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+	m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+
 	if (m_list_notePad.LoadNoteInformation() == false)
 		return false;
 
@@ -249,22 +258,62 @@ bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 
 bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent, bool bNoteShow)
 {
-	return m_list_notePad.InsertNote(strNoteContent, bNoteShow);
+	bool result = m_list_notePad.InsertNote(strNoteContent, bNoteShow);
+
+	if (result)
+	{
+		int timelineCount = m_timeline.GetTimelineCount();
+		CString strTimelineCount;
+		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	}
+
+	return result;
 }
 
 bool BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
 {
-	return m_list_notePad.DeleteNote(notSEQ);
+	bool result = m_list_notePad.DeleteNote(notSEQ);
+
+	if (result)
+	{
+		int timelineCount = m_timeline.GetTimelineCount();
+		CString strTimelineCount;
+		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	}
+
+	return result;
 }
 
 bool BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint)
 {
-	return m_timeline.InsertTimeline(notSEQ, currentMPoint);
+	bool result = m_timeline.InsertTimeline(notSEQ, currentMPoint);
+
+	if (result)
+	{
+		int timelineCount = m_timeline.GetTimelineCount();
+		CString strTimelineCount;
+		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	}
+
+	return result;
 }
 
 bool BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
 {
-	return m_list_notePad.UpdateSetTIME(notSEQ);
+	bool result = m_list_notePad.UpdateSetTIME(notSEQ);
+
+	if (result)
+	{
+		int timelineCount = m_timeline.GetTimelineCount();
+		CString strTimelineCount;
+		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	}
+
+	return result;
 }
 
 bool BOKOScenarioDetailDlg::SignalReloadNoteList()
@@ -285,7 +334,17 @@ void BOKOScenarioDetailDlg::SignalTimelineOneViewRefresh()
 
 bool BOKOScenarioDetailDlg::SignalReloadTimeline()
 {
-	return m_timeline.ReloadTimeline();
+	bool result = m_timeline.ReloadTimeline();
+
+	if (result)
+	{
+		int timelineCount = m_timeline.GetTimelineCount();
+		CString strTimelineCount;
+		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	}
+
+	return result;
 }
 
 void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
@@ -378,9 +437,19 @@ HBRUSH BOKOScenarioDetailDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	// TODO:  여기서 DC의 특성을 변경합니다.
+
+	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
+	if (returnHBR != NULL)
+		return returnHBR;
+
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
 		if (pWnd->GetDlgCtrlID() == m_stt_note_limit_size.GetDlgCtrlID())
+		{
+			pDC->SetBkColor(DI_BK_COLOR);
+			return m_staticBrush;
+		}
+		else if (pWnd->GetDlgCtrlID() == m_stt_timeline_count.GetDlgCtrlID())
 		{
 			pDC->SetBkColor(DI_BK_COLOR);
 			return m_staticBrush;
@@ -390,14 +459,11 @@ HBRUSH BOKOScenarioDetailDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	{
 		if (pWnd->GetDlgCtrlID() == m_edit_note_input.GetDlgCtrlID())
 		{
-			pDC->SetBkColor(DI_SUB_BK_COLOR);
+			pDC->SetBkColor(DI_EDIT_COLOR);
 			return m_editBrush;
 		}
 	}
 
-	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
-	if (returnHBR != NULL)
-		hbr = returnHBR;
 	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
 	return hbr;
 }
@@ -408,5 +474,5 @@ void BOKOScenarioDetailDlg::OnPaint()
 	CPaintDC dc(this); // device context for painting
 					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
 					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
-	DrawBackground(&dc);
+	DrawFrame(&dc);
 }

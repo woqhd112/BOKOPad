@@ -106,12 +106,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="ScrollProcess.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="NoteListInterface.h">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="Timeline.h">
       <Filter>UI\Scenario\Timeline</Filter>
     </ClInclude>
@@ -295,9 +289,6 @@
     <ClInclude Include="OfficeAutomation\CWord\CCells.h">
       <Filter>OfficeAutomation\include\Word</Filter>
     </ClInclude>
-    <ClInclude Include="BOKOSelectExtentionDlg.h">
-      <Filter>UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="DrawButton\CGdiPlusBitmap.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
@@ -310,11 +301,25 @@
     <ClInclude Include="CustomEdit.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
-    <ClInclude Include="DlgInterface.h" />
     <ClInclude Include="CustomButton.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
     <ClInclude Include="CustomStatic.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOSelectExtentionDlg.h">
+      <Filter>UI\Scenario\OneView</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgInterface.h">
+      <Filter>UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteListInterface.h">
+      <Filter>UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollProcess.h">
+      <Filter>UI\ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomMenu.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
   </ItemGroup>
@@ -342,9 +347,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Default</Filter>
-    </ClCompile>
-    <ClCompile Include="ScrollProcess.cpp">
-      <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Timeline.cpp">
       <Filter>UI\Scenario\Timeline</Filter>
@@ -397,20 +399,28 @@
     <ClCompile Include="BOKOManager\UIManager\NoteUIManager.cpp">
       <Filter>Manager\UI Manager</Filter>
     </ClCompile>
-    <ClCompile Include="BOKOSelectExtentionDlg.cpp">
-      <Filter>UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="DrawButton\GdipButton.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
     <ClCompile Include="CustomEdit.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
-    <ClCompile Include="DlgInterface.cpp" />
     <ClCompile Include="CustomButton.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
     <ClCompile Include="CustomStatic.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOSelectExtentionDlg.cpp">
+      <Filter>UI\Scenario\OneView</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgInterface.cpp">
+      <Filter>UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollProcess.cpp">
+      <Filter>UI\ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomMenu.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
   </ItemGroup>
@@ -428,9 +438,6 @@
     <Image Include="res\BOKOPad.ico">
       <Filter>리소스 파일</Filter>
     </Image>
-    <Image Include="res\Cal.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
     <Image Include="res\Excel.png">
       <Filter>리소스 파일\이미지</Filter>
     </Image>
@@ -440,23 +447,26 @@
     <Image Include="res\Word.png">
       <Filter>리소스 파일\이미지</Filter>
     </Image>
+    <Image Include="res\bottom.png">
+      <Filter>리소스 파일\이미지</Filter>
+    </Image>
+    <Image Include="res\Cal.ico">
+      <Filter>리소스 파일\이미지</Filter>
+    </Image>
     <Image Include="res\Cal-5.png">
-      <Filter>리소스 파일</Filter>
+      <Filter>리소스 파일\이미지</Filter>
     </Image>
     <Image Include="res\Cal-6.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="res\bottom.png">
-      <Filter>리소스 파일</Filter>
+      <Filter>리소스 파일\이미지</Filter>
     </Image>
     <Image Include="res\left.png">
-      <Filter>리소스 파일</Filter>
+      <Filter>리소스 파일\이미지</Filter>
     </Image>
     <Image Include="res\right.png">
-      <Filter>리소스 파일</Filter>
+      <Filter>리소스 파일\이미지</Filter>
     </Image>
     <Image Include="res\title.png">
-      <Filter>리소스 파일</Filter>
+      <Filter>리소스 파일\이미지</Filter>
     </Image>
   </ItemGroup>
 </Project>

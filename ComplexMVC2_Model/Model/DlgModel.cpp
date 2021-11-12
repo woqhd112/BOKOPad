@@ -72,9 +72,9 @@ void DlgModel::LoadDatabase()
 
 	if (DB_INSTANCE->ConnectDatabase("../Workspace/Config/md.db"))
 	{
+		DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[DELETE_CASCADE_ON], NULL);
 		if (!bExist)
 		{
-			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[DELETE_CASCADE_ON], NULL);
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);

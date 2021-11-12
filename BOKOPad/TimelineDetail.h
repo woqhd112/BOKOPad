@@ -1,9 +1,9 @@
 ﻿#pragma once
-
+#include "DlgInterface.h"
 
 // TimelineDetail 대화 상자
 
-class TimelineDetail : public CDialogEx
+class TimelineDetail : public CDialogEx, public DlgInterface
 {
 	DECLARE_DYNAMIC(TimelineDetail)
 
@@ -34,4 +34,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
 };

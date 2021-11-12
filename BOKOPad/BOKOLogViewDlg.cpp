@@ -13,15 +13,17 @@ IMPLEMENT_DYNAMIC(BOKOLogViewDlg, CDialogEx)
 
 BOKOLogViewDlg::BOKOLogViewDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_LOG_VIEW, pParent)
+	, DlgInterface(this, true)
 	, m_logMap(nullptr)
 	, m_selectComboIndex(0)
 {
 	Log_Manager->OnPutLog("BOKOLogViewDlg 생성자 호출", LogType::LT_PROCESS);
+	CreateFrame();
 }
 
 BOKOLogViewDlg::~BOKOLogViewDlg()
 {
-	Log_Manager->OnPutLog("BOKOLogViewDlg 생성자 호출", LogType::LT_PROCESS);
+	Log_Manager->OnPutLog("BOKOLogViewDlg 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void BOKOLogViewDlg::DoDataExchange(CDataExchange* pDX)
@@ -40,6 +42,9 @@ BEGIN_MESSAGE_MAP(BOKOLogViewDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_LOG_DIVIDE, &BOKOLogViewDlg::OnCbnSelchangeComboLogDivide)
 	ON_CBN_DROPDOWN(IDC_COMBO_LOG_DIVIDE, &BOKOLogViewDlg::OnCbnDropdownComboLogDivide)
 	ON_BN_CLICKED(IDC_BUTTON_EXECUTE_LOG, &BOKOLogViewDlg::OnBnClickedButtonExecuteLog)
+	ON_WM_PAINT()
+	ON_WM_SIZE()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -56,6 +61,9 @@ BOOL BOKOLogViewDlg::OnInitDialog()
 
 	LoadLog();
 	CURSOR_ARROW;
+
+	InitFrame("로그");
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -83,6 +91,9 @@ void BOKOLogViewDlg::Initialize()
 	m_combo_log_divide.InsertString(3, "Operate");
 	m_combo_log_divide.SetCurSel(0);
 	m_selectComboIndex = 0;
+
+	m_btn_execute.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
+
 }
 
 void BOKOLogViewDlg::InsertCountList(int index, ComplexString type, ComplexString text)
@@ -324,4 +335,54 @@ void BOKOLogViewDlg::OnBnClickedButtonExecuteLog()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	AnalyzeLogData();
+}
+
+
+void BOKOLogViewDlg::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
+					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
+	DrawFrame(&dc);
+}
+
+
+void BOKOLogViewDlg::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	Sizing(nType);
+}
+
+
+HBRUSH BOKOLogViewDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	HBRUSH returnHBR = CtlColors(pDC, pWnd, nCtlColor);
+	if (returnHBR != NULL)
+		return returnHBR;
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+
+	if (nCtlColor == CTLCOLOR_STATIC)
+	{
+		pDC->SetBkColor(DI_BK_COLOR);
+		return m_staticBrush;
+	}
+
+
+	return hbr;
+}
+
+
+BOOL BOKOLogViewDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (WM_LBUTTONDOWN == pMsg->message)
+	{
+		TitleBarActiveMove(pMsg);
+	}
+	return __super::PreTranslateMessage(pMsg);
 }

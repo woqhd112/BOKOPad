@@ -15,6 +15,7 @@ IMPLEMENT_DYNAMIC(OneViewList, CDialogEx)
 
 OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ONE_VIEW_LIST, pParent)
+	, DlgInterface(this, false)
 	, m_size(0)
 	, m_variableItemStart_Y(0)
 	, m_downButton(nullptr)
@@ -25,6 +26,7 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 {
 	Log_Manager->OnPutLog("OneViewList 생성자 호출", LogType::LT_PROCESS);
 	this->Start();
+	CreateFrame();
 }
 
 OneViewList::~OneViewList()
@@ -47,6 +49,7 @@ BEGIN_MESSAGE_MAP(OneViewList, CDialogEx)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -69,6 +72,8 @@ BOOL OneViewList::OnInitDialog()
 	m_buttonFont.CreatePointFont(100, TEXT("굴림"));
 	m_editFont.CreatePointFont(120, TEXT("굴림"));
 
+	InitFrame();
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -88,22 +93,25 @@ void OneViewList::InsertItem(ComplexString strText, int notSEQ)
 	CRect rect;
 	this->GetClientRect(rect);
 
-	CButton* createButton = new CButton;
+	CustomButton* createButton = new CustomButton;
 	CEdit* createEdit = new CEdit;
 
 	ComplexString strTitle = strText.Left(10);
 
 	OneViewListDataStruct itemData;
 
-	createButton->Create(strTitle.GetBuffer(), WS_VISIBLE | BS_PUSHBUTTON | BS_LEFT, CRect(0, 0, 0, 0), this, g_oneViewID++);
-	createEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE | WS_DISABLED, CRect(0, 0, 0, 0), this, g_oneViewID++);
+	createButton->Create(strTitle.GetBuffer(), WS_VISIBLE | BS_LEFT | BS_OWNERDRAW, CRect(0, 0, 0, 0), this, g_oneViewID++);
+	createEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE | ES_READONLY, CRect(0, 0, 0, 0), this, g_oneViewID++);
 
-	createButton->SetFont(&m_buttonFont);
+	createButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
+	//createButton->SetFont(&m_buttonFont);
 	createEdit->SetFont(&m_editFont);
 	createButton->MoveWindow(1, m_variableItemStart_Y + 1, rect.Width() - 2, TAG_BUTTON_HEIGHT - 1);
 	createEdit->MoveWindow(1, m_variableItemStart_Y + 1 + 20, rect.Width() - 2, EXPAND_EDIT_HEIGHT);
 	createEdit->ShowWindow(SW_HIDE);
 	createEdit->SetWindowTextA(strText.GetBuffer());
+
+	createButton->m_nAlignStyle = CMFCButton::AlignStyle::ALIGN_LEFT;
 
 	itemData.start_tagButton_pos_Y = m_variableItemStart_Y;
 	itemData.tagButton = createButton;
@@ -517,9 +525,9 @@ void OneViewList::Run()
 bool OneViewList::DragDown(MSG* pMsg)
 {
 	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
-	if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
+	if (nButtonStyle == BS_OWNERDRAW)
 	{
-		m_downButton = (CButton*)FromHandle(pMsg->hwnd);
+		m_downButton = (CustomButton*)FromHandle(pMsg->hwnd);
 		ComplexMap<int, OneViewListDataStruct>::iterator iter = m_dataMap.begin();
 		while (iter != m_dataMap.end())
 		{
@@ -578,10 +586,8 @@ bool OneViewList::DragMove(MSG* pMsg)
 					m_mprps = MPRPS_BUTTON_BOTTOM;
 				}
 
-				//TRACE("scroll count : %d\n", scroll.GetScrollCount());
-
 				m_focusButtonKey = iter->value.key;
-
+				Invalidate(FALSE);
 				break;
 			}
 
@@ -703,10 +709,12 @@ void OneViewList::OnPaint()
 					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
 					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
 
+	DrawFrame(&dc);
+
 	// 배경 깜빡임없이 그냥 싹 지우고 다시그리는 용도
-	CRect rect;
+	/*CRect rect;
 	GetClientRect(rect);
-	dc.FillSolidRect(&rect, RGB(255, 255, 255));
+	dc.FillSolidRect(&rect, RGB(255, 255, 255));*/
 
 	if (m_focusButtonKey != -1)
 	{
@@ -720,8 +728,7 @@ void OneViewList::OnPaint()
 			{
 				CPen* oldPen;
 				CPen drawHoverPen;
-				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
-
+				drawHoverPen.CreatePen(PS_SOLID, 3, HOVER_COLOR);
 				oldPen = dc.SelectObject(&drawHoverPen);
 				// 상단 가로축
 				dc.MoveTo(0, TAG_BUTTON_HEIGHT * nScrollProcessingFocusKey);
@@ -761,7 +768,7 @@ void OneViewList::OnPaint()
 			{
 				CPen* oldPen;
 				CPen drawHoverPen;
-				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+				drawHoverPen.CreatePen(PS_SOLID, 3, HOVER_COLOR);
 
 				oldPen = dc.SelectObject(&drawHoverPen);
 				// 상단 가로축
@@ -786,7 +793,7 @@ void OneViewList::OnPaint()
 			{
 				CPen* oldPen;
 				CPen drawHoverPen;
-				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+				drawHoverPen.CreatePen(PS_SOLID, 3, HOVER_COLOR);
 
 				oldPen = dc.SelectObject(&drawHoverPen);
 				// 하단 가로축
@@ -811,7 +818,7 @@ void OneViewList::OnPaint()
 			{
 				CPen* oldPen;
 				CPen drawHoverPen;
-				drawHoverPen.CreatePen(PS_SOLID, 3, RGB(0, 255, 255));
+				drawHoverPen.CreatePen(PS_SOLID, 3, HOVER_COLOR);
 
 				oldPen = dc.SelectObject(&drawHoverPen);
 				// 하단 가로축
@@ -860,4 +867,21 @@ BOOL OneViewList::OnEraseBkgnd(CDC* pDC)
 
 	return FALSE;
 	//return __super::OnEraseBkgnd(pDC);
+}
+
+
+HBRUSH OneViewList::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = __super::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	if (nCtlColor == CTLCOLOR_STATIC)
+	{
+		pDC->SetTextColor(DI_BLACK_COLOR);
+		pDC->SetBkColor(DI_EDIT_COLOR);
+		return m_editBrush;
+	}
+
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+	return hbr;
 }

@@ -91,7 +91,8 @@ bool TimelineUIManager::TimelineDragMove()
 				m_bCursorDetach = false;
 
 			}
-			iter1->value.value->m_timeline.ThickEventTimeline(dragDataStruct->noteSEQ, pt, Timeline::TTA_NOTE_BY_TIMELINE_DRAG_EVENT_APPROCH);
+			// 아니 이게 왜 NOTE BY TIMELINE으로 되어있었지 ㅋㅋ;;
+			iter1->value.value->m_timeline.ThickEventTimeline(dragDataStruct->noteSEQ, pt, Timeline::TTA_TIMELINE_BY_TIMELINE_DRAG_EVENT_APPROCH);
 			bFind = true;
 			break;
 		}

@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "OneViewList.h"
+#include "DlgInterface.h"
 
 // BOKOTimelineOneViewDlg 대화 상자
 class NoteDBManager;
 
-class BOKOTimelineOneViewDlg : public CDialogEx
+class BOKOTimelineOneViewDlg : public CDialogEx, public DlgInterface
 {
 	friend class OneViewList;
 	DECLARE_DYNAMIC(BOKOTimelineOneViewDlg)
@@ -29,9 +30,9 @@ private:
 
 	CFont m_editFont;
 	CEdit m_edit_one_view;
-	CButton m_btn_timeline_export;
-	CButton m_btn_expand_all;
-	CButton m_btn_preview;
+	CustomButton m_btn_timeline_export;
+	CustomButton m_btn_expand_all;
+	CustomButton m_btn_preview;
 
 	OneViewList m_list_one_view;
 
@@ -48,4 +49,7 @@ public:
 	afx_msg void OnBnClickedButtonExpandAll();
 	afx_msg void OnBnClickedButtonOneView();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnPaint();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

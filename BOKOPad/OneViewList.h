@@ -1,14 +1,16 @@
 ﻿#pragma once
-#include "ScrollProcess.h"
+#include "DlgInterface.h"
 #include "NoteListInterface.h"
 #include "ComplexThread.h"
 #include "ComplexCondition.h"
 #include "ComplexLock.h"
 
+#define HOVER_COLOR RGB(255, 255, 255)
+
 // OneViewList 대화 상자
 class NoteDBManager;
 
-class OneViewList : public CDialogEx, public NoteListInterface, public ComplexThread
+class OneViewList : public CDialogEx, public NoteListInterface, public ComplexThread, public DlgInterface
 {
 	DECLARE_DYNAMIC(OneViewList)
 
@@ -77,7 +79,7 @@ private:
 	CFont m_buttonFont;
 	CFont m_editFont;
 
-	CButton* m_downButton;
+	CustomButton* m_downButton;
 	int m_downButtonKey;
 	int m_focusButtonKey;
 	MousePointRectPositionStatus m_mprps;
@@ -103,4 +105,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

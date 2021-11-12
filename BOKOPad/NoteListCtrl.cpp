@@ -14,6 +14,7 @@ IMPLEMENT_DYNAMIC(NoteListCtrl, CDialogEx)
 
 NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_NOTE_LIST_CTRL, pParent)
+	, DlgInterface(this, false)
 	, m_noteInformationContainer(new ComplexVector<NoteInformationVO>)
 	, m_noteUIManager(new NoteUIManager)
 	, m_noteDBManager(new NoteDBManager)
@@ -24,7 +25,7 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	Log_Manager->OnPutLog("노트 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("노트 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("NoteListCtrl 생성자 호출", LogType::LT_PROCESS);
-	m_editBrush.CreateSolidBrush(DI_SUB_BK_COLOR);
+	CreateFrame();
 }
 
 NoteListCtrl::~NoteListCtrl()
@@ -47,7 +48,6 @@ NoteListCtrl::~NoteListCtrl()
 		m_noteInformationContainer = nullptr;
 	}
 
-	m_editBrush.DeleteObject();
 	Log_Manager->OnPutLog("NoteListCtrl 소멸자 호출", LogType::LT_PROCESS);
 }
 
@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(NoteListCtrl, CDialogEx)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_SIZE()
 	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -89,7 +90,7 @@ BOOL NoteListCtrl::OnInitDialog()
 	m_calculateItemPos.right = EDIT_WIDTH;
 
 	GotoDlgCtrl(this);
-
+	InitFrame();
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -671,6 +672,20 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 		{
 			m_noteDBManager->StartTransaction(TransactionNames[TND_DRAG_EVENT_NOTE_ANOTHER_TIMELINE_SIGNAL]);
 
+			NoteInformationVO note;
+			if (m_noteDBManager->SelectOneNoteInformation(m_defaultDragData.noteSEQ, &note) == false)
+			{
+				m_bDragProcessing = false;
+				m_downButton = nullptr;
+				CURSOR_ARROW;
+
+				m_noteDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("노트 정보 DB 조회 실패로 인한 롤백 처리", LogType::LT_PROCESS);
+				return false;
+			}
+			Log_Manager->OnPutLog("노트 정보 DB 조회 완료", LogType::LT_PROCESS);
+
+			m_defaultDragData.noteCONTENT = note.GetNotCONTENT();
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
 			{
@@ -789,9 +804,20 @@ HBRUSH NoteListCtrl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// TODO:  여기서 DC의 특성을 변경합니다.
 	if (nCtlColor == CTLCOLOR_EDIT)
 	{
-		pDC->SetBkColor(DI_SUB_BK_COLOR);
+		pDC->SetTextColor(DI_BLACK_COLOR);
+		pDC->SetBkColor(DI_EDIT_COLOR);
 		return m_editBrush;
 	}
 	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
 	return hbr;
+}
+
+
+void NoteListCtrl::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
+					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
+
+	DrawFrame(&dc);
 }

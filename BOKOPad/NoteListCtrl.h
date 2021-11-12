@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "ComplexMap.h"
-#include "ScrollProcess.h"
 #include "NoteListInterface.h"
 #include "DlgInterface.h"
 
@@ -10,7 +9,7 @@ class NoteUIManager;
 
 #define BUTTON_COLOR RGB(68, 68, 68)
 
-class NoteListCtrl : public CDialogEx, public NoteListInterface
+class NoteListCtrl : public CDialogEx, public NoteListInterface, public DlgInterface
 {
 	friend class NoteUIManager;
 	friend class BOKOScenarioDetailDlg;
@@ -68,7 +67,6 @@ private:
 	DragDataStruct m_defaultDragData;
 
 	CButton* m_downButton;
-	CBrush m_editBrush;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -82,4 +80,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
 };

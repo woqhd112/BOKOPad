@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "resource.h"
+#include "DlgInterface.h"
 
 // BOKOProgressPopup 대화 상자
 #define ONE_DOT "."
@@ -7,7 +8,7 @@
 #define THREE_DOT "..."
 
 
-class BOKOProgressPopup : public CDialogEx
+class BOKOProgressPopup : public CDialogEx, public DlgInterface
 {
 	DECLARE_DYNAMIC(BOKOProgressPopup)
 
@@ -42,4 +43,9 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 protected:
+public:
+	afx_msg void OnPaint();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

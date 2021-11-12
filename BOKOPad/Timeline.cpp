@@ -17,6 +17,7 @@ IMPLEMENT_DYNAMIC(Timeline, CDialogEx)
 
 Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_TIMELINE, pParent)
+	, DlgInterface(this, false)
 	, m_timeUIManager(new TimelineUIManager)
 	, m_timeDBManager(new TimelineDBManager)
 {
@@ -32,6 +33,7 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	Log_Manager->OnPutLog("타임라인 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("타임라인 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("Timeline 생성자 호출", LogType::LT_PROCESS);
+	CreateFrame();
 }
 
 Timeline::~Timeline()
@@ -91,7 +93,7 @@ BOOL Timeline::OnInitDialog()
 	m_oneViewDlg.ShowWindow(SW_HIDE);
 
 	Log_Manager->OnPutLog("한눈에보기 매니저 연결", LogType::LT_PROCESS);
-
+	InitFrame();
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -106,6 +108,11 @@ void Timeline::AttachNoteManager(NoteUIManager* manager, NoteDBManager* dbmanage
 void Timeline::HideTimelineDetail()
 {
 	m_detailDlg.ShowWindow(SW_HIDE);
+}
+
+int Timeline::GetTimelineCount() const
+{
+	return m_timeLineContainer.size();
 }
 
 bool Timeline::ReloadTimeline()
@@ -173,6 +180,13 @@ bool Timeline::UpdateTimelineIDX(int startUpdateTimeIDX)
 
 bool Timeline::InsertTimeline(int notSEQ, POINT currentMPoint)
 {
+	if (m_timeLineContainer.size() >= LIMIT_TIMELINE_COUNT)
+	{
+		Log_Manager->OnPutLog("타임라인 최대 등록 갯수 초과", LogType::LT_PROCESS);
+		MessageBox("타임라인의 최대 등록 갯수는 50개 입니다.");
+		return false;
+	}
+
 	int timeIDX = ValidatePointToRectIDX(currentMPoint);
 	if (timeIDX == -1)
 		timeIDX = m_timeLineContainer.size();
@@ -198,6 +212,8 @@ void Timeline::OnPaint()
 					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
 					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
 
+
+	DrawFrame(&dc);
 	// 그리기 작업
 	CPen* oldPen;
 
@@ -220,7 +236,7 @@ void Timeline::OnPaint()
 		int dataSize = m_timeLineContainer.size();
 
 		// 100개이상은 못그림
-		if (dataSize > 100 || dataSize <= 0)
+		if (dataSize > LIMIT_TIMELINE_COUNT || dataSize <= 0)
 			return;
 
 		int dataInterval = int(m_nDataVariableWidth / (dataSize + 1));
@@ -682,34 +698,21 @@ bool Timeline::DragUp(MSG* pMsg)
 			Log_Manager->OnPutLog("노트 정보 DB 조회 완료", LogType::LT_PROCESS);
 			m_defaultDragData.noteCONTENT = inNote.GetNotCONTENT();
 
-			// 노트 삭제
-			if (m_timeDBManager->DeleteNoteInformation(inNote.GetNotSEQ()) == false)
-			{
-				m_bDragProcessing = false;
-				CURSOR_ARROW;
+			//// 노트 삭제
+			//if (m_timeDBManager->DeleteNoteInformation(inNote.GetNotSEQ()) == false)
+			//{
+			//	m_bDragProcessing = false;
+			//	CURSOR_ARROW;
 
-				m_timeDBManager->RollbackTransaction();
-				Log_Manager->OnPutLog("현재 노트 정보 DB 삭제 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
-				if (ReloadTimeline() == false)
-					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+			//	m_timeDBManager->RollbackTransaction();
+			//	Log_Manager->OnPutLog("현재 노트 정보 DB 삭제 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
+			//	if (ReloadTimeline() == false)
+			//		MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
-				return false;
-			}
-			Log_Manager->OnPutLog("노트 정보 DB 삭제 완료", LogType::LT_PROCESS);
+			//	return false;
+			//}
+			//Log_Manager->OnPutLog("노트 정보 DB 삭제 완료", LogType::LT_PROCESS);
 
-			// 타임라인정보 갱신
-			if (ReloadTimeline() == false)
-			{
-				m_bDragProcessing = false;
-				CURSOR_ARROW;
-
-				m_timeDBManager->RollbackTransaction();
-				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
-				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
-				return false;
-			}
-
-			
 			// 노트매니저와 노트컨트롤쪽 컨테이너, 맵 삭제하고 타겟 다이얼로그에 노트 등록
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
@@ -726,8 +729,21 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				return false;
 			}
-			
+
 			Log_Manager->OnPutLog("선택한 위치 : 다른 시나리오", LogType::LT_PROCESS);
+
+			// 타임라인정보 갱신
+			if (ReloadTimeline() == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 시나리오 갱신 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
+				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+				return false;
+			}
+
 			m_timeDBManager->CommitTransaction();
 		}
 		else if (dus == DUS_THIS_TIMELINE)
