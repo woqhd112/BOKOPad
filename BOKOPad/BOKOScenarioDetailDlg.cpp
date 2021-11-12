@@ -38,6 +38,7 @@ void BOKOScenarioDetailDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_DRAG_MODE, m_btn_drag_mode);
 	DDX_Control(pDX, IDC_BUTTON_NOTE_DELETE, m_btn_note_delete);
 	DDX_Control(pDX, IDC_STATIC_TIMELINE_COUNT, m_stt_timeline_count);
+	DDX_Control(pDX, IDC_PROGRESS_TIMELINE_COUNT, m_progress_timeline_count);
 }
 
 
@@ -131,6 +132,7 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 	InitFrame("타임라인");
 	
 	m_stt_timeline_count.SetWindowTextA("0 / 100");
+	m_progress_timeline_count.SetPos(0);
 
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -148,12 +150,14 @@ void BOKOScenarioDetailDlg::Initialize()
 
 	m_btn_note_input.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_btn_note_delete.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
-
+	m_progress_timeline_count.SetBarColor(RGB(72, 205, 22));
+	m_progress_timeline_count.SetBkColor(DI_SUB_BK_COLOR);
 	//m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
 	//m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
+	m_progress_timeline_count.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 100), CAST_INT(thisRect.Height() * 0.07), 100, 20);
 	m_stt_timeline_count.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 50), CAST_INT(thisRect.Height() * 0.07), 50, 20);
 	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.1), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.13));
 	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.28), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.37));
@@ -168,8 +172,19 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_btn_drag_mode.SetCheck(TRUE);
 	m_btn_note_delete.EnableWindow(FALSE);
 	Log_Manager->OnPutLog("시나리오 화면 초기화", LogType::LT_PROCESS);
+
+	m_stt_timeline_count.ShowWindow(SW_HIDE);
 }
 
+void BOKOScenarioDetailDlg::SetCtrlByTimelineCount()
+{
+	int timelineCount = m_timeline.GetTimelineCount();
+	CString strTimelineCount;
+	strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
+	m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+
+	m_progress_timeline_count.SetPos(timelineCount * 100 / LIMIT_TIMELINE_COUNT);
+}
 
 void BOKOScenarioDetailDlg::OnEnChangeEditNoteInput()
 {
@@ -242,10 +257,7 @@ bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 	if (m_timeline.SetScenarioManagerStruct(m_thisDataStruct) == false)
 		return false;
 
-	int timelineCount = m_timeline.GetTimelineCount();
-	CString strTimelineCount;
-	strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-	m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+	SetCtrlByTimelineCount();
 
 	if (m_list_notePad.LoadNoteInformation() == false)
 		return false;
@@ -262,10 +274,7 @@ bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent, bool
 
 	if (result)
 	{
-		int timelineCount = m_timeline.GetTimelineCount();
-		CString strTimelineCount;
-		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+		SetCtrlByTimelineCount();
 	}
 
 	return result;
@@ -277,10 +286,7 @@ bool BOKOScenarioDetailDlg::SignalDeleteNote(int notSEQ)
 
 	if (result)
 	{
-		int timelineCount = m_timeline.GetTimelineCount();
-		CString strTimelineCount;
-		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+		SetCtrlByTimelineCount();
 	}
 
 	return result;
@@ -292,10 +298,7 @@ bool BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint
 
 	if (result)
 	{
-		int timelineCount = m_timeline.GetTimelineCount();
-		CString strTimelineCount;
-		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+		SetCtrlByTimelineCount();
 	}
 
 	return result;
@@ -307,10 +310,7 @@ bool BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
 
 	if (result)
 	{
-		int timelineCount = m_timeline.GetTimelineCount();
-		CString strTimelineCount;
-		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+		SetCtrlByTimelineCount();
 	}
 
 	return result;
@@ -338,10 +338,7 @@ bool BOKOScenarioDetailDlg::SignalReloadTimeline()
 
 	if (result)
 	{
-		int timelineCount = m_timeline.GetTimelineCount();
-		CString strTimelineCount;
-		strTimelineCount.Format("%d / %s", timelineCount, LIMIT_TIMELINE_COUNT_TEXT);
-		m_stt_timeline_count.SetWindowTextA(strTimelineCount);
+		SetCtrlByTimelineCount();
 	}
 
 	return result;

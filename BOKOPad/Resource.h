@@ -69,6 +69,7 @@
 #define IDC_MFCBUTTON_EXCEL             1046
 #define IDC_MFCBUTTON_WORD              1047
 #define IDC_STATIC_TIMELINE_COUNT       1049
+#define IDC_PROGRESS_TIMELINE_COUNT     1050
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -88,7 +89,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        173
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1050
+#define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
