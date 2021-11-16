@@ -139,6 +139,10 @@ bool NoteUIManager::InvokeHelper(PerformanceMessage message)
 	{
 		bHelpSuccess = Clear();
 	}
+	else if (message == PM_NOTE_VIEW_UPDATE)
+	{
+		bHelpSuccess = NoteViewUpdate();
+	}
 	else if (message == PM_ROLLBACK_THIS_TIMELINE_ATTACH)
 	{
 		bHelpSuccess = RollbackThisTimelineAttach();
@@ -147,7 +151,7 @@ bool NoteUIManager::InvokeHelper(PerformanceMessage message)
 	{
 		bHelpSuccess = RollbackThisAnotherTimelineAttach();
 	}
-
+	
 	return bHelpSuccess;
 }
 
@@ -182,9 +186,10 @@ bool NoteUIManager::Insert()
 		{
 			noteInputEdit->SetFont(&m_setFont);
 			noteInputEdit->ExecuteTimer();
-			noteInputButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
+			noteInputButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD, CBT_DEFAULT, CBE_TOGGLE);
 
 			NotePadStruct padStruct;
+			padStruct.bOpenView = noteDataStruct->noteView;
 			padStruct.noteButton = noteInputButton;
 			padStruct.noteEdit = noteInputEdit;
 			padStruct.noteCheckBox = noteInputCheckBox;
@@ -580,12 +585,114 @@ bool NoteUIManager::NoteClick()
 	// 버튼 아이디로 노트정보 찾기
 	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
 
-	bool bFind = false;
+	int findKey = -1;
+
+	if (dragDataStruct->pushShiftButton)
+	{
+		int beforeCheckKey = -1;
+		while (iter1 != m_notePadManager.end())
+		{
+			if (iter1->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
+			{
+				findKey = iter1->value.key;
+				break;
+			}
+			iter1++;
+		}
+
+		iter1 = m_notePadManager.begin();
+		while (iter1 != m_notePadManager.end())
+		{
+			if (iter1->value.value.noteButton->GetDlgCtrlID() != dragDataStruct->buttonID && iter1->value.value.noteCheckBox->GetCheck())
+			{
+				beforeCheckKey = iter1->value.key;
+				break;
+			}
+			iter1++;
+		}
+
+		int startKey = -1, endKey = -1;
+
+		if (beforeCheckKey < findKey)
+		{
+			startKey = beforeCheckKey;
+			endKey = findKey;
+		}
+		else
+		{
+			startKey = findKey;
+			endKey = beforeCheckKey;
+		}
+
+		if (startKey == -1)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		if (endKey == -1)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		for (int i = startKey; i <= endKey; i++)
+		{
+			ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.find(i);
+			if (iter2 != m_notePadManager.end())
+			{
+				if (iter2->value.value.bOpenView)
+				{
+					iter2->value.value.noteCheckBox->SetCheck(TRUE);
+					iter2->value.value.noteButton->ExecuteClickButtonColor();
+				}
+			}
+		}
+
+		ReleaseDragStruct();
+
+		return true;
+	}
+	else
+	{
+		if (dragDataStruct->pushCtrlButton == false)
+		{
+			while (iter1 != m_notePadManager.end())
+			{
+				if (iter1->value.value.noteButton->GetDlgCtrlID() != dragDataStruct->buttonID)
+				{
+					if (iter1->value.value.bOpenView)
+					{
+						iter1->value.value.noteCheckBox->SetCheck(FALSE);
+						iter1->value.value.noteButton->ResetClickButtonColor();
+					}
+				}
+				else
+				{
+					findKey = iter1->value.key;
+				}
+				iter1++;
+			}
+		}
+		else
+		{
+			while (iter1 != m_notePadManager.end())
+			{
+				if (iter1->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
+				{
+					findKey = iter1->value.key;
+					break;
+				}
+				iter1++;
+			}
+		}
+	}
+
+	/*iter1 = m_notePadManager.begin();
 	while (iter1 != m_notePadManager.end())
 	{
 		if (iter1->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
 		{
-			bFind = true;
 			break;
 		}
 		iter1++;
@@ -595,14 +702,61 @@ bool NoteUIManager::NoteClick()
 	{
 		ReleaseNoteStruct();
 		return false;
+	}*/
+	if (findKey == -1)
+	{
+		ReleaseNoteStruct();
+		return false;
 	}
 
-	if (iter1->value.value.noteCheckBox->GetCheck() == TRUE)
-		iter1->value.value.noteCheckBox->SetCheck(FALSE);
-	else
-		iter1->value.value.noteCheckBox->SetCheck(TRUE);
+	iter1 = m_notePadManager.find(findKey);
+	if (iter1 == m_notePadManager.end())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	if (iter1->value.value.bOpenView)
+	{
+		if (iter1->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			iter1->value.value.noteCheckBox->SetCheck(FALSE);
+			iter1->value.value.noteButton->ResetClickButtonColor();
+		}
+		else
+		{
+			iter1->value.value.noteCheckBox->SetCheck(TRUE);
+			iter1->value.value.noteButton->ExecuteClickButtonColor();
+		}
+	}
 
 	ReleaseDragStruct();
+
+	return true;
+}
+
+bool NoteUIManager::NoteViewUpdate()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
+	while (iter != m_notePadManager.end())
+	{
+		if (iter->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			iter->value.value.bOpenView = noteDataStruct->noteView;
+		}
+		iter++;
+	}
 
 	return true;
 }
@@ -662,19 +816,37 @@ bool NoteUIManager::DragDown()
 		return false;
 	}
 
+	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
+	int checkCount = 0;
+	while (iter1 != m_notePadManager.end())
+	{
+		if (iter1->value.value.bOpenView)
+		{
+			if (iter1->value.value.noteCheckBox->GetCheck() == TRUE)
+			{
+				checkCount++;
+				iter1->value.value.noteButton->ShowWindow(SW_HIDE);
+				iter1->value.value.noteEdit->ShowWindow(SW_HIDE);
+			}
+		}
+
+		iter1++;
+	}
+
 	m_dragState = DUS_NOTHING;
 	//m_dragDlg->SetDragData(dragDataStruct->noteSEQ, dragDataStruct->noteIndex, dragDataStruct->noteCONTENT);
 	m_dragDlg->MoveWindow(int(dragDataStruct->mousePos_X - (DRAG_DLG_WIDTH / 2)), int(dragDataStruct->mousePos_Y - (DRAG_DLG_HEIGHT / 2)), DRAG_DLG_WIDTH, DRAG_DLG_HEIGHT);
+	m_dragDlg->SetDragData(checkCount);
 	m_dragDlg->ShowWindow(SW_SHOW);
 
-	iter->value.value.noteButton->ShowWindow(SW_HIDE);
-	iter->value.value.noteEdit->ShowWindow(SW_HIDE);
+	//iter->value.value.noteButton->ShowWindow(SW_HIDE);
+	//iter->value.value.noteEdit->ShowWindow(SW_HIDE);
 
 	//m_cursorEventCnt = ShowCursor(FALSE);
 	CursorCountRestore(-1);
-	m_mainDlg->SetCapture();
+	//m_mainDlg->SetCapture();
 	ReleaseDragStruct();
-
+	
 	m_bIsDragging = true;
 
 	return true;
@@ -765,7 +937,14 @@ bool NoteUIManager::DragMove()
 		}
 	}*/
 
+	// 다운이벤트를 스레드로 빼서 콜백함수가 안먹혀 무브에서 한번만 커서 하이드 시킴 
+	// 우선 임시처리임
+	if (m_cursorEventCnt == -1)
+	{
+		CursorCountRestore(-2);
+	}
 
+	m_mainDlg->SetCapture();
 	m_dragDlg->MoveWindow(int(dragDataStruct->mousePos_X - (DRAG_DLG_WIDTH / 2)), int(dragDataStruct->mousePos_Y - (DRAG_DLG_HEIGHT / 2)), DRAG_DLG_WIDTH, DRAG_DLG_HEIGHT);
 
 	ReleaseDragStruct();
@@ -923,7 +1102,7 @@ bool NoteUIManager::DragNothing()
 	// 버튼 아이디로 노트정보 찾기
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
 
-	bool bFind = false;
+	/*bool bFind = false;
 	while (iter != m_notePadManager.end())
 	{
 		if (iter->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
@@ -941,7 +1120,17 @@ bool NoteUIManager::DragNothing()
 	}
 
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
-	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+	iter->value.value.noteEdit->ShowWindow(SW_SHOW);*/
+
+	while (iter != m_notePadManager.end())
+	{
+		if (iter->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			iter->value.value.noteButton->ShowWindow(SW_SHOW);
+			iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+		}
+		iter++;
+	}
 
 	ReleaseDragStruct();
 
@@ -964,7 +1153,7 @@ bool NoteUIManager::DragThisAttach()
 	// 버튼 아이디로 노트정보 찾기
 	ComplexMap<int, NotePadStruct>::iterator iter = m_notePadManager.begin();
 
-	bool bFind = false;
+	/*bool bFind = false;
 	while (iter != m_notePadManager.end())
 	{
 		if (iter->value.value.noteButton->GetDlgCtrlID() == dragDataStruct->buttonID)
@@ -982,7 +1171,17 @@ bool NoteUIManager::DragThisAttach()
 	}
 
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
-	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+	iter->value.value.noteEdit->ShowWindow(SW_SHOW);*/
+
+	while (iter != m_notePadManager.end())
+	{
+		if (iter->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			iter->value.value.noteButton->ShowWindow(SW_SHOW);
+			iter->value.value.noteEdit->ShowWindow(SW_SHOW);
+		}
+		iter++;
+	}
 
 	ReleaseDragStruct();
 	return true;
@@ -1041,19 +1240,58 @@ bool NoteUIManager::DragAnotherAttach()
 		return false;
 	}
 
-	// 현재 시나리오에서 노트삭제
-	if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	ComplexMap<int, NotePadStruct>::iterator iter4 = m_notePadManager.begin();
+
+	ComplexVector<int> seqContainer;
+
+	// 우선 등록부터하고 삭제는 시퀀스컨테이너에 담고 차례로 삭제한다.
+	while (iter4 != m_notePadManager.end())
 	{
-		ReleaseDragStruct();
-		return false;
+		if (iter4->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			ComplexMap<int, int>::iterator iter5 = m_noteSeqMap.find(iter4->value.key);
+			if (iter5 != m_noteSeqMap.end())
+			{
+				// notSEQ
+				seqContainer.push_back(iter5->value.value);
+				CString strContent;
+				iter4->value.value.noteEdit->GetWindowTextA(strContent);
+
+				// 타겟 시나리오에서 노트추가
+				if (iter3->value.value->SignalInsertNote(strContent.GetBuffer(), true) == false)
+				{
+					ReleaseDragStruct();
+					return false;
+				}
+			}
+		}
+		iter4++;
 	}
 
-	// 타겟 시나리오에서 노트추가
-	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, true) == false)
+	for (int i = 0; i < seqContainer.size(); i++)
 	{
-		ReleaseDragStruct();
-		return false;
+		int notSEQ = seqContainer.at(i);
+		// 현재 시나리오에서 노트삭제
+		if (iter2->value.value->SignalDeleteNote(notSEQ) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
 	}
+
+	//// 현재 시나리오에서 노트삭제
+	//if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
+
+	//// 타겟 시나리오에서 노트추가
+	//if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, true) == false)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
 
 	ReleaseDragStruct();
 	return true;
@@ -1084,13 +1322,60 @@ bool NoteUIManager::DragThisTimelineAttach()
 		ReleaseDragStruct();
 		return false;
 	}
-	
-	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
-	
-	if (iter1->value.value->SignalInsertTimeline(dragDataStruct->noteSEQ, pt) == false)
+
+	ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.begin();
+
+	int checkCount = 0;
+	while (iter2 != m_notePadManager.end())
 	{
-		ReleaseDragStruct();
-		return false;
+		if (iter2->value.value.noteCheckBox->GetCheck() == TRUE)
+			checkCount++;
+
+		iter2++;
+	}
+
+	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+	if (checkCount > 1)
+	{
+		iter2 = m_notePadManager.begin();
+		while (iter2 != m_notePadManager.end())
+		{
+			if (iter2->value.value.noteCheckBox->GetCheck() == TRUE)
+			{
+				ComplexMap<int, int>::iterator iter3 = m_noteSeqMap.find(iter2->value.key);
+				if (iter3 != m_noteSeqMap.end())
+				{
+					// pt 값 증가시켜야함.. 어떻게할까
+					if (iter1->value.value->SignalInsertTimeline(iter3->value.value, pt) == false)
+					{
+						ReleaseDragStruct();
+						return false;
+					}
+
+					if (iter1->value.value->SignalUpdateSetTIME(iter3->value.value, true) == false)
+					{
+						ReleaseDragStruct();
+						return false;
+					}
+				}
+			}
+
+			iter2++;
+		}
+
+		if (iter1->value.value->SignalReloadNoteList() == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+	}
+	else
+	{
+		if (iter1->value.value->SignalInsertTimeline(dragDataStruct->noteSEQ, pt) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
 	}
 
 	ReleaseDragStruct();
@@ -1151,35 +1436,90 @@ bool NoteUIManager::DragAnotherTimelineAttach()
 		return false;
 	}
 
-	// 현재 시나리오에서 노트삭제
-	if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	ComplexVector<int> seqContainer;
+	ComplexMap<int, NotePadStruct>::iterator iter4 = m_notePadManager.begin();
+	while (iter4 != m_notePadManager.end())
+	{
+		if (iter4->value.value.noteCheckBox->GetCheck() == TRUE)
+		{
+			ComplexMap<int, int>::iterator iter5 = m_noteSeqMap.find(iter4->value.key);
+			CString strText;
+			iter4->value.value.noteEdit->GetWindowTextA(strText);
+			seqContainer.push_back(iter5->value.value);
+			// 타겟 시나리오에서 노트추가
+			if (iter3->value.value->SignalInsertNote(strText.GetBuffer(), false) == false)
+			{
+				ReleaseDragStruct();
+				return false;
+			}
+			int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
+
+			if (targetNoteContainerSize <= 0)
+			{
+				ReleaseDragStruct();
+				return false;
+			}
+
+			int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
+			CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+			// 타겟 타임라인 추가
+			// pt 값 증가시켜야함.. 어떻게할까
+			if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+			{
+				ReleaseDragStruct();
+				return false;
+			}
+		}
+		iter4++;
+	}
+
+	for (int i = 0; i < seqContainer.size(); i++)
+	{
+		int notSEQ = seqContainer.at(i);
+		// 현재 시나리오에서 노트삭제
+		if (iter2->value.value->SignalDeleteNote(notSEQ) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+	}
+
+	if (iter2->value.value->SignalReloadNoteList() == false)
 	{
 		ReleaseDragStruct();
 		return false;
 	}
 
-	// 타겟 시나리오에서 노트추가
-	if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, false) == false)
-	{
-		ReleaseDragStruct();
-		return false;
-	}
-	int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
 
-	if (targetNoteContainerSize <= 0)
-	{
-		ReleaseDragStruct();
-		return false;
-	}
+	//// 현재 시나리오에서 노트삭제
+	//if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
 
-	int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
-	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
-	// 타겟 타임라인 추가
-	if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
-	{
-		ReleaseDragStruct();
-		return false;
-	}
+	//// 타겟 시나리오에서 노트추가
+	//if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, false) == false)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
+	//int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
+
+	//if (targetNoteContainerSize <= 0)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
+
+	//int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
+	//CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+	//// 타겟 타임라인 추가
+	//if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+	//{
+	//	ReleaseDragStruct();
+	//	return false;
+	//}
 
 	ReleaseDragStruct();
 	return true;

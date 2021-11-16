@@ -4,7 +4,7 @@
 
 namespace ComplexUtilProcess
 {
-	COMPLEXUTILPROCESS_DLL void ExportFile(ComplexString writeContent, ComplexString writePath)
+	COMPLEXUTILPROCESS_DLL void ExportFile(ComplexString writeContent, ComplexString writePath, ComplexString extentionName)
 	{
 		ComplexString fileContent;
 		fileContent = writeContent;
@@ -42,9 +42,9 @@ namespace ComplexUtilProcess
 		ComplexString strFullPath;
 		char last = writePath.GetAt(writePath.GetLength() - 1);
 		if(last == '\\' || last == '/')
-			strFullPath.Format("%s%s.txt", writePath.GetBuffer(), writeTitle.GetBuffer());
+			strFullPath.Format("%s%s.%s", writePath.GetBuffer(), writeTitle.GetBuffer(), extentionName.GetBuffer());
 		else
-			strFullPath.Format("%s/%s.txt", writePath.GetBuffer(), writeTitle.GetBuffer());
+			strFullPath.Format("%s/%s.%s", writePath.GetBuffer(), writeTitle.GetBuffer(), extentionName.GetBuffer());
 
 		file.Write(strFullPath, writeContent, ComplexFile::FM_W_OVERWRITE);
 	}

@@ -30,6 +30,8 @@
 #define IDB_PNG_BK_RIGHT                169
 #define IDB_PNG_BK_TITLE                170
 #define IDD_DIALOG_MENU                 171
+#define IDB_PNG_BK_SUB                  173
+#define IDB_PNG_BK                      174
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -87,7 +89,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        173
+#define _APS_NEXT_RESOURCE_VALUE        175
 #define _APS_NEXT_COMMAND_VALUE         32783
 #define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           101

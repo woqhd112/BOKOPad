@@ -468,5 +468,11 @@
     <Image Include="res\title.png">
       <Filter>리소스 파일\이미지</Filter>
     </Image>
+    <Image Include="res\test.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\test2.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

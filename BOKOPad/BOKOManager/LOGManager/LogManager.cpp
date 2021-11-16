@@ -4,6 +4,7 @@
 #include "..\..\BOKOPad.h"
 
 LogManager::LogManager()
+	: m_status(LPS_NONE)
 {
 	ComplexUtilProcess::INITIALIZE_LOG();
 }
@@ -65,7 +66,7 @@ bool LogManager::OnLoadLogData()
 
 		fileCount++;
 	}
-	BOKOProgressPopup progress(fileCount);
+	BOKOProgressPopup progress(&m_bProcessing, fileCount);
 	progress.Create(BOKOProgressPopup::IDD);
 	progress.ShowWindow(SW_SHOW);
 	CPaintDC dc(&progress);
@@ -73,7 +74,7 @@ bool LogManager::OnLoadLogData()
 
 	BOOL bWorking = finder.FindFile(fullPath.GetBuffer());
 	
-	while (bWorking)
+	while (bWorking && m_bProcessing)
 	{
 		//다음 파일 or 폴더 가 존재하면다면 TRUE 반환
 		bWorking = finder.FindNextFile();
@@ -98,9 +99,29 @@ bool LogManager::OnLoadLogData()
 			return false;
 	}
 
+	// 중간에 x버튼 눌러 멈췄을 경우는 전부 종료해야함
+	if (m_bProcessing == false)
+	{
+		m_status = LPS_FAIL;
+		progress.SendMessageA(WM_CLOSE);
+		return false;
+	}
+
+	m_status = LPS_SUCCESS;
+
 	progress.SendMessageA(WM_CLOSE);
 
 	return true;
+}
+
+bool LogManager::IsProcessing() const
+{
+	return m_bProcessing;
+}
+
+LogProcessStatus LogManager::GetProcessStatus() const
+{
+	return m_status;
 }
 
 bool LogManager::AnalysisLogFile(ComplexString analizeLogFilePath, ComplexVector<ComplexString>* out)
@@ -117,7 +138,7 @@ bool LogManager::AnalysisLogFile(ComplexString analizeLogFilePath, ComplexVector
 		logFileBuf.RemoveAll("\n");
 		m_stringTokens.ApplyStringTokenize(logFileBuf, ',');
 
-		while (m_stringTokens.HasNextToken())
+		while (m_stringTokens.HasNextToken() && m_bProcessing)
 		{
 			ComplexString token = m_stringTokens.NextToken();
 			out->push_back(token);

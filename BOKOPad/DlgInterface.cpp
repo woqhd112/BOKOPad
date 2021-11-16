@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "DlgInterface.h"
+#include "DrawButton/CGdiPlusBitmap.h"
 #include "resource.h"
 
 static int s_ctlID = 20000;
@@ -22,10 +23,24 @@ DlgInterface::~DlgInterface()
 	m_staticBrush.DeleteObject();
 	m_editBrush.DeleteObject();
 	m_subBKBrush.DeleteObject();
+
+	if (m_pBitmap)
+	{
+		delete m_pBitmap;
+		m_pBitmap = NULL;
+	}
+	if (m_hBuffer)
+	{
+		::GlobalUnlock(m_hBuffer);
+		::GlobalFree(m_hBuffer);
+		m_hBuffer = NULL;
+	}
+
 }
 
 void DlgInterface::CreateFrame()
 {
+#ifdef PATH_RESOURCE
 	/*TCHAR* szTitleFileName1 = "C:\\Users\\user\\Desktop\\况农胶其捞胶\\work_vs2017\\BOKOPad\\BOKOPad\\res\\title.png";
 	m_pngTitlebar.Load(szTitleFileName1);
 
@@ -43,6 +58,72 @@ void DlgInterface::CreateFrame()
 
 	TCHAR* szTitleFileName6 = "C:\\Users\\user\\Desktop\\况农胶其捞胶\\work_vs2017\\BOKOPad\\BOKOPad\\res\\test.png";
 	m_pngBackground2.Load(szTitleFileName6);
+
+#else
+	LoadPNGResource(m_pngBackground1, IDB_PNG_BK, "PNG");
+	LoadPNGResource(m_pngBackground2, IDB_PNG_BK_SUB, "PNG");
+#endif
+}
+
+bool DlgInterface::LoadPNGResource(CImage& loadObjectIamage, UINT id, LPCTSTR pType, HMODULE hInst)
+{
+	LPCTSTR pName = MAKEINTRESOURCE(id);
+
+	if (m_pBitmap)
+	{
+		delete m_pBitmap;
+		m_pBitmap = NULL;
+	}
+	if (m_hBuffer)
+	{
+		::GlobalUnlock(m_hBuffer);
+		::GlobalFree(m_hBuffer);
+		m_hBuffer = NULL;
+	}
+
+	HRSRC hResource = ::FindResource(hInst, pName, pType);
+	if (!hResource)
+		return false;
+
+	DWORD imageSize = ::SizeofResource(hInst, hResource);
+	if (!imageSize)
+		return false;
+
+	const void* pResourceData = ::LockResource(::LoadResource(hInst, hResource));
+	if (!pResourceData)
+		return false;
+
+	m_hBuffer = ::GlobalAlloc(GMEM_MOVEABLE, imageSize);
+	if (m_hBuffer)
+	{
+		void* pBuffer = ::GlobalLock(m_hBuffer);
+		if (pBuffer)
+		{
+			CopyMemory(pBuffer, pResourceData, imageSize);
+
+			IStream* pStream = NULL;
+			if (::CreateStreamOnHGlobal(m_hBuffer, FALSE, &pStream) == S_OK)
+			{
+				m_pBitmap = Gdiplus::Bitmap::FromStream(pStream);
+				if (SUCCEEDED(loadObjectIamage.Load(pStream)))
+				{
+					pStream->Release();
+					if (m_pBitmap)
+					{
+						if (m_pBitmap->GetLastStatus() == Gdiplus::Ok)
+							return true;
+
+						delete m_pBitmap;
+						m_pBitmap = NULL;
+					}
+				}
+			}
+			::GlobalUnlock(m_hBuffer);
+		}
+		::GlobalFree(m_hBuffer);
+		m_hBuffer = NULL;
+	}
+	return false;
 }
 
 void DlgInterface::SetWindowTitleText(CString text)

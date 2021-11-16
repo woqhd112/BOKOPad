@@ -90,6 +90,22 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 	path = dir_;
 	path.Remove(DB_MODULE_NANE);
 
+#ifndef SELECT_EXTENTION
+
+	ComplexString strWriteAnsiContent, strConvertUTF8Content;
+	m_list_one_view.GetFullItemText(&strWriteAnsiContent);
+
+	CFolderPickerDialog fd(path.GetBuffer(), OFN_FILEMUSTEXIST, NULL, 0);
+	if (fd.DoModal() != IDOK)
+		return;
+
+	CString strFullPath = fd.GetPathName();
+
+	// 이거 pc별로 포맷팅이 다른데 구분하는법있나.. BOKOOptionDlg도 처리해야함..
+	//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
+	ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer(), "odf");
+
+#else
 	int selectExtentionType = -1;
 	// 확장자 선택
 	Log_Manager->OnPutLog("확장자 선택 화면 생성 완료", LogType::LT_OPERATE);
@@ -158,8 +174,9 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 
 		// 이거 pc별로 포맷팅이 다른데 구분하는법있나.. BOKOOptionDlg도 처리해야함..
 		//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
-		ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+		ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer(), "txt");
 	}
+#endif
 
 	CURSOR_ARROW;
 

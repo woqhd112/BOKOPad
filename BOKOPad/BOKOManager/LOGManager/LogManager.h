@@ -17,6 +17,13 @@ enum LogType
 	LT_OPERATE
 };
 
+enum LogProcessStatus
+{
+	LPS_NONE = 0,
+	LPS_SUCCESS,
+	LPS_FAIL
+};
+
 class LogManager
 {
 public:
@@ -32,6 +39,9 @@ public:
 
 	void Clear();
 
+	bool IsProcessing() const;
+	LogProcessStatus GetProcessStatus() const;
+
 private:
 
 	bool AnalysisLogFile(ComplexString analizeLogFilePath, ComplexVector<ComplexString>* out);
@@ -42,5 +52,8 @@ private:
 
 	ComplexStringTokenizer m_stringTokens;
 
+	bool m_bProcessing;
+
+	LogProcessStatus m_status;
 };
 

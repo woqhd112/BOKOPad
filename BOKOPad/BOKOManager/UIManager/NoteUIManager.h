@@ -26,6 +26,7 @@ private:
 	bool DragUp();
 	bool DragOff();
 	bool Clear();
+	bool NoteViewUpdate();
 
 	bool LoadDraggingMode();
 	bool UnloadDraggingMode();

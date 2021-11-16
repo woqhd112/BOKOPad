@@ -129,7 +129,7 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 
 	GotoDlgCtrl(&m_edit_note_input);
 
-	InitFrame("타임라인");
+	InitFrame(m_strTitleText);
 	
 	m_stt_timeline_count.SetWindowTextA("0 / 100");
 	m_progress_timeline_count.SetPos(0);
@@ -140,7 +140,8 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 
 void BOKOScenarioDetailDlg::Initialize()
 {
-	SetWindowTextA(m_thisDataStruct.scenarioData.GetSceTITLE());
+	m_strTitleText.Format("%s 타임라인", m_thisDataStruct.scenarioData.GetSceTITLE().GetBuffer());
+	SetWindowTextA(m_strTitleText);
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
 	Log_Manager->OnPutLog("노트 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.Create(Timeline::IDD, this);
@@ -154,6 +155,11 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_progress_timeline_count.SetBkColor(DI_SUB_BK_COLOR);
 	//m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
 	//m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
+
+	/*m_progress_timeline_count.ModifyStyle(0, WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
+	m_stt_timeline_count.ModifyStyle(0, WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
+	m_progress_timeline_count.BringWindowToTop();
+	m_stt_timeline_count.BringWindowToTop();*/
 
 	CRect thisRect;
 	this->GetWindowRect(thisRect);
@@ -170,7 +176,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_timeline.ShowWindow(SW_SHOW);
 	m_btn_drag_mode.ShowWindow(SW_HIDE);
 	m_btn_drag_mode.SetCheck(TRUE);
-	m_btn_note_delete.EnableWindow(FALSE);
+	//m_btn_note_delete.EnableWindow(FALSE);
 	Log_Manager->OnPutLog("시나리오 화면 초기화", LogType::LT_PROCESS);
 
 	m_stt_timeline_count.ShowWindow(SW_HIDE);
@@ -268,7 +274,7 @@ bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
 	return true;
 }
 
-bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString& strNoteContent, bool bNoteShow)
+bool BOKOScenarioDetailDlg::SignalInsertNote(ComplexString strNoteContent, bool bNoteShow)
 {
 	bool result = m_list_notePad.InsertNote(strNoteContent, bNoteShow);
 
@@ -304,9 +310,9 @@ bool BOKOScenarioDetailDlg::SignalInsertTimeline(int notSEQ, POINT currentMPoint
 	return result;
 }
 
-bool BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ)
+bool BOKOScenarioDetailDlg::SignalUpdateSetTIME(int notSEQ, bool setTIME)
 {
-	bool result = m_list_notePad.UpdateSetTIME(notSEQ);
+	bool result = m_list_notePad.UpdateSetTIME(notSEQ, setTIME);
 
 	if (result)
 	{
@@ -359,7 +365,7 @@ void BOKOScenarioDetailDlg::OnMouseMove(UINT nFlags, CPoint point)
 void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	if (m_bDragModeCheck)
+	/*if (m_bDragModeCheck)
 	{
 		m_btn_drag_mode.SetCheck(FALSE);
 		m_bDragModeCheck = false;
@@ -394,7 +400,7 @@ void BOKOScenarioDetailDlg::OnBnClickedCheckDragMode()
 			return;
 		}
 		Log_Manager->OnPutLog("드래그모드 On", LogType::LT_EVENT);
-	}
+	}*/
 }
 
 
@@ -448,8 +454,10 @@ HBRUSH BOKOScenarioDetailDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		}
 		else if (pWnd->GetDlgCtrlID() == m_stt_timeline_count.GetDlgCtrlID())
 		{
-			pDC->SetBkColor(DI_BK_COLOR);
-			return m_staticBrush;
+			pDC->SetBkMode(TRANSPARENT);
+			CBrush B;
+			B.CreateStockObject(NULL_BRUSH);
+			return B;
 		}
 	}
 	else if (nCtlColor == CTLCOLOR_EDIT)

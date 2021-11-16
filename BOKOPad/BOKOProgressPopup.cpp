@@ -11,12 +11,14 @@
 
 IMPLEMENT_DYNAMIC(BOKOProgressPopup, CDialogEx)
 
-BOKOProgressPopup::BOKOProgressPopup(int itemCount, CWnd* pParent /*=nullptr*/)
+BOKOProgressPopup::BOKOProgressPopup(bool* processing, int itemCount, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_PROGRESS_POPUP, pParent)
 	, DlgInterface(this, true)
 {
 	m_nItemCount = itemCount;
 	m_posCount = 0;
+	m_bProcessing = processing;
+	*m_bProcessing = false;
 	CreateFrame();
 }
 
@@ -37,6 +39,7 @@ BEGIN_MESSAGE_MAP(BOKOProgressPopup, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
 	ON_WM_SIZE()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -51,7 +54,7 @@ BOOL BOKOProgressPopup::OnInitDialog()
 
 	//m_progress.SetRange(m_nStartRange, m_nEndRange);
 	m_progress.SetPos(0);
-
+	*m_bProcessing = true;
 	InitFrame("진행 중");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -129,6 +132,18 @@ BOOL BOKOProgressPopup::PreTranslateMessage(MSG* pMsg)
 	{
 		TitleBarActiveMove(pMsg);
 	}
+	else if (WM_KEYDOWN == pMsg->message)
+	{
+		if (pMsg->wParam == VK_ESCAPE)
+			OnClose();
+	}
 
 	return __super::PreTranslateMessage(pMsg);
+}
+
+void BOKOProgressPopup::OnClose()
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	*m_bProcessing = false;
+	__super::OnClose();
 }

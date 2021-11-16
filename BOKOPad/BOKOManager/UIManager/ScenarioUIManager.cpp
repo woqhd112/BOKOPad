@@ -110,7 +110,7 @@ bool ScenarioUIManager::Create()
 	inputScenarioStruct.scenarioIndex = scenarioDataStruct->scenarioIndex;
 
 	BOKOScenarioDetailDlg* scenarioDetail = new BOKOScenarioDetailDlg(inputScenarioStruct, m_mainDlg);
-	bool bCreate = (bool)scenarioDetail->Create(BOKOScenarioDetailDlg::IDD, m_mainDlg);
+	bool bCreate = (bool)scenarioDetail->Create(BOKOScenarioDetailDlg::IDD, CWnd::GetDesktopWindow());
 	if (bCreate)
 	{
 		try

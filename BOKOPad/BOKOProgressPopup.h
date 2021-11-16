@@ -13,7 +13,7 @@ class BOKOProgressPopup : public CDialogEx, public DlgInterface
 	DECLARE_DYNAMIC(BOKOProgressPopup)
 
 public:
-	BOKOProgressPopup(int itemCount, CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	BOKOProgressPopup(bool* processing, int itemCount, CWnd* pParent = nullptr);   // 표준 생성자입니다.
 	virtual ~BOKOProgressPopup();
 
 // 대화 상자 데이터입니다.
@@ -30,6 +30,9 @@ private:
 	int m_nItemCount;
 
 	int m_posCount;
+
+	bool* m_bProcessing;
+
 public:
 
 	bool AddProgressPos();
@@ -48,4 +51,5 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnClose();
 };

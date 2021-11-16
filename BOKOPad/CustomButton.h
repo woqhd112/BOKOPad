@@ -10,6 +10,12 @@ enum CustomButtonType
 	CBT_MINIMIZE
 };
 
+enum CustomButtonEvent
+{
+	CBE_CLICK = 0,
+	CBE_TOGGLE
+};
+
 class CustomButton : public CMFCButton
 {
 	DECLARE_DYNAMIC(CustomButton)
@@ -18,7 +24,11 @@ public:
 	CustomButton();
 	virtual ~CustomButton();
 
-	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, CustomButtonType buttonType = CBT_DEFAULT);
+	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, CustomButtonType buttonType = CBT_DEFAULT, CustomButtonEvent buttonEvent = CBE_CLICK);
+
+	void ResetClickButtonColor();
+	void ExecuteClickButtonColor();
+	CustomButtonEvent m_buttonEvent;
 
 private:
 
@@ -30,6 +40,9 @@ private:
 	COLORREF m_defaultColor;
 	COLORREF m_hoverColor;
 	COLORREF m_downColor;
+
+	bool m_bClicked;
+	bool m_bDown;
 
 public:
 

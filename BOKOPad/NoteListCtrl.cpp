@@ -19,12 +19,15 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	, m_noteUIManager(new NoteUIManager)
 	, m_noteDBManager(new NoteDBManager)
 	, m_downButton(nullptr)
+	, m_bPushCtrlButton(false)
+	, m_bPushShiftButton(false)
 {
 	m_bMainScrollFocus = true;
 	m_viewNoteSize = 0;
 	Log_Manager->OnPutLog("노트 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("노트 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("NoteListCtrl 생성자 호출", LogType::LT_PROCESS);
+	this->Start();
 	CreateFrame();
 }
 
@@ -47,8 +50,10 @@ NoteListCtrl::~NoteListCtrl()
 		delete m_noteInformationContainer;
 		m_noteInformationContainer = nullptr;
 	}
-
 	Log_Manager->OnPutLog("NoteListCtrl 소멸자 호출", LogType::LT_PROCESS);
+	this->Stop();
+	m_cond.Destroy();
+	this->Join();
 }
 
 void NoteListCtrl::DoDataExchange(CDataExchange* pDX)
@@ -106,7 +111,7 @@ bool NoteListCtrl::LoadDraggingNote()
 		if (iter->value.IsSetTIMELINE() == false)
 		{
 			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
-			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, true, i);
 			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 			if (m_noteUIManager->SendMessages(PM_LOAD_DRAGGING_MODE) == false)
 				return false;
@@ -133,7 +138,7 @@ bool NoteListCtrl::UnloadDraggingNote()
 		if (iter->value.IsSetTIMELINE() == false)
 		{
 			CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
-			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+			NoteManagerStruct noteManagerStruct(&iter->value, itemRect, true, i);
 			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 			if (m_noteUIManager->SendMessages(PM_UNLOAD_DRAGGING_MODE) == false)
 				return false;
@@ -175,8 +180,9 @@ bool NoteListCtrl::LoadNoteInformation()
 	int bDetectedTimelineCnt = 0;
 	while (iter != m_noteInformationContainer->end())
 	{
+		bool bTimeline = iter->value.IsSetTIMELINE();
 		CRect* itemRect = CalcNotePosition(bDetectedTimelineCnt);
-		NoteManagerStruct noteManagerStruct(&iter->value, itemRect, i);
+		NoteManagerStruct noteManagerStruct(&iter->value, itemRect, !bTimeline, i);
 
 		m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 		if (m_noteUIManager->SendMessages(PM_NOTE_INSERT) == false)
@@ -208,12 +214,12 @@ bool NoteListCtrl::UpdateScenarioList(NoteInformationVO* noteInform)
 	return true;
 }
 
-bool NoteListCtrl::UpdateSetTIME(int notSEQ)
+bool NoteListCtrl::UpdateSetTIME(int notSEQ, bool setTIME)
 {
 	NoteInformationVO note;
 	note.SetNotSEQ(notSEQ);
 	note.SetSceSEQ(m_thisDataStruct.scenarioData.GetSceSEQ());
-	if (m_noteDBManager->UpdateNoteInformationInSetTIMELINE(notSEQ, false) == false)
+	if (m_noteDBManager->UpdateNoteInformationInSetTIMELINE(notSEQ, setTIME) == false)
 		return false;
 
 	Log_Manager->OnPutLog("노트 DB 정보 타임라인으로 변경 완료", LogType::LT_PROCESS);
@@ -221,7 +227,7 @@ bool NoteListCtrl::UpdateSetTIME(int notSEQ)
 	if (UpdateScenarioList(&note) == false)
 		return false;
 
-	NoteManagerStruct noteManagerStruct(&note, NULL, notSEQ);
+	NoteManagerStruct noteManagerStruct(&note, NULL, false, notSEQ);
 
 	m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 	if (m_noteUIManager->SendMessages(PM_FIND_NOTE_INDEX) == false)
@@ -234,8 +240,11 @@ bool NoteListCtrl::UpdateSetTIME(int notSEQ)
 	Log_Manager->OnPutLog("해당 노트 화면 출력 완료", LogType::LT_PROCESS);
 		
 	// 타임라인 보이기 false로 업데이트 완료했으니 노트들 무빙시켜야함
-	if (MoveNote() == false)
-		return false;
+	if (setTIME == false)
+	{
+		if (MoveNote() == false)
+			return false;
+	}
 
 	ScrollExecute(true, true);
 	return true;
@@ -253,7 +262,7 @@ bool NoteListCtrl::InsertNote(ComplexString inpusString, bool bNoteShow)
 		return false;
 
 	CRect* itemRect = CalcNotePosition(m_viewNoteSize);
-	NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, m_noteInformationContainer->size() - 1);
+	NoteManagerStruct noteManagerStruct(&m_noteInformationContainer->back(), itemRect, bNoteShow, m_noteInformationContainer->size() - 1);
 
 	m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 	if (m_noteUIManager->SendMessages(PM_NOTE_INSERT) == false)
@@ -270,7 +279,7 @@ bool NoteListCtrl::CheckDeleteNote()
 {
 	ComplexVector<NoteInformationVO>::iterator iter = m_noteInformationContainer->begin();
 
-	NoteManagerStruct noteManagerStruct(NULL, NULL, -1);
+	NoteManagerStruct noteManagerStruct(NULL, NULL, false, -1);
 	int deleteCount = 0;
 	while (iter != m_noteInformationContainer->end())
 	{
@@ -318,7 +327,7 @@ bool NoteListCtrl::DeleteNote(int notSEQ)
 	if (UpdateScenarioList(&inNote) == false)
 		return false;
 
-	NoteManagerStruct noteManagerStruct(&inNote, NULL, -1);
+	NoteManagerStruct noteManagerStruct(&inNote, NULL, false, -1);
 	m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 	if (m_noteUIManager->SendMessages(PM_NOTE_DELETE) == false)
 		return false;
@@ -346,7 +355,7 @@ bool NoteListCtrl::MoveNote()
 		if (moveVO.IsSetTIMELINE() == false)
 		{
 			CRect* itemRect = CalcNotePosition(i - bDetectedTimelineCnt);
-			NoteManagerStruct noteManagerStruct(&moveVO, itemRect, i);
+			NoteManagerStruct noteManagerStruct(&moveVO, itemRect, true, i);
 			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 			if (m_noteUIManager->SendMessages(PM_NOTE_MOVE) == false)
 				return false;
@@ -450,6 +459,45 @@ CRect* NoteListCtrl::CalcNotePosition(int itemIndex)
 	return &m_calculateItemPos;
 }
 
+void NoteListCtrl::Run()
+{
+	while (this->IsRunning())
+	{
+		m_cond.Wait();
+		m_nDragTime = 0;
+		while (m_bDragTimer)
+		{
+			m_timerLock.Lock();
+			m_nDragTime += 20;
+			m_timerLock.UnLock();
+			ComplexThread::Sleep(20);
+			if (m_bDragTimer)
+			{
+				if (m_nDragTime >= 300)
+				{
+					if (m_downButton)
+					{
+						m_noteUIManager->InputDragStruct(&m_defaultDragData);
+						m_bDragProcessing = m_noteUIManager->SendMessages(PM_DRAG_DOWN);
+						if (!m_bDragProcessing)
+						{
+							m_noteUIManager->InputDragStruct(&m_defaultDragData);
+							if (m_noteUIManager->SendMessages(PM_DRAG_OFF) == false)
+								MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+						}
+
+						Log_Manager->OnPutLog("드래그 버튼 다운", LogType::LT_EVENT);
+					}
+
+					m_bDragTimer = false;
+					break;
+				}
+			}
+		}
+	}
+}
+
 bool NoteListCtrl::DragDown(MSG* pMsg)
 {
 	Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
@@ -464,21 +512,10 @@ bool NoteListCtrl::DragDown(MSG* pMsg)
 		m_defaultDragData.mousePos_X = pMsg->pt.x;
 		m_defaultDragData.mousePos_Y = pMsg->pt.y;
 		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
-		m_noteUIManager->InputDragStruct(&m_defaultDragData);
-		m_bDragProcessing = m_noteUIManager->SendMessages(PM_DRAG_DOWN);
-		if (!m_bDragProcessing)
-		{
-			m_noteUIManager->InputDragStruct(&m_defaultDragData);
-			if (m_noteUIManager->SendMessages(PM_DRAG_OFF) == false)
-				MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
-
-			return false;
-		}
-
-		Log_Manager->OnPutLog("드래그 버튼 다운", LogType::LT_EVENT);
-		return true;
+		m_bDragTimer = true;
+		m_cond.Signal();
 	}
-	return false;
+	return true;
 }
 
 bool NoteListCtrl::DragMove(MSG* pMsg)
@@ -495,8 +532,14 @@ bool NoteListCtrl::DragMove(MSG* pMsg)
 
 bool NoteListCtrl::DragUp(MSG* pMsg)
 {
+	m_bDragTimer = false;
+	m_nDragTime = 0;
+
 	if (!m_bDragProcessing)
+	{
+		m_downButton = nullptr;
 		return false;
+	}
 
 	if (m_downButton == nullptr)
 	{
@@ -507,6 +550,9 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 	Log_Manager->OnPutLog("드래그 버튼 업", LogType::LT_EVENT);
 
 	m_defaultDragData.buttonID = m_downButton->GetDlgCtrlID();
+	m_bDragProcessing = false;
+	m_downButton = nullptr;
+
 	m_noteUIManager->InputDragStruct(&m_defaultDragData);
 	if (m_noteUIManager->SendMessages(PM_DRAG_UP))
 	{
@@ -518,8 +564,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_NOTHING) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				return false;
 			}
 			Log_Manager->OnPutLog("선택한 위치 : 없음", LogType::LT_PROCESS);
@@ -530,8 +574,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_THIS_ATTACH) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				return false;
 			}
 			Log_Manager->OnPutLog("선택한 위치 : 현재 시나리오", LogType::LT_PROCESS);
@@ -544,8 +586,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			NoteInformationVO note;
 			if (m_noteDBManager->SelectOneNoteInformation(m_defaultDragData.noteSEQ, &note) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -558,8 +598,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_ATTACH) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -579,8 +617,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_THIS_TIMELINE_ATTACH) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -595,10 +631,9 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 			// 노트의 settimeline값을 true로 주고 노트 ui를 hide 시키고 감춘 노트인덱스까지 모두 이동시킨다.
 			NoteInformationVO inNote(m_defaultDragData.noteSEQ, m_thisDataStruct.scenarioData.GetSceSEQ(), true, false, "");
+			/*
 			if (m_noteDBManager->UpdateNoteInformationInSetTIMELINE(m_defaultDragData.noteSEQ, true) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -607,16 +642,29 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
-			}
+			}*/
 
 			Log_Manager->OnPutLog("현재 노트의 타임라인 설정 정보 DB 처리 완료", LogType::LT_PROCESS);
 
-			NoteManagerStruct noteManagerStruct(&inNote, NULL, m_defaultDragData.noteIndex);
+			NoteManagerStruct noteManagerStruct(&inNote, NULL, false, m_defaultDragData.noteIndex);
+			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
+			if (m_noteUIManager->SendMessages(PM_NOTE_VIEW_UPDATE) == false)
+			{
+				CURSOR_ARROW;
+
+				m_noteDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("해당 노트 화면 정보 업데이트 오류로 인한 롤백 처리", LogType::LT_PROCESS);
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+			Log_Manager->OnPutLog("해당 노트 화면 정보 업데이트", LogType::LT_PROCESS);
+
 			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
 			if (m_noteUIManager->SendMessages(PM_NOTE_HIDE) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -632,8 +680,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 			if (UpdateScenarioList(&inNote) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -650,8 +696,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			// 노트없앤 인덱스부터 에딧 이동
 			if (MoveNote() == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -675,8 +719,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			NoteInformationVO note;
 			if (m_noteDBManager->SelectOneNoteInformation(m_defaultDragData.noteSEQ, &note) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -689,8 +731,6 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 			m_noteUIManager->InputDragStruct(&m_defaultDragData);
 			if (m_noteUIManager->SendMessages(PM_DRAG_ANOTHER_TIMELINE_ATTACH) == false)
 			{
-				m_bDragProcessing = false;
-				m_downButton = nullptr;
 				CURSOR_ARROW;
 
 				m_noteDBManager->RollbackTransaction();
@@ -712,14 +752,10 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 	}
 	else
 	{
-		m_bDragProcessing = false;
-		m_downButton = nullptr;
 		Log_Manager->OnPutLog("드래그 버튼 업 이벤트 실패", LogType::LT_PROCESS);
 		return false;
 	}
 
-	m_bDragProcessing = false;
-	m_downButton = nullptr;
 	Log_Manager->OnPutLog("드래그 버튼 업 이벤트 완료", LogType::LT_PROCESS);
 
 	return true;
@@ -743,14 +779,33 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 		else
 		{
 			m_bMainScrollFocus = false;
-			if (DragDown(pMsg))
-				return TRUE;
+			DragDown(pMsg);
 		}
 	}
 	else if (pMsg->message == WM_LBUTTONUP)
 	{
-		if (DragUp(pMsg))
-			return TRUE;
+		if (pMsg->hwnd == this->GetSafeHwnd())
+		{
+			if (m_bDragProcessing)
+			{
+				if (DragUp(pMsg))
+					return TRUE;
+			}
+			else
+			{
+				m_defaultDragData.buttonID = -1;
+				m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
+				m_defaultDragData.pushShiftButton = m_bPushShiftButton;
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				m_noteUIManager->SendMessages(PM_NOTE_CLICK);
+				Log_Manager->OnPutLog("버튼 클릭 초기화", LogType::LT_EVENT);
+			}
+		}
+		else
+		{
+			if (DragUp(pMsg))
+				return TRUE;
+		}
 	}
 	else if (pMsg->message == WM_MOUSEMOVE)
 	{
@@ -761,12 +816,22 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 	{
 		if (pMsg->wParam == VK_CONTROL)
 		{
-			MSG msg;
-			msg.message = WM_KEYUP;
-			msg.wParam = VK_CONTROL;
-			GetParent()->PreTranslateMessage(&msg);
-			GetParent()->SetFocus();
-			return TRUE;
+			m_bPushCtrlButton = false;
+		}
+		else if (pMsg->wParam == VK_SHIFT)
+		{
+			m_bPushShiftButton = false;
+		}
+	}
+	else if (WM_KEYDOWN == pMsg->message)
+	{
+		if (pMsg->wParam == VK_CONTROL)
+		{
+			m_bPushCtrlButton = true;
+		}
+		else if (pMsg->wParam == VK_SHIFT)
+		{
+			m_bPushShiftButton = true;
 		}
 	}
 
@@ -780,18 +845,16 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
 		// 노트매니저에 체크박스 클릭 이벤트 날리기
+		m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
+		m_defaultDragData.pushShiftButton = m_bPushShiftButton;
 		m_defaultDragData.buttonID = LOWORD(wParam);
 		m_noteUIManager->InputDragStruct(&m_defaultDragData);
-		m_noteUIManager->SendMessages(PM_NOTE_CLICK);
-		Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
+		if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
+		{
+			Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
+		}
 		return 1;
 	}
-	//else if (HIWORD(wParam) == EN_CHANGE)
-	//{
-	//	int editID = LOWORD(wParam);
-	//	// 여기다가 에딧 변경작업 추가하기
-	//	// 음 컨트롤러하나 상속받아서 스레드 추가해서 작업할까..
-	//}
 
 	return CDialogEx::OnCommand(wParam, lParam);
 }

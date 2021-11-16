@@ -115,7 +115,7 @@ void BOKOOptionDlg::OnBnClickedButtonExportFile()
 			strWriteAnsiContent = noteInform.GetNotCONTENT();
 			//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
 			//ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
-			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer(), "txt");
 
 			iter++;
 		}

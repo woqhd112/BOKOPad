@@ -92,5 +92,13 @@ protected:
 	bool m_bDrawing;
 
 	bool m_bMainDlg;
+
+	HGLOBAL m_hBuffer;
+	Gdiplus::Bitmap* m_pBitmap;
+
+private:
+
+	bool LoadPNGResource(CImage& loadObjectIamage, UINT id, LPCTSTR pType, HMODULE hInst = NULL);
+
 };
 

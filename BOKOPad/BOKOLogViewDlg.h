@@ -34,6 +34,7 @@ private:
 	ComplexVector<ComplexString> m_processLog;
 	ComplexVector<ComplexString> m_operateLog;
 
+
 	void Initialize();
 	void LoadLog();
 	void AnalyzeLogData();
@@ -45,6 +46,7 @@ public:
 
 
 protected:
+
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
 	DECLARE_MESSAGE_MAP()

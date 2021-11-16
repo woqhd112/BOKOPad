@@ -249,7 +249,7 @@ bool TimelineUIManager::NoteInsert()
 		return false;
 	}
 
-	if (iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ) == false)
+	if (iter->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ, false) == false)
 	{
 		ReleaseDragStruct();
 		return false;

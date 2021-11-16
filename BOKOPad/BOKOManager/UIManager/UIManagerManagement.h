@@ -55,6 +55,7 @@ enum PerformanceMessage
 	PM_DRAG_ANOTHER_ATTACH,
 	PM_DRAG_THIS_TIMELINE_ATTACH,
 	PM_DRAG_ANOTHER_TIMELINE_ATTACH,
+	PM_NOTE_VIEW_UPDATE,
 	PM_NOTE_CLICK,
 	PM_NOTE_INSERT,
 	PM_NOTE_DELETE,
@@ -97,13 +98,15 @@ struct NoteManagerStruct
 	{
 
 	}
-	NoteManagerStruct(NoteInformationVO* noteData, CRect* noteRect, int noteIndex = -1)
+	NoteManagerStruct(NoteInformationVO* noteData, CRect* noteRect, bool noteView, int noteIndex = -1)
 		: noteData(noteData)
+		, noteView(noteView)
 		, noteIndex(noteIndex)
 		, noteRect(noteRect)
 	{
 
 	}
+	bool noteView;
 	int noteIndex;	// 노트 리스트의 인덱스 번호
 	NoteInformationVO* noteData;	// 저장할 노트 데이터
 	CRect* noteRect;
@@ -115,8 +118,10 @@ struct DragDataStruct
 	{
 	
 	}
-	DragDataStruct(int target_sceSEQ, int sceIndex, int noteSEQ, int sceSEQ, int noteIndex, int buttonID, ComplexString noteCONTENT, int mousePos_X, int mousePos_Y)
-		: target_sceSEQ(target_sceSEQ)
+	DragDataStruct(bool pushShift, bool pushCtrl, int target_sceSEQ, int sceIndex, int noteSEQ, int sceSEQ, int noteIndex, int buttonID, ComplexString noteCONTENT, int mousePos_X, int mousePos_Y)
+		: pushShiftButton(pushShift)
+		, pushCtrlButton(pushCtrl)
+		, target_sceSEQ(target_sceSEQ)
 		, sceIndex(sceIndex)
 		, noteSEQ(noteSEQ)
 		, sceSEQ(sceSEQ)
@@ -129,6 +134,8 @@ struct DragDataStruct
 
 	}
 
+	bool pushShiftButton = false;
+	bool pushCtrlButton = false;
 	int target_sceSEQ = -1;
 	int sceSEQ = -1;
 	int sceIndex = -1;
@@ -162,6 +169,7 @@ protected:
 
 	struct NotePadStruct
 	{
+		bool bOpenView;
 		CustomEdit* noteEdit;
 		CustomButton* noteButton;
 		CButton* noteCheckBox;

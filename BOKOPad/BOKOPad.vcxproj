@@ -334,6 +334,8 @@
     <Image Include="res\left.png" />
     <Image Include="res\Notepad.png" />
     <Image Include="res\right.png" />
+    <Image Include="res\test.png" />
+    <Image Include="res\test2.png" />
     <Image Include="res\title.png" />
     <Image Include="res\Word.png" />
   </ItemGroup>

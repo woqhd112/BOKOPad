@@ -156,8 +156,12 @@ void BOKOLogViewDlg::OnCbnDropdownComboLogDivide()
 
 void BOKOLogViewDlg::LoadLog()
 {
-	Log_Manager->OnLoadLogData();
-	m_logMap = Log_Manager->GetLogData();
+	if (Log_Manager->OnLoadLogData() == true)
+		m_logMap = Log_Manager->GetLogData();
+	else
+	{
+		OnClose();
+	}
 }
 
 void BOKOLogViewDlg::AnalyzeLogData()

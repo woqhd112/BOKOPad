@@ -542,7 +542,7 @@ void CBOKOPadDlg::OnScenarioExport()
 			strWriteAnsiContent = noteInform.GetNotCONTENT();
 			//ComplexUtilProcess::ANSIToUTF8(strConvertUTF8Content, strWriteAnsiContent);
 			//ComplexUtilProcess::ExportFile(strConvertUTF8Content, strFullPath.GetBuffer());
-			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer());
+			ComplexUtilProcess::ExportFile(strWriteAnsiContent, strFullPath.GetBuffer(), "txt");
 			Log_Manager->OnPutLog("노트 내보내기 성공", LogType::LT_PROCESS);
 			iter++;
 		}

@@ -32,9 +32,9 @@ public:
 	bool SignalLoadScenarioList();
 
 	bool SignalInsertTimeline(int notSEQ, POINT currentMPoint);
-	bool SignalInsertNote(ComplexString& strNoteContent, bool bNoteShow);
+	bool SignalInsertNote(ComplexString strNoteContent, bool bNoteShow);
 	bool SignalDeleteNote(int notSEQ);
-	bool SignalUpdateSetTIME(int notSEQ);
+	bool SignalUpdateSetTIME(int notSEQ, bool setTIME);
 	bool SignalReloadNoteList();
 	bool SignalReloadTimeline();
 	void SignalTimelineOneViewRefresh();
@@ -60,6 +60,7 @@ private:
 	bool m_bKeyDownEvent;
 
 	ScenarioManagerStruct m_thisDataStruct;
+	CString m_strTitleText;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
