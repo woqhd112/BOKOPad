@@ -23,6 +23,7 @@ public:
 	void Clear();
 	void SetTimelineText(ComplexString& strText, int noteSEQ);
 	void SetExpandCloseEvent();
+	virtual void Initialize();
 
 public:
 
@@ -38,6 +39,12 @@ private:
 
 	bool m_bExpandedProcess;
 	bool m_bPreviewProcess;
+
+protected:
+
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

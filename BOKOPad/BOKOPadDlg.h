@@ -24,7 +24,7 @@ public:
 protected:
 
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
+	virtual void Initialize();
 
 public:
 
@@ -42,15 +42,19 @@ private:
 	CButton m_btn_scenario_title_modify;
 	CButton m_btn_scenario_delete;
 
-
 	CustomMenu m_menu;
 
 // 구현입니다.
 
 private:
 
-	void Initialize();
 	void InsertScenario(ComplexString title, ComplexString index);
+
+protected:
+
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 protected:
 	HICON m_hIcon;

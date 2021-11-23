@@ -173,8 +173,12 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	CRect rect;
 	GetWindowRect(rect);
 
-	InitFrame("BOKOPad");
+	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+}
 
+void CBOKOPadDlg::Initialize()
+{
+	InitFrame("BOKOPad");
 	m_menu.Create(CustomMenu::IDD, this);
 	m_menu.ShowWindow(SW_HIDE);
 	m_menu.AddMenu("로그 확인", OnLogViewCallBackFunc);
@@ -182,7 +186,12 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 	m_menu.Init(true);
 
-	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+	SetWindowTextA("BOKOPad");
+
+	m_list_scenario_list.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+	m_list_scenario_list.InsertColumn(0, "", LVCFMT_LEFT, 0);
+	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 0);
+	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_LEFT, 350);
 }
 
 void CBOKOPadDlg::InsertScenario(ComplexString title, ComplexString index)
@@ -204,16 +213,6 @@ void CBOKOPadDlg::InsertScenario(ComplexString title, ComplexString index)
 	item2.pszText = (LPSTR)title.GetBuffer();
 	m_list_scenario_list.SetItem(&item2);
 
-}
-
-void CBOKOPadDlg::Initialize()
-{
-	SetWindowTextA("BOKOPad");
-
-	m_list_scenario_list.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-	m_list_scenario_list.InsertColumn(0, "", LVCFMT_LEFT, 0);
-	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 0);
-	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_LEFT, 350);
 }
 
 void CBOKOPadDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -684,4 +683,19 @@ BOOL CBOKOPadDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 
 
 	return __super::OnCommand(wParam, lParam);
+}
+
+bool CBOKOPadDlg::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool CBOKOPadDlg::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool CBOKOPadDlg::DragUp(MSG* pMsg)
+{
+	return false;
 }

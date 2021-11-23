@@ -2,7 +2,6 @@
 #include "CustomButton.h"
 #include "CustomStatic.h"
 #include "DrawButton/GdipButton.h"
-#include "ScrollProcess.h"
 
 #define DI_TEXT_COLOR RGB(255, 255, 255)
 #define DI_BK_COLOR RGB(68, 68, 68)
@@ -95,6 +94,13 @@ protected:
 
 	HGLOBAL m_hBuffer;
 	Gdiplus::Bitmap* m_pBitmap;
+
+	virtual void Initialize() = 0;
+	virtual bool DragDown(MSG* pMsg) = 0;
+	virtual bool DragMove(MSG* pMsg) = 0;
+	virtual bool DragUp(MSG* pMsg) = 0;
+
+	bool m_bDragProcessing;
 
 private:
 

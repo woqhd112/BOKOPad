@@ -216,7 +216,9 @@
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
     <ClInclude Include="CustomButton.h" />
     <ClInclude Include="CustomEdit.h" />
+    <ClInclude Include="CustomEditCtrl.h" />
     <ClInclude Include="CustomMenu.h" />
+    <ClInclude Include="CustomScroll.h" />
     <ClInclude Include="CustomStatic.h" />
     <ClInclude Include="DlgInterface.h" />
     <ClInclude Include="DrawButton\CGdiPlusBitmap.h" />
@@ -270,7 +272,6 @@
     <ClInclude Include="OfficeAutomation\Manager\WordAutomationManager.h" />
     <ClInclude Include="OneViewList.h" />
     <ClInclude Include="NoteListCtrl.h" />
-    <ClInclude Include="NoteListInterface.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollProcess.h" />
@@ -300,7 +301,9 @@
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
     <ClCompile Include="CustomButton.cpp" />
     <ClCompile Include="CustomEdit.cpp" />
+    <ClCompile Include="CustomEditCtrl.cpp" />
     <ClCompile Include="CustomMenu.cpp" />
+    <ClCompile Include="CustomScroll.cpp" />
     <ClCompile Include="CustomStatic.cpp" />
     <ClCompile Include="DlgInterface.cpp" />
     <ClCompile Include="DrawButton\GdipButton.cpp" />

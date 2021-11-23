@@ -313,13 +313,16 @@
     <ClInclude Include="DlgInterface.h">
       <Filter>UI\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="NoteListInterface.h">
-      <Filter>UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="ScrollProcess.h">
       <Filter>UI\ETC</Filter>
     </ClInclude>
     <ClInclude Include="CustomMenu.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomScroll.h">
+      <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomEditCtrl.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
   </ItemGroup>
@@ -421,6 +424,12 @@
       <Filter>UI\ETC</Filter>
     </ClCompile>
     <ClCompile Include="CustomMenu.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomScroll.cpp">
+      <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomEditCtrl.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
   </ItemGroup>

@@ -191,6 +191,14 @@ BOOL BOKOTimelineOneViewDlg::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
+	Initialize();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void BOKOTimelineOneViewDlg::Initialize()
+{
 	m_editFont.CreatePointFont(150, TEXT("굴림"));
 
 	m_edit_one_view.SetFont(&m_editFont);
@@ -206,15 +214,13 @@ BOOL BOKOTimelineOneViewDlg::OnInitDialog()
 	m_edit_one_view.MoveWindow(rect.left + 20, 80, rect.right - 40, 310);
 	m_list_one_view.MoveWindow(rect.left + 20, 80, rect.right - 40, 310);
 	m_list_one_view.ShowWindow(SW_SHOW);
+	m_list_one_view.Initialize();
 
 	m_btn_timeline_export.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_btn_expand_all.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_btn_preview.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 
 	InitFrame("한눈에 보기");
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
 
@@ -320,4 +326,19 @@ void BOKOTimelineOneViewDlg::OnSize(UINT nType, int cx, int cy)
 	__super::OnSize(nType, cx, cy);
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	Sizing(nType);
+}
+
+bool BOKOTimelineOneViewDlg::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOTimelineOneViewDlg::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOTimelineOneViewDlg::DragUp(MSG* pMsg)
+{
+	return false;
 }

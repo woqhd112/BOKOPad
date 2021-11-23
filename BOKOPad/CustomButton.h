@@ -24,7 +24,7 @@ public:
 	CustomButton();
 	virtual ~CustomButton();
 
-	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, CustomButtonType buttonType = CBT_DEFAULT, CustomButtonEvent buttonEvent = CBE_CLICK);
+	void Initialize(COLORREF color, FlatStyle style, CString strFontName = _T("고딕"), int nFontSize = 10, int nFontFlags = FW_NORMAL, CustomButtonType buttonType = CBT_DEFAULT, CustomButtonEvent buttonEvent = CBE_CLICK, bool buttonRgn = false);
 
 	void ResetClickButtonColor();
 	void ExecuteClickButtonColor();
@@ -43,6 +43,9 @@ private:
 
 	bool m_bClicked;
 	bool m_bDown;
+	CRgn m_rgnWnd;
+
+	void SetRgn();
 
 public:
 

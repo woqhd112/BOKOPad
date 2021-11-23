@@ -2,7 +2,6 @@
 #include "Resource.h"
 #include "TimelineDetail.h"
 #include "BOKOTimelineOneViewDlg.h"
-#include "NoteListInterface.h"
 #include "DlgInterface.h"
 
 class NoteUIManager;
@@ -15,7 +14,7 @@ class TimelineUIManager;
 #define LIMIT_TIMELINE_COUNT 50
 #define LIMIT_TIMELINE_COUNT_TEXT "50"
 
-class Timeline : public CDialogEx, public NoteListInterface, public DlgInterface
+class Timeline : public CDialogEx, public DlgInterface
 {
 	friend class TimelineUIManager;
 	friend class NoteUIManager;
@@ -121,6 +120,10 @@ private:
 	// 타임라인의 데이터 세로선의 rect 값을 담고있는 컨테이너
 	// key : timeIDX, value : rect
 	ComplexMap<int, CRect> m_timeLinePointMap;
+
+protected:
+
+	virtual void Initialize();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

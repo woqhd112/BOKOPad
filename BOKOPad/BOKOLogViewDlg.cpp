@@ -390,3 +390,18 @@ BOOL BOKOLogViewDlg::PreTranslateMessage(MSG* pMsg)
 	}
 	return __super::PreTranslateMessage(pMsg);
 }
+
+bool BOKOLogViewDlg::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOLogViewDlg::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOLogViewDlg::DragUp(MSG* pMsg)
+{
+	return false;
+}

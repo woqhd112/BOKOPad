@@ -56,13 +56,13 @@ void ScrollProcess::ExecuteScroll(int scrollLineFlag)
 	}
 
 
-	SCROLLINFO si;
-	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+	/*SCROLLINFO si;
+	si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
 	si.nMax = nScrollMax;
 	si.nPos = m_nScrollPos;
 	si.nPage = m_nWheelSize;
-	m_pProcessDlg->SetScrollInfo(SB_VERT, &si, TRUE);
+	m_pProcessDlg->SetScrollInfo(SB_VERT, &si, TRUE);*/
 }
 
 void ScrollProcess::ProcessScrollCount(int nSBCode)
@@ -85,83 +85,83 @@ void ScrollProcess::ProcessScrollCount(int nSBCode)
 		break;
 	}
 }
+//
+//bool ScrollProcess::OperateScroll(int nSBCode, int nPos)
+//{
+//	if (!m_bInit)
+//		return false;
+//
+//	int delta = 0;
+//	if (nSBCode == SB_LINEUP || nSBCode == SB_PAGEUP)
+//	{
+//		delta = -m_nWheelSize;
+//	}
+//	else if (nSBCode == SB_LINEDOWN || nSBCode == SB_PAGEDOWN)
+//	{
+//		delta = m_nWheelSize;
+//	}
+//	/*else if (nSBCode == SB_THUMBTRACK)
+//	{
+//		if (m_prePos < nPos && nPos % m_nWheelSize == 0)
+//		{
+//			delta = m_nWheelSize;
+//			nSBCode = SB_PAGEDOWN;
+//		}
+//		else if (m_prePos > nPos && nPos % m_nWheelSize == 0)
+//		{
+//			delta = -m_nWheelSize;
+//			nSBCode = SB_PAGEUP;
+//		}
+//	}
+//
+//	m_prePos = nPos;*/
+//
+//	if (m_nScrollProcessCount < 0)
+//		m_nScrollProcessCount = 0;
+//
+//	int scrollpos = m_nScrollPos + delta;
+//	int nMaxPos = m_nAllPageSize - m_nWheelSize;
+//
+//	if (scrollpos < 0)
+//	{
+//		delta = -m_nScrollPos;
+//	}
+//	else
+//	{
+//		if (scrollpos > nMaxPos)
+//		{
+//			delta = nMaxPos - m_nScrollPos;
+//		}
+//	}
+//
+//	if (delta != 0)
+//	{
+//		ProcessScrollCount(nSBCode);
+//		m_nScrollPos += delta;
+//		m_pProcessDlg->SetScrollPos(SB_VERT, m_nScrollPos, TRUE);
+//		m_pProcessDlg->ScrollWindow(0, -delta);
+//
+//		return true;
+//	}
+//
+//	return false;
+//}
 
-bool ScrollProcess::OperateScroll(int nSBCode, int nPos)
-{
-	if (!m_bInit)
-		return false;
-
-	int delta = 0;
-	if (nSBCode == SB_LINEUP || nSBCode == SB_PAGEUP)
-	{
-		delta = -m_nWheelSize;
-	}
-	else if (nSBCode == SB_LINEDOWN || nSBCode == SB_PAGEDOWN)
-	{
-		delta = m_nWheelSize;
-	}
-	/*else if (nSBCode == SB_THUMBTRACK)
-	{
-		if (m_prePos < nPos && nPos % m_nWheelSize == 0)
-		{
-			delta = m_nWheelSize;
-			nSBCode = SB_PAGEDOWN;
-		}
-		else if (m_prePos > nPos && nPos % m_nWheelSize == 0)
-		{
-			delta = -m_nWheelSize;
-			nSBCode = SB_PAGEUP;
-		}
-	}
-
-	m_prePos = nPos;*/
-
-	if (m_nScrollProcessCount < 0)
-		m_nScrollProcessCount = 0;
-
-	int scrollpos = m_nScrollPos + delta;
-	int nMaxPos = m_nAllPageSize - m_nWheelSize;
-
-	if (scrollpos < 0)
-	{
-		delta = -m_nScrollPos;
-	}
-	else
-	{
-		if (scrollpos > nMaxPos)
-		{
-			delta = nMaxPos - m_nScrollPos;
-		}
-	}
-
-	if (delta != 0)
-	{
-		ProcessScrollCount(nSBCode);
-		m_nScrollPos += delta;
-		m_pProcessDlg->SetScrollPos(SB_VERT, m_nScrollPos, TRUE);
-		m_pProcessDlg->ScrollWindow(0, -delta);
-
-		return true;
-	}
-
-	return false;
-}
-
-UINT ScrollProcess::OperateWheel(short zDelta)
-{
-
-	UINT nFlag;
-	if (zDelta > 0)	// 위스크롤
-	{
-		nFlag = SB_LINEUP;
-	}
-	else // 아래스크롤
-	{
-		nFlag = SB_LINEDOWN;
-	}
-
-	return nFlag;
-}
+//UINT ScrollProcess::OperateWheel(short zDelta)
+//{
+//
+//	UINT nFlag;
+//	if (zDelta > 0)	// 위스크롤
+//	{
+//		nFlag = SB_LINEUP;
+//	}
+//	else // 아래스크롤
+//	{
+//		nFlag = SB_LINEDOWN;
+//	}
+//
+//	return nFlag;
+//}
 
 int ScrollProcess::GetLineCount() const
 {

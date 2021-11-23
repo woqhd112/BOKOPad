@@ -1,16 +1,16 @@
 ﻿#pragma once
 #include "DlgInterface.h"
-#include "NoteListInterface.h"
 #include "ComplexThread.h"
 #include "ComplexCondition.h"
 #include "ComplexLock.h"
+#include "CustomScroll.h"
 
 #define HOVER_COLOR RGB(255, 255, 255)
 
 // OneViewList 대화 상자
 class NoteDBManager;
 
-class OneViewList : public CDialogEx, public NoteListInterface, public ComplexThread, public DlgInterface
+class OneViewList : public CDialogEx, public ComplexThread, public DlgInterface
 {
 	DECLARE_DYNAMIC(OneViewList)
 
@@ -21,6 +21,7 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_ONE_VIEW_LIST };
 
+	virtual void Initialize();
 	void AttachManager(NoteDBManager* dbmanager);
 	void SetScenarioManagerStruct(ScenarioManagerStruct thisDataStruct);
 
@@ -75,7 +76,7 @@ private:
 	// key : 인덱스
 	// value : 리스트 ui컨트롤
 	ComplexMap<int, OneViewListDataStruct> m_dataMap;
-	ScrollProcess scroll;
+	CustomScroll scroll;
 	CFont m_buttonFont;
 	CFont m_editFont;
 

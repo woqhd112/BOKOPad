@@ -35,7 +35,6 @@ private:
 	ComplexVector<ComplexString> m_operateLog;
 
 
-	void Initialize();
 	void LoadLog();
 	void AnalyzeLogData();
 	void InsertCountList(int index, ComplexString type, ComplexString text);
@@ -43,7 +42,12 @@ private:
 
 public:
 
+protected:
 
+	virtual void Initialize();
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 protected:
 

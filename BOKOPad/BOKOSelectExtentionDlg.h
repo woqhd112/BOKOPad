@@ -29,7 +29,9 @@ private:
 
 public:
 
+protected:
 
+	virtual void Initialize();
 
 
 protected:

@@ -38,11 +38,18 @@ public:
 	bool SignalReloadNoteList();
 	bool SignalReloadTimeline();
 	void SignalTimelineOneViewRefresh();
+	int SignalGetTimelineCount();
 
 private:
 
-	void Initialize();
 	void SetCtrlByTimelineCount();
+
+protected:
+
+	virtual void Initialize();
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
 
 private:
 

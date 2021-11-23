@@ -17,10 +17,8 @@ public:
 		int wheelSize;
 	};
 
-	void Init(ScrollInfo& info);
-	void ExecuteScroll(int scrollLineFlag);
-	bool OperateScroll(int nSBCode, int nPos);
-	UINT OperateWheel(short zDelta);
+	//bool OperateScroll(int nSBCode, int nPos);
+	//UINT OperateWheel(short zDelta);
 
 	int GetLineCount() const;
 	int GetScrollCount() const;
@@ -29,8 +27,10 @@ public:
 
 	void ResetScroll();
 
-private:
+protected:
 
+	void Init(ScrollInfo& info);
+	void ExecuteScroll(int scrollLineFlag);
 	void ProcessScrollCount(int nSBCode);
 
 	bool m_bInit;

@@ -32,6 +32,8 @@
 #define IDD_DIALOG_MENU                 171
 #define IDB_PNG_BK_SUB                  173
 #define IDB_PNG_BK                      174
+#define IDD_DIALOG_SCROLL_BAR           175
+#define IDD_DIALOG_EDIT                 178
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -72,6 +74,10 @@
 #define IDC_MFCBUTTON_WORD              1047
 #define IDC_STATIC_TIMELINE_COUNT       1049
 #define IDC_PROGRESS_TIMELINE_COUNT     1050
+#define IDC_MFCBUTTON_TOP               1051
+#define IDC_MFCBUTTON_BOTTOM            1053
+#define IDC_MFCBUTTON_MIDDLE            1054
+#define IDC_EDIT_CUSTOM                 1055
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -89,9 +95,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        175
+#define _APS_NEXT_RESOURCE_VALUE        180
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1051
+#define _APS_NEXT_CONTROL_VALUE         1056
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -107,6 +107,7 @@ bool TimelineUIManager::TimelineDragMove()
 			m_bCursorDetach = true;
 			CursorCountRestore(-1);
 			m_dragDlg->ShowWindow(SW_SHOW);
+			m_dragDlg->SetDragData(1);
 			m_bCursorAttach = false;
 		}
 	}

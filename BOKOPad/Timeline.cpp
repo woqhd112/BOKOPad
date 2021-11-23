@@ -76,6 +76,14 @@ BOOL Timeline::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	Initialize();
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void Timeline::Initialize()
+{
 	m_timeUIManager->AttachManager(this);
 	Log_Manager->OnPutLog("Timeline UI 매니저 연결", LogType::LT_PROCESS);
 
@@ -92,10 +100,10 @@ BOOL Timeline::OnInitDialog()
 	m_detailDlg.ShowWindow(SW_HIDE);
 	m_oneViewDlg.ShowWindow(SW_HIDE);
 
+	//m_oneViewDlg.Initialize();
+
 	Log_Manager->OnPutLog("한눈에보기 매니저 연결", LogType::LT_PROCESS);
 	InitFrame();
-	return TRUE;  // return TRUE unless you set the focus to a control
-				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
 void Timeline::AttachNoteManager(NoteUIManager* manager, NoteDBManager* dbmanager)
@@ -645,11 +653,31 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				m_timeDBManager->RollbackTransaction();
 				Log_Manager->OnPutLog("현재 노트 프로세스 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
-				if (ReloadTimeline() == false)
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;
 			}
+
+			NoteInformationVO inNote;
+			inNote.SetNotSEQ(m_defaultDragData.noteSEQ);
+			NoteManagerStruct noteManagerStruct(&inNote, NULL, true, -1);
+			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
+			if (m_noteUIManager->SendMessages(PM_SEQ_NOTE_VIEW_UPDATE) == false)
+			{
+				m_bDragProcessing = false;
+				CURSOR_ARROW;
+
+				m_timeDBManager->RollbackTransaction();
+				Log_Manager->OnPutLog("현재 타임라인 View 업데이트 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
+					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
+
+				return false;
+			}
+			Log_Manager->OnPutLog("타임라인 정보 업데이트", LogType::LT_PROCESS);
 
 			if (m_timeDBManager->DeleteTimeline(m_defaultDragData.noteSEQ, m_thisDataStruct.scenarioData.GetSceSEQ()) == false)
 			{
@@ -658,7 +686,8 @@ bool Timeline::DragUp(MSG* pMsg)
 
 				m_timeDBManager->RollbackTransaction();
 				Log_Manager->OnPutLog("현재 타임라인 DB 삭제 처리 오류로 인한 롤백 처리", LogType::LT_PROCESS);
-				if (ReloadTimeline() == false)
+				m_noteUIManager->InputDragStruct(&m_defaultDragData);
+				if (m_noteUIManager->SendMessages(PM_ROLLBACK_THIS_TIMELINE_ATTACH) == false)
 					MessageBox("데이터 충돌이 났습니다. 재 접속 부탁드립니다.");
 
 				return false;

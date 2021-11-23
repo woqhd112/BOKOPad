@@ -22,7 +22,7 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	, m_bPushCtrlButton(false)
 	, m_bPushShiftButton(false)
 {
-	m_bMainScrollFocus = true;
+	bMainScrollFocus = true;
 	m_viewNoteSize = 0;
 	Log_Manager->OnPutLog("노트 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("노트 DB 매니저 생성 완료", LogType::LT_PROCESS);
@@ -50,10 +50,12 @@ NoteListCtrl::~NoteListCtrl()
 		delete m_noteInformationContainer;
 		m_noteInformationContainer = nullptr;
 	}
+	scroll.DestroyWindow();
 	Log_Manager->OnPutLog("NoteListCtrl 소멸자 호출", LogType::LT_PROCESS);
 	this->Stop();
 	m_cond.Destroy();
 	this->Join();
+
 }
 
 void NoteListCtrl::DoDataExchange(CDataExchange* pDX)
@@ -83,21 +85,27 @@ BOOL NoteListCtrl::OnInitDialog()
 	m_noteUIManager->AttachManager(this);
 	Log_Manager->OnPutLog("노트 UI 매니저 연결", LogType::LT_PROCESS);
 
-	ScrollProcess::ScrollInfo info;
-	info.scrollExecuteCtrl = this;
-	info.wheelSize = EDIT_HEIGHT + 10;
-	scroll.Init(info);
-	scroll.ExecuteScroll(SCROLL_LINE_NOTHING);
+	GotoDlgCtrl(this);
+	InitFrame();
 
+	return FALSE;  // return TRUE unless you set the focus to a control
+				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void NoteListCtrl::Initialize()
+{
 	m_calculateItemPos.left = 0;
 	m_calculateItemPos.top = 0;
 	m_calculateItemPos.bottom = EDIT_HEIGHT;
 	m_calculateItemPos.right = EDIT_WIDTH;
 
-	GotoDlgCtrl(this);
-	InitFrame();
-	return FALSE;  // return TRUE unless you set the focus to a control
-				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+	ScrollProcess::ScrollInfo info;
+	info.scrollExecuteCtrl = this;
+	info.wheelSize = EDIT_HEIGHT + 10;
+
+	scroll.Create(CustomScroll::IDD, this);
+	scroll.SetScrollInfo(info);
+	scroll.ShowWindow(SW_HIDE);
 }
 
 bool NoteListCtrl::LoadDraggingNote()
@@ -500,9 +508,9 @@ void NoteListCtrl::Run()
 
 bool NoteListCtrl::DragDown(MSG* pMsg)
 {
-	Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
-	if (Scenario_UI_Manager->SendMessages(PM_IS_DRAGGING_MODE) == false)
-		return false;
+	//Scenario_UI_Manager->InputScenarioStruct(&m_thisDataStruct);
+	/*if (Scenario_UI_Manager->SendMessages(PM_IS_DRAGGING_MODE) == false)
+		return false;*/
 
 	UINT nButtonStyle = GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F;
 	//if (nButtonStyle == BS_PUSHBUTTON || nButtonStyle == BS_DEFPUSHBUTTON)
@@ -511,11 +519,21 @@ bool NoteListCtrl::DragDown(MSG* pMsg)
 		m_downButton = (CustomButton*)FromHandle(pMsg->hwnd);
 		m_defaultDragData.mousePos_X = pMsg->pt.x;
 		m_defaultDragData.mousePos_Y = pMsg->pt.y;
+		m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
+		m_defaultDragData.pushShiftButton = m_bPushShiftButton;
 		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
+		m_noteUIManager->InputDragStruct(&m_defaultDragData);
+		if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
+		{
+			Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
+		}
+
 		m_bDragTimer = true;
 		m_cond.Signal();
+
+		return true;
 	}
-	return true;
+	return false;
 }
 
 bool NoteListCtrl::DragMove(MSG* pMsg)
@@ -648,7 +666,7 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 
 			NoteManagerStruct noteManagerStruct(&inNote, NULL, false, m_defaultDragData.noteIndex);
 			m_noteUIManager->InputNoteStruct(&noteManagerStruct);
-			if (m_noteUIManager->SendMessages(PM_NOTE_VIEW_UPDATE) == false)
+			if (m_noteUIManager->SendMessages(PM_INSERT_NOTE_VIEW_UPDATE) == false)
 			{
 				CURSOR_ARROW;
 
@@ -767,19 +785,26 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (pMsg->message == WM_MOUSEWHEEL)
 	{
-		if (m_bMainScrollFocus)
+		if (bMainScrollFocus)
 		{
 			pMsg->hwnd = this->GetSafeHwnd();
 		}
+		//else
+		//	return TRUE;
 	}
 	else if (pMsg->message == WM_LBUTTONDOWN)
 	{
 		if (pMsg->hwnd == this->GetSafeHwnd())
-			m_bMainScrollFocus = true;
+		{
+			bMainScrollFocus = true;
+			this->SetFocus();
+		}
 		else
 		{
-			m_bMainScrollFocus = false;
-			DragDown(pMsg);
+			bMainScrollFocus = false;
+			if (DragDown(pMsg))
+				return TRUE;
+			//DragDown(pMsg);
 		}
 	}
 	else if (pMsg->message == WM_LBUTTONUP)
@@ -812,25 +837,29 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 		if (DragMove(pMsg))
 			return FALSE;
 	}
-	else if (WM_KEYUP == pMsg->message)
+	else if (pMsg->message == WM_KEYUP)
 	{
 		if (pMsg->wParam == VK_CONTROL)
 		{
+			Log_Manager->OnPutLog("컨트롤 버튼 Up", LogType::LT_EVENT);
 			m_bPushCtrlButton = false;
 		}
 		else if (pMsg->wParam == VK_SHIFT)
 		{
+			Log_Manager->OnPutLog("시프트 버튼 Up", LogType::LT_EVENT);
 			m_bPushShiftButton = false;
 		}
 	}
-	else if (WM_KEYDOWN == pMsg->message)
+	else if (pMsg->message == WM_KEYDOWN)
 	{
 		if (pMsg->wParam == VK_CONTROL)
 		{
+			Log_Manager->OnPutLog("컨트롤 버튼 Down", LogType::LT_EVENT);
 			m_bPushCtrlButton = true;
 		}
 		else if (pMsg->wParam == VK_SHIFT)
 		{
+			Log_Manager->OnPutLog("시프트 버튼 Down", LogType::LT_EVENT);
 			m_bPushShiftButton = true;
 		}
 	}
@@ -844,16 +873,16 @@ BOOL NoteListCtrl::OnCommand(WPARAM wParam, LPARAM lParam)
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (HIWORD(wParam) == BN_CLICKED)
 	{
-		// 노트매니저에 체크박스 클릭 이벤트 날리기
-		m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
-		m_defaultDragData.pushShiftButton = m_bPushShiftButton;
-		m_defaultDragData.buttonID = LOWORD(wParam);
-		m_noteUIManager->InputDragStruct(&m_defaultDragData);
-		if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
-		{
-			Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
-		}
-		return 1;
+		//// 노트매니저에 체크박스 클릭 이벤트 날리기
+		//m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
+		//m_defaultDragData.pushShiftButton = m_bPushShiftButton;
+		//m_defaultDragData.buttonID = LOWORD(wParam);
+		//m_noteUIManager->InputDragStruct(&m_defaultDragData);
+		//if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
+		//{
+		//	Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
+		//}
+		//return 1;
 	}
 
 	return CDialogEx::OnCommand(wParam, lParam);

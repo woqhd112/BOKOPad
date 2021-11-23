@@ -47,15 +47,19 @@ BOOL TimelineDetail::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
-	m_edit_detail_this.MoveWindow(20, 20, 170, 150);
-	m_edit_detail_target.MoveWindow(200, 20, 170, 150);
-
-	InitFrame();
+	Initialize();
 
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
+void TimelineDetail::Initialize()
+{
+	m_edit_detail_this.MoveWindow(20, 20, 170, 150);
+	m_edit_detail_target.MoveWindow(200, 20, 170, 150);
+
+	InitFrame();
+}
 
 void TimelineDetail::SetText(ComplexString thisText, ComplexString targetText)
 {
@@ -92,4 +96,20 @@ void TimelineDetail::OnPaint()
 					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
 
 	DrawFrame(&dc);
+}
+
+
+bool TimelineDetail::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool TimelineDetail::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool TimelineDetail::DragUp(MSG* pMsg)
+{
+	return false;
 }

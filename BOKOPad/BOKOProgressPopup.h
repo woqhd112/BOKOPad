@@ -33,6 +33,13 @@ private:
 
 	bool* m_bProcessing;
 
+protected:
+
+	virtual void Initialize();
+	virtual bool DragDown(MSG* pMsg);
+	virtual bool DragMove(MSG* pMsg);
+	virtual bool DragUp(MSG* pMsg);
+
 public:
 
 	bool AddProgressPos();

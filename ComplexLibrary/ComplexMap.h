@@ -39,6 +39,8 @@ namespace ComplexLibrary
 		ComplexVector<T> m_keys;
 		ComplexLinkedList<ComplexPair<T, N>> m_pairs;
 
+		ComplexLinkedList<ComplexPair<T, N>> m_rpairs;
+
 		int m_capacity;
 		int m_size;
 
@@ -65,6 +67,7 @@ namespace ComplexLibrary
 				ComplexPair<T, N> pair = ptr.m_pairs.at(i);
 				T key = pair.key;
 				m_pairs.push_tail(pair);
+				m_rpairs.push_head(pair);
 				m_keys.push_back(key);
 			}
 		}
@@ -81,6 +84,7 @@ namespace ComplexLibrary
 				ComplexPair<T, N> pair = ptr.m_pairs.at(i);
 				T key = pair.key;
 				m_pairs.push_tail(pair);
+				m_rpairs.push_head(pair);
 				m_keys.push_back(key);
 			}
 		}
@@ -97,6 +101,7 @@ namespace ComplexLibrary
 			{
 				std::pair<T, N> iter_pair = *iter;
 				m_pairs.push_tail(iter_pair.first, iter_pair.second);
+				m_rpairs.push_head(iter_pair.first, iter_pair.second);
 				m_keys.push_back(iter_pair.first);
 				iter++;
 			}
@@ -122,6 +127,7 @@ namespace ComplexLibrary
 			}
 			m_keys.push_back(key);
 			m_pairs.push_tail(pair);
+			m_rpairs.push_head(pair);
 			m_size++;
 		}
 
@@ -137,6 +143,7 @@ namespace ComplexLibrary
 			}
 			m_keys.push_back(key);
 			m_pairs.push_tail(ComplexPair<T, N>(key, value));
+			m_rpairs.push_head(ComplexPair<T, N>(key, value));
 			m_size++;
 		}
 
@@ -160,6 +167,7 @@ namespace ComplexLibrary
 				return false;
 
 			m_pairs.erase(i);
+			m_rpairs.erase(i);
 			m_keys.erase(i);
 			m_size--;
 
@@ -197,6 +205,16 @@ namespace ComplexLibrary
 			return iterator(nullptr);
 		}
 
+		iterator rbegin()
+		{
+			return iterator(m_rpairs.get_head());
+		}
+
+		iterator rend()
+		{
+			return iterator(nullptr);
+		}
+
 		// keyset 사용시 key에 담는 클래스에 < operator 구현할 것
 		ComplexSet<T> key_set()
 		{
@@ -230,6 +248,7 @@ namespace ComplexLibrary
 			m_size = 0;
 			m_keys.clear();
 			m_pairs.clear();
+			m_rpairs.clear();
 		}
 
 		ComplexMap<T, N>& operator = (ComplexMap<T, N>& other)
@@ -244,6 +263,7 @@ namespace ComplexLibrary
 				ComplexPair<T, N> pair = other.m_pairs.at(i);
 				T key = pair.key;
 				m_pairs.push_tail(pair);
+				m_rpairs.push_head(pair);
 				m_keys.push_back(key);
 			}
 
@@ -262,6 +282,7 @@ namespace ComplexLibrary
 			{
 				std::pair<T, N> iter_pair = *iter;
 				m_pairs.push_tail(iter_pair.first, iter_pair.second);
+				m_rpairs.push_head(iter_pair.first, iter_pair.second);
 				m_keys.push_back(iter_pair.first);
 				iter++;
 			}

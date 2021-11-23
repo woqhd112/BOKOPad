@@ -80,12 +80,16 @@ BOOL CustomMenu::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
-	InitFrame();
-
-	SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOMOVE);
+	Initialize();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void CustomMenu::Initialize()
+{
+	InitFrame();
+	SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOMOVE);
 }
 
 void CustomMenu::Init(bool bMainMenu)
@@ -311,4 +315,19 @@ BOOL CustomMenu::OnCommand(WPARAM wParam, LPARAM lParam)
 
 
 	return __super::OnCommand(wParam, lParam);
+}
+
+bool CustomMenu::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool CustomMenu::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool CustomMenu::DragUp(MSG* pMsg)
+{
+	return false;
 }

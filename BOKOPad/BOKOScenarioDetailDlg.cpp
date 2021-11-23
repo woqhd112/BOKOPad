@@ -134,6 +134,7 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 	m_stt_timeline_count.SetWindowTextA("0 / 100");
 	m_progress_timeline_count.SetPos(0);
 
+
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -149,10 +150,6 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager, m_list_notePad.m_noteDBManager);
 	Log_Manager->OnPutLog("타임라인 UI 매니저 연결", LogType::LT_PROCESS);
 
-	m_btn_note_input.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
-	m_btn_note_delete.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
-	m_progress_timeline_count.SetBarColor(RGB(72, 205, 22));
-	m_progress_timeline_count.SetBkColor(DI_SUB_BK_COLOR);
 	//m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
 	//m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
 
@@ -178,6 +175,12 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_btn_drag_mode.SetCheck(TRUE);
 	//m_btn_note_delete.EnableWindow(FALSE);
 	Log_Manager->OnPutLog("시나리오 화면 초기화", LogType::LT_PROCESS);
+
+	m_list_notePad.Initialize();
+	m_btn_note_input.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
+	m_btn_note_delete.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
+	m_progress_timeline_count.SetBarColor(RGB(72, 205, 22));
+	m_progress_timeline_count.SetBkColor(DI_SUB_BK_COLOR);
 
 	m_stt_timeline_count.ShowWindow(SW_HIDE);
 }
@@ -255,6 +258,11 @@ BOOL BOKOScenarioDetailDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 	
 
 	return CDialogEx::OnCommand(wParam, lParam);
+}
+
+int BOKOScenarioDetailDlg::SignalGetTimelineCount()
+{
+	return m_timeline.GetTimelineCount();
 }
 
 bool BOKOScenarioDetailDlg::SignalLoadScenarioList()
@@ -480,4 +488,20 @@ void BOKOScenarioDetailDlg::OnPaint()
 					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
 					   // 그리기 메시지에 대해서는 __super::OnPaint()을(를) 호출하지 마십시오.
 	DrawFrame(&dc);
+}
+
+
+bool BOKOScenarioDetailDlg::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOScenarioDetailDlg::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOScenarioDetailDlg::DragUp(MSG* pMsg)
+{
+	return false;
 }

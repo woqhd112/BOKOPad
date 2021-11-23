@@ -53,31 +53,7 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
-	this->SetBackgroundColor(RGB(255, 255, 255));
-
-	m_btn_notepad.LoadStdImage(IDB_PNG_NOTEPAD, "PNG");
-	m_btn_notepad.LoadHovImage(IDB_PNG_NOTEPAD, "PNG");
-	m_btn_notepad.LoadAltImage(IDB_PNG_NOTEPAD, "PNG");
-
-	m_btn_excel.LoadStdImage(IDB_PNG_EXCEL, "PNG");
-	m_btn_excel.LoadHovImage(IDB_PNG_EXCEL, "PNG");
-	m_btn_excel.LoadAltImage(IDB_PNG_EXCEL, "PNG");
-
-	m_btn_word.LoadStdImage(IDB_PNG_WORD, "PNG");
-	m_btn_word.LoadHovImage(IDB_PNG_WORD, "PNG");
-	m_btn_word.LoadAltImage(IDB_PNG_WORD, "PNG");
-
-	m_btn_excel.MoveWindow(20, 40, 64, 64);
-	m_btn_word.MoveWindow(140, 40, 64, 64);
-	m_btn_notepad.MoveWindow(260, 40, 64, 64);
-
-	m_btn_notepad2.ShowWindow(SW_HIDE);
-	m_btn_excel2.ShowWindow(SW_HIDE);
-	m_btn_word2.ShowWindow(SW_HIDE);
-
-	m_btn_excel2.SetFocus();
-
-	InitFrame("확장자 선택");
+	Initialize();
 
 	//SetClassLongA(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
 	//SetClassLongA(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
@@ -140,6 +116,34 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
+void BOKOSelectExtentionDlg::Initialize()
+{
+	this->SetBackgroundColor(RGB(255, 255, 255));
+
+	m_btn_notepad.LoadStdImage(IDB_PNG_NOTEPAD, "PNG");
+	m_btn_notepad.LoadHovImage(IDB_PNG_NOTEPAD, "PNG");
+	m_btn_notepad.LoadAltImage(IDB_PNG_NOTEPAD, "PNG");
+
+	m_btn_excel.LoadStdImage(IDB_PNG_EXCEL, "PNG");
+	m_btn_excel.LoadHovImage(IDB_PNG_EXCEL, "PNG");
+	m_btn_excel.LoadAltImage(IDB_PNG_EXCEL, "PNG");
+
+	m_btn_word.LoadStdImage(IDB_PNG_WORD, "PNG");
+	m_btn_word.LoadHovImage(IDB_PNG_WORD, "PNG");
+	m_btn_word.LoadAltImage(IDB_PNG_WORD, "PNG");
+
+	m_btn_excel.MoveWindow(20, 40, 64, 64);
+	m_btn_word.MoveWindow(140, 40, 64, 64);
+	m_btn_notepad.MoveWindow(260, 40, 64, 64);
+
+	m_btn_notepad2.ShowWindow(SW_HIDE);
+	m_btn_excel2.ShowWindow(SW_HIDE);
+	m_btn_word2.ShowWindow(SW_HIDE);
+
+	m_btn_excel2.SetFocus();
+
+	InitFrame("확장자 선택");
+}
 
 BOOL BOKOSelectExtentionDlg::PreTranslateMessage(MSG* pMsg)
 {

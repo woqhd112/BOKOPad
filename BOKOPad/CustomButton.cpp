@@ -40,7 +40,7 @@ END_MESSAGE_MAP()
 // CustomButton 메시지 처리기
 
 
-void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontName /*= _T("고딕")*/, int nFontSize /*= 10*/, int nFontFlags /*= FW_NORMAL*/, CustomButtonType buttonType, CustomButtonEvent buttonEvent)
+void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontName /*= _T("고딕")*/, int nFontSize /*= 10*/, int nFontFlags /*= FW_NORMAL*/, CustomButtonType buttonType, CustomButtonEvent buttonEvent, bool buttonRgn)
 {
 	this->EnableWindowsTheming(FALSE);
 	this->SetFaceColor(color);
@@ -62,6 +62,66 @@ void CustomButton::Initialize(COLORREF color, FlatStyle style, CString strFontNa
 	this->m_nFlatStyle = style;
 	this->m_buttonType = buttonType;
 	this->m_buttonEvent = buttonEvent;
+
+	//if (buttonRgn)
+		//SetRgn();
+
+}
+
+void CustomButton::SetRgn()
+{
+	CRect rc;
+	GetWindowRect(rc);
+
+	int width = rc.Width() + 1;
+	int height = rc.Height() + 1;
+
+	int x = 0, y = 0;
+	int round = 5;
+	CRgn rgnA, rgnB;
+
+	if ((HRGN)m_rgnWnd != NULL)
+		m_rgnWnd.DeleteObject();
+
+	m_rgnWnd.CreateRectRgn(x, y, width, height);
+
+	// 좌측 상단
+	rgnA.CreateEllipticRgn(x, y, round, round);
+	rgnB.CreateRectRgn(x, y, round / 2, round / 2);
+	rgnA.CombineRgn(&rgnB, &rgnA, RGN_DIFF);
+
+	m_rgnWnd.CombineRgn(&m_rgnWnd, &rgnA, RGN_DIFF);
+	rgnA.DeleteObject();
+	rgnB.DeleteObject();
+
+	// 우측 상단
+	rgnA.CreateEllipticRgn(width - round, y, width, round);
+	rgnB.CreateRectRgn(width - round / 2, y, width, round / 2);
+	rgnA.CombineRgn(&rgnB, &rgnA, RGN_DIFF);
+
+	m_rgnWnd.CombineRgn(&m_rgnWnd, &rgnA, RGN_DIFF);
+	rgnA.DeleteObject();
+	rgnB.DeleteObject();
+
+	// 좌측 하단
+	rgnA.CreateEllipticRgn(x, height, round, height - round);
+	rgnB.CreateRectRgn(x, height, round / 2, height - round / 2);
+	rgnA.CombineRgn(&rgnB, &rgnA, RGN_DIFF);
+
+	m_rgnWnd.CombineRgn(&m_rgnWnd, &rgnA, RGN_DIFF);
+	rgnA.DeleteObject();
+	rgnB.DeleteObject();
+
+	// 우측 하단
+	rgnA.CreateEllipticRgn(width - round, height, width, height - round);
+	rgnB.CreateRectRgn(width - round / 2, height, width, height - round / 2);
+	rgnA.CombineRgn(&rgnB, &rgnA, RGN_DIFF);
+
+	m_rgnWnd.CombineRgn(&m_rgnWnd, &rgnA, RGN_DIFF);
+	rgnA.DeleteObject();
+	rgnB.DeleteObject();
+
+	SetWindowRgn((HRGN)m_rgnWnd, TRUE);
 }
 
 void CustomButton::ResetClickButtonColor()

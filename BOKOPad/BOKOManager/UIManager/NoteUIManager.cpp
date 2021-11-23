@@ -23,7 +23,7 @@ NoteUIManager::~NoteUIManager()
 	while (iter != m_notePadManager.end())
 	{
 		NotePadStruct noteStruct = iter->value.value;
-		CustomEdit* noteEdit = noteStruct.noteEdit;
+		CustomEditCtrl* noteEdit = noteStruct.noteEdit;
 		CustomButton* noteButton = noteStruct.noteButton;
 		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
@@ -139,9 +139,13 @@ bool NoteUIManager::InvokeHelper(PerformanceMessage message)
 	{
 		bHelpSuccess = Clear();
 	}
-	else if (message == PM_NOTE_VIEW_UPDATE)
+	else if (message == PM_INSERT_NOTE_VIEW_UPDATE)
 	{
-		bHelpSuccess = NoteViewUpdate();
+		bHelpSuccess = InsertNoteViewUpdate();
+	}
+	else if (message == PM_SEQ_NOTE_VIEW_UPDATE)
+	{
+		bHelpSuccess = SeqNoteViewUpdate();
 	}
 	else if (message == PM_ROLLBACK_THIS_TIMELINE_ATTACH)
 	{
@@ -170,12 +174,12 @@ bool NoteUIManager::Insert()
 	noteManagerStruct.noteIndex = noteDataStruct->noteIndex;
 	noteManagerStruct.noteRect = noteDataStruct->noteRect;
 
-	CustomEdit* noteInputEdit = new CustomEdit(noteManagerStruct.noteData->GetNotSEQ());
+	CustomEditCtrl* noteInputEdit = new CustomEditCtrl(g_notePadID++, noteManagerStruct.noteData->GetNotSEQ());
 	CustomButton* noteInputButton = new CustomButton;
 	CButton* noteInputCheckBox = new CButton;
 	
 	bool bCreate1 = false, bCreate2 = false, bCreate3 = false;
-	bCreate1 = (bool)noteInputEdit->Create(WS_VISIBLE | ES_AUTOVSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
+	bCreate1 = (bool)noteInputEdit->Create(CustomEditCtrl::IDD, m_mainDlg);
 	bCreate2 = (bool)noteInputButton->Create("...", WS_VISIBLE | BS_CENTER | BS_OWNERDRAW, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 	bCreate3 = (bool)noteInputCheckBox->Create("", WS_VISIBLE | BS_AUTOCHECKBOX, CRect(0, 0, 0, 0), m_mainDlg, g_notePadID++);
 
@@ -184,6 +188,8 @@ bool NoteUIManager::Insert()
 	{
 		try
 		{
+			noteInputEdit->MoveWindows(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top + 10, noteManagerStruct.noteRect->Width(), noteManagerStruct.noteRect->Height());
+			noteInputEdit->Initialize();
 			noteInputEdit->SetFont(&m_setFont);
 			noteInputEdit->ExecuteTimer();
 			noteInputButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD, CBT_DEFAULT, CBE_TOGGLE);
@@ -219,8 +225,8 @@ bool NoteUIManager::Insert()
 		noteInputButton->SetWindowTextA("...");
 		noteInputButton->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 
-		noteInputEdit->MoveWindow(noteManagerStruct.noteRect->left, noteManagerStruct.noteRect->top + 10, noteManagerStruct.noteRect->Width(), noteManagerStruct.noteRect->Height());
-		noteInputEdit->SetWindowTextA(noteManagerStruct.noteData->GetNotCONTENT().GetBuffer());
+		
+		noteInputEdit->SetWindowTexts(noteManagerStruct.noteData->GetNotCONTENT().GetBuffer());
 		noteInputEdit->ShowWindow(noteManagerStruct.noteData->IsSetTIMELINE() ? SW_HIDE : SW_SHOW);
 	}
 	else if (!bCreate1 && bCreate2)
@@ -307,7 +313,7 @@ bool NoteUIManager::Delete()
 
 	CustomButton* deleteButton = iter2->value.value.noteButton;
 	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
-	CustomEdit* deleteEdit = iter2->value.value.noteEdit;
+	CustomEditCtrl* deleteEdit = iter2->value.value.noteEdit;
 	
 	delete deleteButton;
 	delete deleteCheckBox;
@@ -332,7 +338,7 @@ bool NoteUIManager::Clear()
 	while (iter != m_notePadManager.end())
 	{
 		NotePadStruct noteStruct = iter->value.value;
-		CustomEdit* noteEdit = noteStruct.noteEdit;
+		CustomEditCtrl* noteEdit = noteStruct.noteEdit;
 		CustomButton* noteButton = noteStruct.noteButton;
 		CButton* noteCheckBox = noteStruct.noteCheckBox;
 		noteEdit->DestroyWindow();
@@ -381,6 +387,7 @@ bool NoteUIManager::Show()
 	}
 
 	iter->value.value.noteButton->ShowWindow(SW_SHOW);
+	iter->value.value.noteCheckBox->SetCheck(FALSE);
 	// 드래그상태에서만 처리되는 함수이니 주석
 	//iter->value.value.noteCheckBox->ShowWindow(SW_SHOW);
 	iter->value.value.noteEdit->ShowWindow(SW_SHOW);
@@ -545,7 +552,7 @@ bool NoteUIManager::NoteCheckDelete()
 
 	CustomButton* deleteButton = iter2->value.value.noteButton;
 	CButton* deleteCheckBox = iter2->value.value.noteCheckBox;
-	CustomEdit* deleteEdit = iter2->value.value.noteEdit;
+	CustomEditCtrl* deleteEdit = iter2->value.value.noteEdit;
 
 	delete deleteButton;
 	delete deleteCheckBox;
@@ -735,7 +742,51 @@ bool NoteUIManager::NoteClick()
 	return true;
 }
 
-bool NoteUIManager::NoteViewUpdate()
+bool NoteUIManager::SeqNoteViewUpdate()
+{
+	NoteManagerStruct* noteDataStruct = BringNoteStruct();
+
+	if (noteDataStruct == nullptr)
+		return false;
+
+	if (m_notePadManager.empty())
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	int notSEQ = noteDataStruct->noteData->GetNotSEQ();
+	int notIndex = -1;
+
+	ComplexMap<int, int>::iterator iter1 = m_noteSeqMap.begin();
+
+	while (iter1 != m_noteSeqMap.end())
+	{
+		if (iter1->value.value == notSEQ)
+		{
+			notIndex = iter1->value.key;
+			break;
+		}
+		iter1++;
+	}
+
+	if (notIndex <= -1)
+	{
+		ReleaseNoteStruct();
+		return false;
+	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter2 = m_notePadManager.find(notIndex);
+	if (iter2 != m_notePadManager.end())
+	{
+		iter2->value.value.bOpenView = noteDataStruct->noteView;
+	}
+
+	ReleaseNoteStruct();
+	return true;
+}
+
+bool NoteUIManager::InsertNoteViewUpdate()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
 
@@ -758,6 +809,7 @@ bool NoteUIManager::NoteViewUpdate()
 		iter++;
 	}
 
+	ReleaseNoteStruct();
 	return true;
 }
 
@@ -831,6 +883,12 @@ bool NoteUIManager::DragDown()
 		}
 
 		iter1++;
+	}
+
+	if (checkCount < 1)
+	{
+		ReleaseDragStruct();
+		return false;
 	}
 
 	m_dragState = DUS_NOTHING;
@@ -1255,7 +1313,7 @@ bool NoteUIManager::DragAnotherAttach()
 				// notSEQ
 				seqContainer.push_back(iter5->value.value);
 				CString strContent;
-				iter4->value.value.noteEdit->GetWindowTextA(strContent);
+				iter4->value.value.noteEdit->GetWindowTexts(strContent);
 
 				// 타겟 시나리오에서 노트추가
 				if (iter3->value.value->SignalInsertNote(strContent.GetBuffer(), true) == false)
@@ -1337,7 +1395,11 @@ bool NoteUIManager::DragThisTimelineAttach()
 	CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
 	if (checkCount > 1)
 	{
-		iter2 = m_notePadManager.begin();
+		if (iter1->value.value->SignalGetTimelineCount() > 0)
+			iter2 = m_notePadManager.rbegin();
+		else
+			iter2 = m_notePadManager.begin();
+
 		while (iter2 != m_notePadManager.end())
 		{
 			if (iter2->value.value.noteCheckBox->GetCheck() == TRUE)
@@ -1345,7 +1407,6 @@ bool NoteUIManager::DragThisTimelineAttach()
 				ComplexMap<int, int>::iterator iter3 = m_noteSeqMap.find(iter2->value.key);
 				if (iter3 != m_noteSeqMap.end())
 				{
-					// pt 값 증가시켜야함.. 어떻게할까
 					if (iter1->value.value->SignalInsertTimeline(iter3->value.value, pt) == false)
 					{
 						ReleaseDragStruct();
@@ -1372,6 +1433,18 @@ bool NoteUIManager::DragThisTimelineAttach()
 	else
 	{
 		if (iter1->value.value->SignalInsertTimeline(dragDataStruct->noteSEQ, pt) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		if (iter1->value.value->SignalUpdateSetTIME(dragDataStruct->noteSEQ, true) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		if (iter1->value.value->SignalReloadNoteList() == false)
 		{
 			ReleaseDragStruct();
 			return false;
@@ -1436,91 +1509,110 @@ bool NoteUIManager::DragAnotherTimelineAttach()
 		return false;
 	}
 
-	ComplexVector<int> seqContainer;
 	ComplexMap<int, NotePadStruct>::iterator iter4 = m_notePadManager.begin();
+	int checkCount = 0;
 	while (iter4 != m_notePadManager.end())
 	{
 		if (iter4->value.value.noteCheckBox->GetCheck() == TRUE)
+			checkCount++;
+
+		iter4++;
+	}
+
+
+	if (checkCount > 1)
+	{
+		ComplexVector<int> seqContainer;
+		if (iter3->value.value->SignalGetTimelineCount() > 0)
+			iter4 = m_notePadManager.rbegin();
+		else
+			iter4 = m_notePadManager.begin();
+
+		while (iter4 != m_notePadManager.end())
 		{
-			ComplexMap<int, int>::iterator iter5 = m_noteSeqMap.find(iter4->value.key);
-			CString strText;
-			iter4->value.value.noteEdit->GetWindowTextA(strText);
-			seqContainer.push_back(iter5->value.value);
-			// 타겟 시나리오에서 노트추가
-			if (iter3->value.value->SignalInsertNote(strText.GetBuffer(), false) == false)
+			if (iter4->value.value.noteCheckBox->GetCheck() == TRUE)
 			{
-				ReleaseDragStruct();
-				return false;
-			}
-			int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
+				ComplexMap<int, int>::iterator iter5 = m_noteSeqMap.find(iter4->value.key);
+				CString strText;
+				iter4->value.value.noteEdit->GetWindowTexts(strText);
+				seqContainer.push_back(iter5->value.value);
+				// 타겟 시나리오에서 노트추가
+				if (iter3->value.value->SignalInsertNote(strText.GetBuffer(), false) == false)
+				{
+					ReleaseDragStruct();
+					return false;
+				}
+				int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
 
-			if (targetNoteContainerSize <= 0)
-			{
-				ReleaseDragStruct();
-				return false;
-			}
+				if (targetNoteContainerSize <= 0)
+				{
+					ReleaseDragStruct();
+					return false;
+				}
 
-			int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
-			CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
-			// 타겟 타임라인 추가
-			// pt 값 증가시켜야함.. 어떻게할까
-			if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+				int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
+				CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+				// 타겟 타임라인 추가
+				// pt 값 증가시켜야함.. 어떻게할까
+				if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+				{
+					ReleaseDragStruct();
+					return false;
+				}
+			}
+			iter4++;
+		}
+
+		for (int i = 0; i < seqContainer.size(); i++)
+		{
+			int notSEQ = seqContainer.at(i);
+			// 현재 시나리오에서 노트삭제
+			if (iter2->value.value->SignalDeleteNote(notSEQ) == false)
 			{
 				ReleaseDragStruct();
 				return false;
 			}
 		}
-		iter4++;
-	}
 
-	for (int i = 0; i < seqContainer.size(); i++)
-	{
-		int notSEQ = seqContainer.at(i);
-		// 현재 시나리오에서 노트삭제
-		if (iter2->value.value->SignalDeleteNote(notSEQ) == false)
+		if (iter2->value.value->SignalReloadNoteList() == false)
 		{
 			ReleaseDragStruct();
 			return false;
 		}
 	}
-
-	if (iter2->value.value->SignalReloadNoteList() == false)
+	else
 	{
-		ReleaseDragStruct();
-		return false;
+		// 현재 시나리오에서 노트삭제
+		if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		// 타겟 시나리오에서 노트추가
+		if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, false) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+		int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
+
+		if (targetNoteContainerSize <= 0)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
+
+		int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
+		CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
+		// 타겟 타임라인 추가
+		if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
+		{
+			ReleaseDragStruct();
+			return false;
+		}
 	}
-
-
-	//// 현재 시나리오에서 노트삭제
-	//if (iter2->value.value->SignalDeleteNote(dragDataStruct->noteSEQ) == false)
-	//{
-	//	ReleaseDragStruct();
-	//	return false;
-	//}
-
-	//// 타겟 시나리오에서 노트추가
-	//if (iter3->value.value->SignalInsertNote(dragDataStruct->noteCONTENT, false) == false)
-	//{
-	//	ReleaseDragStruct();
-	//	return false;
-	//}
-	//int targetNoteContainerSize = iter3->value.value->m_list_notePad.m_noteInformationContainer->size();
-
-	//if (targetNoteContainerSize <= 0)
-	//{
-	//	ReleaseDragStruct();
-	//	return false;
-	//}
-
-	//int lastInsertNoteSEQ = iter3->value.value->m_list_notePad.m_noteInformationContainer->at(targetNoteContainerSize - 1).GetNotSEQ();
-	//CPoint pt(dragDataStruct->mousePos_X, dragDataStruct->mousePos_Y);
-	//// 타겟 타임라인 추가
-	//if (iter3->value.value->SignalInsertTimeline(lastInsertNoteSEQ, pt) == false)
-	//{
-	//	ReleaseDragStruct();
-	//	return false;
-	//}
-
+	
 	ReleaseDragStruct();
 	return true;
 }

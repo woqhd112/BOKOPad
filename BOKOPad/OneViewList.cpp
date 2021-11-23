@@ -31,11 +31,13 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 
 OneViewList::~OneViewList()
 {
+	scroll.DestroyWindow();
 	DeleteAllItems();
 	Log_Manager->OnPutLog("OneViewList 소멸자 호출", LogType::LT_PROCESS);
 	this->Stop();
 	m_cond.Destroy();
 	this->Join();
+
 }
 
 void OneViewList::DoDataExchange(CDataExchange* pDX)
@@ -61,21 +63,27 @@ BOOL OneViewList::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
-	ScrollProcess::ScrollInfo info;
-	info.scrollExecuteCtrl = this;
-	info.wheelSize = 20;
-	scroll.Init(info);
-	scroll.ExecuteScroll(SCROLL_LINE_NOTHING);
 
+	InitFrame();
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void OneViewList::Initialize()
+{
 	this->SetBackgroundColor(RGB(250, 250, 250));
 
 	m_buttonFont.CreatePointFont(100, TEXT("굴림"));
 	m_editFont.CreatePointFont(120, TEXT("굴림"));
 
-	InitFrame();
+	ScrollProcess::ScrollInfo info;
+	info.scrollExecuteCtrl = this;
+	info.wheelSize = 20;
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+	scroll.Create(CustomScroll::IDD, this);
+	scroll.SetScrollInfo(info);
+	scroll.ShowWindow(SW_HIDE);
 }
 
 void OneViewList::AttachManager(NoteDBManager* dbmanager)
@@ -106,8 +114,8 @@ void OneViewList::InsertItem(ComplexString strText, int notSEQ)
 	createButton->Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	//createButton->SetFont(&m_buttonFont);
 	createEdit->SetFont(&m_editFont);
-	createButton->MoveWindow(1, m_variableItemStart_Y + 1, rect.Width() - 2, TAG_BUTTON_HEIGHT - 1);
-	createEdit->MoveWindow(1, m_variableItemStart_Y + 1 + 20, rect.Width() - 2, EXPAND_EDIT_HEIGHT);
+	createButton->MoveWindow(1, m_variableItemStart_Y + 1, rect.Width() - 20, TAG_BUTTON_HEIGHT - 1);
+	createEdit->MoveWindow(1, m_variableItemStart_Y + 1 + 20, rect.Width() - 20, EXPAND_EDIT_HEIGHT);
 	createEdit->ShowWindow(SW_HIDE);
 	createEdit->SetWindowTextA(strText.GetBuffer());
 

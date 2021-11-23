@@ -4,11 +4,19 @@
 #include "pch.h"
 #include "BOKOPad.h"
 #include "CustomEdit.h"
-
+#include "CustomEditCtrl.h"
+#include "NoteListCtrl.h"
 
 // CustomEdit
 
 IMPLEMENT_DYNAMIC(CustomEdit, CEdit)
+
+CustomEdit::CustomEdit()
+{
+	m_notSEQ = 0;
+	m_bSwapping = false;
+	m_nPrevLineCount = 0;
+}
 
 CustomEdit::CustomEdit(int notSEQ)
 {
@@ -27,15 +35,47 @@ CustomEdit::~CustomEdit()
 BEGIN_MESSAGE_MAP(CustomEdit, CEdit)
 	ON_CONTROL_REFLECT(EN_CHANGE, &CustomEdit::OnEnChange)
 	ON_WM_TIMER()
+	ON_WM_MOUSEWHEEL()
+	ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
+void CustomEdit::SetNotSEQ(int notSEQ)
+{
+	m_notSEQ = notSEQ;
+}
 
 // CustomEdit 메시지 처리기
 
 void CustomEdit::ExecuteTimer()
 {
 	SetTimer(NULL, 500, NULL);
+}
+
+void CustomEdit::ScrollSync()
+{
+	CustomEditCtrl* parent = (CustomEditCtrl*)GetParent();
+	parent->m_scroll.ResetScroll();
+
+	int nLineCount = GetLineCount();
+	if (nLineCount > 6)
+	{
+		int error = nLineCount - 6;
+		for (int i = 0; i < error; i++)
+			parent->m_scroll.ExecuteScroll(SCROLL_LINE_ADD);
+	}
+}
+
+void CustomEdit::SetScrollEditPos(int scrollUpAndDown)
+{
+	if (scrollUpAndDown == SB_PAGEDOWN || scrollUpAndDown == SB_LINEDOWN)
+	{
+		LineScroll(1);
+	}
+	else if (scrollUpAndDown == SB_PAGEUP || scrollUpAndDown == SB_LINEUP)
+	{
+		LineScroll(-1);
+	}
 }
 
 void CustomEdit::OnEnChange()
@@ -47,6 +87,30 @@ void CustomEdit::OnEnChange()
 
 	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
+	int nLineCount = GetLineCount();
+	if (nLineCount > 6)
+	{
+		// 현재 크기의 6줄 이상이면 스크롤 처리함
+		if (m_nPrevLineCount > nLineCount)
+		{
+			// 텍스트 지웠을때 라인이 감소하면..
+
+			int error = m_nPrevLineCount - nLineCount;
+			CustomEditCtrl* parent = (CustomEditCtrl*)GetParent();
+			for (int i = 0; i < error; i++)
+				parent->m_scroll.ExecuteScroll(SCROLL_LINE_ADD);
+		}
+		else if (m_nPrevLineCount < nLineCount)
+		{
+			// 텍스트 입력했을때 라인이 증가하면..
+
+			int error = nLineCount - m_nPrevLineCount;
+			CustomEditCtrl* parent = (CustomEditCtrl*)GetParent();
+			for (int i = 0; i < error; i++)
+				parent->m_scroll.ExecuteScroll(SCROLL_LINE_DELETE);
+		}
+	}
+
 	CString strText;
 	GetWindowTextA(strText);
 	// 텍스트가 비어있지 않을 때만 푸시
@@ -57,13 +121,15 @@ void CustomEdit::OnEnChange()
 		m_editQueue.unlock();
 		m_bSwapping = false;
 	}
+
+	m_nPrevLineCount = GetLineCount();
 }
 
 
 void CustomEdit::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
+	
 	m_editQueue.swapQueue();
 	m_bSwapping = true;
 	if (m_editQueue.emptyOutputQueue() == false)
@@ -78,4 +144,51 @@ void CustomEdit::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CEdit::OnTimer(nIDEvent);
+}
+
+
+
+BOOL CustomEdit::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (pMsg->message == WM_MOUSEWHEEL)
+	{
+		if (pMsg->hwnd == this->GetSafeHwnd())
+		{
+			CustomEditCtrl* parent = (CustomEditCtrl*)GetParent();
+			NoteListCtrl* gParent = (NoteListCtrl*)parent->GetParent();
+			if (gParent->bMainScrollFocus == false)
+			{
+				parent->SendMessageA(pMsg->message, pMsg->wParam, pMsg->lParam);
+				return TRUE;
+			}
+		}
+	}
+	else if (pMsg->message == WM_LBUTTONDOWN)
+	{
+		if (pMsg->hwnd == this->GetSafeHwnd())
+		{
+			NoteListCtrl* gParent = (NoteListCtrl*)GetParent()->GetParent();
+			gParent->bMainScrollFocus = false;
+			this->SetFocus();
+		}
+	}
+
+	return CEdit::PreTranslateMessage(pMsg);
+}
+
+
+BOOL CustomEdit::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	return CEdit::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+void CustomEdit::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CEdit::OnVScroll(nSBCode, nPos, pScrollBar);
 }

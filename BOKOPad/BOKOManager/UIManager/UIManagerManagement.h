@@ -4,6 +4,7 @@
 #include "Model/VO/NoteInformationVO.h"
 #include "Model/VO/TimelineVO.h"
 #include "..\..\CustomEdit.h"
+#include "..\..\CustomEditCtrl.h"
 #include "..\..\CustomButton.h"
 //#include <memory>
 
@@ -55,7 +56,8 @@ enum PerformanceMessage
 	PM_DRAG_ANOTHER_ATTACH,
 	PM_DRAG_THIS_TIMELINE_ATTACH,
 	PM_DRAG_ANOTHER_TIMELINE_ATTACH,
-	PM_NOTE_VIEW_UPDATE,
+	PM_INSERT_NOTE_VIEW_UPDATE,
+	PM_SEQ_NOTE_VIEW_UPDATE,
 	PM_NOTE_CLICK,
 	PM_NOTE_INSERT,
 	PM_NOTE_DELETE,
@@ -170,7 +172,7 @@ protected:
 	struct NotePadStruct
 	{
 		bool bOpenView;
-		CustomEdit* noteEdit;
+		CustomEditCtrl* noteEdit;
 		CustomButton* noteButton;
 		CButton* noteCheckBox;
 	};

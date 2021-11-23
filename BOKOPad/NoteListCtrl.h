@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "ComplexMap.h"
-#include "NoteListInterface.h"
 #include "DlgInterface.h"
 #include "ComplexThread.h"
 #include "ComplexCondition.h"
 #include "ComplexLock.h"
+#include "CustomScroll.h"
 
 class NoteDBManager;
 class NoteUIManager;
@@ -12,7 +12,7 @@ class NoteUIManager;
 
 #define BUTTON_COLOR RGB(68, 68, 68)
 
-class NoteListCtrl : public CDialogEx, public NoteListInterface, public DlgInterface, public ComplexThread
+class NoteListCtrl : public CDialogEx, public DlgInterface, public ComplexThread
 {
 	friend class NoteUIManager;
 	friend class BOKOScenarioDetailDlg;
@@ -26,6 +26,9 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DIALOG_NOTE_LIST_CTRL };
 
+	virtual void Initialize();
+	
+	bool bMainScrollFocus;
 
 private:
 
@@ -55,14 +58,14 @@ protected:
 
 public:
 
-	ScrollProcess scroll;
+	CustomScroll scroll;
+	//CustomScroll scrolls;
 
 private:
 
 	ComplexVector<NoteInformationVO>* m_noteInformationContainer;
 	NoteDBManager* m_noteDBManager;
 	NoteUIManager* m_noteUIManager;
-	bool m_bMainScrollFocus;
 
 	CRect m_calculateItemPos;
 
