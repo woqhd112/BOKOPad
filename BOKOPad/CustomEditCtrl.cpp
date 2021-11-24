@@ -12,11 +12,18 @@
 
 IMPLEMENT_DYNAMIC(CustomEditCtrl, CDialogEx)
 
-CustomEditCtrl::CustomEditCtrl(int id, int notSEQ, CWnd* pParent /*=nullptr*/)
+CustomEditCtrl::CustomEditCtrl(CWnd* pParent)
 	: CDialogEx(IDD_DIALOG_EDIT, pParent)
 	, DlgInterface(this, false)
 {
-	m_nEditID = id;
+	m_nNotSEQ = 0;
+	CreateFrame();
+}
+
+CustomEditCtrl::CustomEditCtrl(int notSEQ, CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_DIALOG_EDIT, pParent)
+	, DlgInterface(this, false)
+{
 	m_nNotSEQ = notSEQ;
 	CreateFrame();
 }
@@ -71,6 +78,11 @@ void CustomEditCtrl::Initialize()
 	info.wheelSize = 10;
 	m_scroll.SetScrollInfo(info, SC_DISCONNECT);
 	m_scroll.ShowWindow(SW_HIDE);
+}
+
+void CustomEditCtrl::LimitText(int textlimit)
+{
+	m_edit_custom.LimitText(textlimit);
 }
 
 void CustomEditCtrl::MoveWindows(int x, int y, int cx, int cy)
@@ -161,6 +173,12 @@ void CustomEditCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	//__super::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
+
+void CustomEditCtrl::SetData(int notSEQ)
+{
+	m_nNotSEQ = notSEQ;
+	m_edit_custom.SetNotSEQ(m_nNotSEQ);
+}
 
 BOOL CustomEditCtrl::PreTranslateMessage(MSG* pMsg)
 {

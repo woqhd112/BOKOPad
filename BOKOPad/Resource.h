@@ -34,6 +34,21 @@
 #define IDB_PNG_BK                      174
 #define IDD_DIALOG_SCROLL_BAR           175
 #define IDD_DIALOG_EDIT                 178
+#define IDD_DIALOG_SCENARIO_LIST_CTRL   180
+#define IDB_PNG_NOTE_ADD                194
+#define IDD_DIALOG_SCENARIO_ADD         196
+#define IDB_PNG_NOTE_BLACK              199
+#define IDB_PNG_NOTE_BLUE               200
+#define IDB_PNG_NOTE_BROWN              201
+#define IDB_PNG_NOTE_GREEN              202
+#define IDB_PNG_NOTE_ORANGE             203
+#define IDB_PNG_NOTE_PINK               204
+#define IDB_PNG_NOTE_PURPLE             205
+#define IDB_PNG_NOTE_RED                206
+#define IDB_PNG_NOTE_SKY                207
+#define IDB_PNG_NOTE_TABLE              208
+#define IDB_PNG11                       209
+#define IDB_PNG_NOTE_YELLOW             209
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -78,6 +93,9 @@
 #define IDC_MFCBUTTON_BOTTOM            1053
 #define IDC_MFCBUTTON_MIDDLE            1054
 #define IDC_EDIT_CUSTOM                 1055
+#define IDC_MFCBUTTON_ADD_ITEM          1056
+#define IDC_MFCBUTTON_SCENARIO_ADD      1057
+#define IDC_STATIC_SCENARIO             1058
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -95,9 +113,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        180
+#define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1056
+#define _APS_NEXT_CONTROL_VALUE         1059
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

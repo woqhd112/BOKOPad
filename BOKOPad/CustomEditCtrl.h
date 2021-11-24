@@ -11,7 +11,8 @@ class CustomEditCtrl : public CDialogEx, public DlgInterface
 	DECLARE_DYNAMIC(CustomEditCtrl)
 
 public:
-	CustomEditCtrl(int id, int notSEQ, CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	CustomEditCtrl(CWnd* pParent = nullptr);   // 표준 생성자입니다.
+	CustomEditCtrl(int notSEQ, CWnd* pParent = nullptr);   // 표준 생성자입니다.
 	virtual ~CustomEditCtrl();
 
 // 대화 상자 데이터입니다.
@@ -20,19 +21,21 @@ public:
 
 public:
 
+	void SetData(int notSEQ);
 	void SetFont(CFont* pFont, BOOL bRedraw = 1);
 
 	void ExecuteTimer();
 	void SetWindowTexts(LPCTSTR lpszString);
 	void GetWindowTexts(CString& lpszString);
 	void MoveWindows(int x, int y, int cx, int cy);
+	void LimitText(int textlimit);
 
 	virtual void Initialize();
 
+	CustomEdit m_edit_custom;
 
 private:
 
-	CustomEdit m_edit_custom;
 	CustomScroll m_scroll;
 
 	int m_nEditID;

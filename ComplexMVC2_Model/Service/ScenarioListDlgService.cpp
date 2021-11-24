@@ -113,3 +113,12 @@ bool ScenarioListDlgService::SelectInSceSEQScenarioListInSceTITLE(ComplexString 
 
 	return bSuccess;
 }
+
+bool ScenarioListDlgService::DeleteAllScenarioList()
+{
+	bool bSuccess = false;
+
+	bSuccess = m_scenarioDlgModel->DeleteAllScenarioList();
+
+	return bSuccess;
+}

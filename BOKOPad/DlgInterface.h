@@ -46,7 +46,7 @@ public:
 	~DlgInterface();
 
 	void InitFrame(CString strTitleText = "");
-	void CreateFrame();
+	void CreateFrame(bool ownDraw = false);
 	//void DrawFrame();
 	void DrawFrame(CPaintDC* in_pDC);
 	void Sizing(UINT nType);

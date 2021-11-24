@@ -24,6 +24,7 @@ public:
 	bool UpdateScenarioListInSceTITLE(ComplexString in_sceTITLE, int in_sceSEQ);
 	bool UpdateScenarioListInNotCNT(int in_notCNT, int in_sceSEQ);
 	bool SelectInSceSEQScenarioListInSceTITLE(ComplexString in_sceTITLE, int* out_sceSEQ);
+	bool DeleteAllScenarioList();
 
 private:
 

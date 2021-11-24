@@ -163,3 +163,12 @@ bool ScenarioListDlgModelImp::SelectInSceSEQScenarioListInSceTITLE(ComplexString
 
 	return bSuccess;
 }
+
+bool ScenarioListDlgModelImp::DeleteAllScenarioList()
+{
+	bool bSuccess = false;
+
+	bSuccess = DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[DELETE_ALL_SCENARIO_LIST_TABLE], NULL);
+
+	return bSuccess;
+}

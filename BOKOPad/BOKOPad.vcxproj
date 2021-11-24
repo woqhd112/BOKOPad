@@ -211,6 +211,7 @@
     <ClInclude Include="BOKOPad.h" />
     <ClInclude Include="BOKOPadDlg.h" />
     <ClInclude Include="BOKOProgressPopup.h" />
+    <ClInclude Include="BOKOScenarioAddDlg.h" />
     <ClInclude Include="BOKOScenarioDetailDlg.h" />
     <ClInclude Include="BOKOSelectExtentionDlg.h" />
     <ClInclude Include="BOKOTimelineOneViewDlg.h" />
@@ -273,8 +274,9 @@
     <ClInclude Include="OneViewList.h" />
     <ClInclude Include="NoteListCtrl.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PreProcessorDefineConst.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ScrollProcess.h" />
+    <ClInclude Include="ScenarioListCtrl.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Timeline.h" />
     <ClInclude Include="TimelineDetail.h" />
@@ -296,6 +298,7 @@
     <ClCompile Include="BOKOPad.cpp" />
     <ClCompile Include="BOKOPadDlg.cpp" />
     <ClCompile Include="BOKOProgressPopup.cpp" />
+    <ClCompile Include="BOKOScenarioAddDlg.cpp" />
     <ClCompile Include="BOKOScenarioDetailDlg.cpp" />
     <ClCompile Include="BOKOSelectExtentionDlg.cpp" />
     <ClCompile Include="BOKOTimelineOneViewDlg.cpp" />
@@ -317,7 +320,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ScrollProcess.cpp" />
+    <ClCompile Include="ScenarioListCtrl.cpp" />
     <ClCompile Include="Timeline.cpp" />
     <ClCompile Include="TimelineDetail.cpp" />
   </ItemGroup>
@@ -336,6 +339,18 @@
     <Image Include="res\Excel.png" />
     <Image Include="res\left.png" />
     <Image Include="res\Notepad.png" />
+    <Image Include="res\Note\Add.png" />
+    <Image Include="res\Note\Black.png" />
+    <Image Include="res\Note\Blue.png" />
+    <Image Include="res\Note\Brown.png" />
+    <Image Include="res\Note\Green.png" />
+    <Image Include="res\Note\Orange.png" />
+    <Image Include="res\Note\Pink.png" />
+    <Image Include="res\Note\purple.png" />
+    <Image Include="res\Note\Red.png" />
+    <Image Include="res\Note\Sky.png" />
+    <Image Include="res\Note\Table.png" />
+    <Image Include="res\Note\Yellow.png" />
     <Image Include="res\right.png" />
     <Image Include="res\test.png" />
     <Image Include="res\test2.png" />

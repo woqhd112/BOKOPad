@@ -17,6 +17,7 @@ public:
 	bool SelectInSceSEQNoteInformation(int in_sceSEQ, ComplexVector<NoteInformationVO>* out);
 	bool InsertNoteInformation(NoteInformationVO& in);
 	bool UpdateNoteInformationInNotContent(int in_notSEQ, ComplexString in_notCONTENT);
+	bool DeleteAllScenarioList();
 
 private:
 

@@ -174,7 +174,7 @@ bool NoteUIManager::Insert()
 	noteManagerStruct.noteIndex = noteDataStruct->noteIndex;
 	noteManagerStruct.noteRect = noteDataStruct->noteRect;
 
-	CustomEditCtrl* noteInputEdit = new CustomEditCtrl(g_notePadID++, noteManagerStruct.noteData->GetNotSEQ());
+	CustomEditCtrl* noteInputEdit = new CustomEditCtrl(noteManagerStruct.noteData->GetNotSEQ());
 	CustomButton* noteInputButton = new CustomButton;
 	CButton* noteInputCheckBox = new CButton;
 	

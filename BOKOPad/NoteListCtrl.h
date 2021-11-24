@@ -10,7 +10,6 @@ class NoteDBManager;
 class NoteUIManager;
 // NoteListCtrl 대화 상자
 
-#define BUTTON_COLOR RGB(68, 68, 68)
 
 class NoteListCtrl : public CDialogEx, public DlgInterface, public ComplexThread
 {

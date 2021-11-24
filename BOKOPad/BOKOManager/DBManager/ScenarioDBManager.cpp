@@ -115,3 +115,11 @@ bool ScenarioDBManager::UpdateNoteInformationInNotContent(int in_notSEQ, Complex
 
 	return false;
 }
+
+bool ScenarioDBManager::DeleteAllScenarioList()
+{
+	if (MVC_Controller->DeleteAllScenarioList())
+		return true;
+
+	return false;
+}

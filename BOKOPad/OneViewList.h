@@ -5,7 +5,6 @@
 #include "ComplexLock.h"
 #include "CustomScroll.h"
 
-#define HOVER_COLOR RGB(255, 255, 255)
 
 // OneViewList 대화 상자
 class NoteDBManager;

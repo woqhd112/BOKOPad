@@ -176,8 +176,10 @@ namespace ComplexLibrary
 
 		iterator find(T key)
 		{
-			if (m_size <= 0)
-				throw ComplexIndexOutOfBoundsException("map size is zero.", "ComplexMap", "find");
+			if (m_size < 0)
+				throw ComplexIndexOutOfBoundsException("map size is error.", "ComplexMap", "find");
+			else if (m_size == 0)
+				return iterator(nullptr);
 
 			int i = 0;
 			bool bFind = false;

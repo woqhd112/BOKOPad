@@ -6,9 +6,6 @@
 
 // BOKOScenarioDetailDlg 대화 상자
 
-#define LIMIT_TEXT_FORMAT "%d / 500"
-#define CAST_INT(x) int((x)) 
-
 class BOKOScenarioDetailDlg : public CDialogEx, public DlgInterface
 {
 	// 타임라인 접근권한
@@ -53,7 +50,9 @@ protected:
 
 private:
 
-	CEdit m_edit_note_input;
+	//CEdit m_edit_note_input;
+	CustomEditCtrl m_edit_note_input;
+
 	CustomButton m_btn_note_input;
 	CButton m_btn_drag_mode;
 	CustomButton m_btn_note_delete;
@@ -68,6 +67,8 @@ private:
 
 	ScenarioManagerStruct m_thisDataStruct;
 	CString m_strTitleText;
+
+	CFont m_setFont;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.

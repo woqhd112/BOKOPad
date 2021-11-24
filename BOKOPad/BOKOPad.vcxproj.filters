@@ -23,9 +23,6 @@
     <Filter Include="Default">
       <UniqueIdentifier>{ae71a8a3-8167-4acf-9177-d2fc6895acc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Scenario\Timeline">
-      <UniqueIdentifier>{d62dce94-0cef-4e05-8227-ead3c9682af7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{62975cb7-9ebb-4ed0-be2d-29b6abd4900e}</UniqueIdentifier>
     </Filter>
@@ -71,6 +68,12 @@
     <Filter Include="UI\CustomControl">
       <UniqueIdentifier>{5bec8b1c-58ab-4ff6-8221-4a44650b6159}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Scenario\Timeline">
+      <UniqueIdentifier>{d62dce94-0cef-4e05-8227-ead3c9682af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Scenario\NoteList">
+      <UniqueIdentifier>{23d84cc9-7c5c-4ee6-8592-8bc0017cf52d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOKOOptionDlg.h">
@@ -83,9 +86,6 @@
       <Filter>UI\Option</Filter>
     </ClInclude>
     <ClInclude Include="BOKOScenarioDetailDlg.h">
-      <Filter>UI\Scenario</Filter>
-    </ClInclude>
-    <ClInclude Include="NoteListCtrl.h">
       <Filter>UI\Scenario</Filter>
     </ClInclude>
     <ClInclude Include="BOKODragDlg.h">
@@ -313,9 +313,6 @@
     <ClInclude Include="DlgInterface.h">
       <Filter>UI\ETC</Filter>
     </ClInclude>
-    <ClInclude Include="ScrollProcess.h">
-      <Filter>UI\ETC</Filter>
-    </ClInclude>
     <ClInclude Include="CustomMenu.h">
       <Filter>UI\CustomControl</Filter>
     </ClInclude>
@@ -324,6 +321,18 @@
     </ClInclude>
     <ClInclude Include="CustomEditCtrl.h">
       <Filter>UI\CustomControl</Filter>
+    </ClInclude>
+    <ClInclude Include="NoteListCtrl.h">
+      <Filter>UI\Scenario\NoteList</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioListCtrl.h">
+      <Filter>UI\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="PreProcessorDefineConst.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="BOKOScenarioAddDlg.h">
+      <Filter>UI\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -337,9 +346,6 @@
       <Filter>UI\Option</Filter>
     </ClCompile>
     <ClCompile Include="BOKOScenarioDetailDlg.cpp">
-      <Filter>UI\Scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="NoteListCtrl.cpp">
       <Filter>UI\Scenario</Filter>
     </ClCompile>
     <ClCompile Include="BOKODragDlg.cpp">
@@ -420,9 +426,6 @@
     <ClCompile Include="DlgInterface.cpp">
       <Filter>UI\ETC</Filter>
     </ClCompile>
-    <ClCompile Include="ScrollProcess.cpp">
-      <Filter>UI\ETC</Filter>
-    </ClCompile>
     <ClCompile Include="CustomMenu.cpp">
       <Filter>UI\CustomControl</Filter>
     </ClCompile>
@@ -431,6 +434,15 @@
     </ClCompile>
     <ClCompile Include="CustomEditCtrl.cpp">
       <Filter>UI\CustomControl</Filter>
+    </ClCompile>
+    <ClCompile Include="NoteListCtrl.cpp">
+      <Filter>UI\Scenario\NoteList</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioListCtrl.cpp">
+      <Filter>UI\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOScenarioAddDlg.cpp">
+      <Filter>UI\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +493,42 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="res\test2.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Blue.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Brown.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Green.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Orange.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Pink.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\purple.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Red.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Sky.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Table.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Yellow.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Note\Add.png">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

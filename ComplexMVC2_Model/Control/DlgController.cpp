@@ -107,6 +107,11 @@ bool DlgController::SelectInSceSEQScenarioListInSceTITLE()
 	return m_scenarioListDlgService->SelectInSceSEQScenarioListInSceTITLE(scenario.GetSceTITLE());
 }
 
+bool DlgController::DeleteAllScenarioList()
+{
+	return m_scenarioListDlgService->DeleteAllScenarioList();
+}
+
 bool DlgController::SelectInSceSEQNoteInformation()
 {
 	NoteInformationVO note;

@@ -37,6 +37,8 @@ public:
 	bool UpdateScenarioListInNotCNT();
 	// 특정 시나리오를 시나리오 타이틀로 로드
 	bool SelectInSceSEQScenarioListInSceTITLE();
+	// 시나리오 리스트 전부 삭제
+	bool DeleteAllScenarioList();
 
 	// note information control
 	// 시나리오 시퀀스로 노트정보 로드

@@ -39,7 +39,7 @@ DlgInterface::~DlgInterface()
 
 }
 
-void DlgInterface::CreateFrame()
+void DlgInterface::CreateFrame(bool ownDraw)
 {
 #ifdef PATH_RESOURCE
 	/*TCHAR* szTitleFileName1 = "C:\\Users\\user\\Desktop\\워크스페이스\\work_vs2017\\BOKOPad\\BOKOPad\\res\\title.png";
@@ -61,8 +61,15 @@ void DlgInterface::CreateFrame()
 	m_pngBackground2.Load(szTitleFileName6);
 
 #else
-	LoadPNGResource(m_pngBackground1, IDB_PNG_BK, "PNG");
-	LoadPNGResource(m_pngBackground2, IDB_PNG_BK_SUB, "PNG");
+	if (ownDraw)
+	{
+		LoadPNGResource(m_pngBackground2, IDB_PNG_NOTE_TABLE, "PNG");
+	}
+	else
+	{
+		LoadPNGResource(m_pngBackground1, IDB_PNG_BK, "PNG");
+		LoadPNGResource(m_pngBackground2, IDB_PNG_BK_SUB, "PNG");
+	}
 #endif
 }
 

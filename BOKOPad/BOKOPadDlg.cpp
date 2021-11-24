@@ -67,30 +67,19 @@ CBOKOPadDlg::~CBOKOPadDlg()
 {
 	Scenario_UI_Manager->SendMessages(PM_SCENARIO_CLEAR);
 	Log_Manager->OnPutLog("BOKOPadDlg 소멸자 호출", LogType::LT_PROCESS);
+
+	m_scenario.DestroyWindow();
 }
 
 void CBOKOPadDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST_SCENARIO_LIST, m_list_scenario_list);
-	DDX_Control(pDX, IDC_BUTTON_OPTION, m_btn_option);
-	DDX_Control(pDX, IDC_EDIT_INPUT_SCENARIO, m_edit_input_scenario);
-	DDX_Control(pDX, IDC_BUTTON_INPUT_SCENARIO, m_btn_input_scenario);
-	DDX_Control(pDX, IDC_BUTTON_SCENARIO_TITLE_MODIFY, m_btn_scenario_title_modify);
-	DDX_Control(pDX, IDC_BUTTON_SCENARIO_DELETE, m_btn_scenario_delete);
 }
 
 BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_OPTION, &CBOKOPadDlg::OnBnClickedButtonOption)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnLvnItemchangedListScenarioList)
-	ON_BN_CLICKED(IDC_BUTTON_INPUT_SCENARIO, &CBOKOPadDlg::OnBnClickedButtonInputScenario)
-	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_TITLE_MODIFY, &CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify)
-	ON_BN_CLICKED(IDC_BUTTON_SCENARIO_DELETE, &CBOKOPadDlg::OnBnClickedButtonScenarioDelete)
-	ON_NOTIFY(NM_DBLCLK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMDblclkListScenarioList)
-	ON_NOTIFY(NM_CLICK, IDC_LIST_SCENARIO_LIST, &CBOKOPadDlg::OnNMClickListScenarioList)
 	ON_COMMAND(ID_SCENARIO_EXPORT, &CBOKOPadDlg::OnScenarioExport)
 	ON_COMMAND(ID_SCENARIO_IMPORT, &CBOKOPadDlg::OnScenarioImport)
 	ON_COMMAND(ID_PROGRAM_CLOSE, &CBOKOPadDlg::OnProgramClose)
@@ -141,31 +130,7 @@ BOOL CBOKOPadDlg::OnInitDialog()
 	Initialize();
 	Log_Manager->OnPutLog("메인 화면 초기화", LogType::LT_PROCESS);
 	
-	CURSOR_WAIT;
-	// 옵션 로드
-	if (Scenario_DB_Manager->SelectAllPadOption(&m_mainOptionData))
-		Log_Manager->OnPutLog("옵션 정보 로드", LogType::LT_PROCESS);
-
-	m_btn_option.ShowWindow(SW_HIDE);
-
-	// 시나리오 리스트 로드
-	if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
-	{
-		ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
-
-		while (iter != m_loadScenarioList.end())
-		{
-			ComplexString index = ComplexConvert::IntToString(iter->value.GetSceSEQ());
-			ComplexString title = iter->value.GetSceTITLE();
-			InsertScenario(title, index);
-			iter++;
-		}
-		Log_Manager->OnPutLog("시나리오 정보 로드", LogType::LT_PROCESS);
-	}
-	CURSOR_ARROW;
-
-	GotoDlgCtrl(&m_edit_input_scenario);
-	m_edit_input_scenario.LimitText(20);
+	m_scenario.LoadScenarioList();
 
 	Scenario_UI_Manager->AttachManager(this);
 	Log_Manager->OnPutLog("시나리오 UI 매니저 연결", LogType::LT_PROCESS);
@@ -178,6 +143,9 @@ BOOL CBOKOPadDlg::OnInitDialog()
 
 void CBOKOPadDlg::Initialize()
 {
+	this->SetWindowPos(NULL, 0, 0, MAIN_DLG_SIZE_WIDTH, MAIN_DLG_SIZE_HEIGHT, SWP_NOMOVE);
+
+
 	InitFrame("BOKOPad");
 	m_menu.Create(CustomMenu::IDD, this);
 	m_menu.ShowWindow(SW_HIDE);
@@ -188,30 +156,9 @@ void CBOKOPadDlg::Initialize()
 
 	SetWindowTextA("BOKOPad");
 
-	m_list_scenario_list.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-	m_list_scenario_list.InsertColumn(0, "", LVCFMT_LEFT, 0);
-	m_list_scenario_list.InsertColumn(1, "순번", LVCFMT_CENTER, 0);
-	m_list_scenario_list.InsertColumn(2, "시나리오 명", LVCFMT_LEFT, 350);
-}
-
-void CBOKOPadDlg::InsertScenario(ComplexString title, ComplexString index)
-{
-	int listSize = m_list_scenario_list.GetItemCount();
-	m_list_scenario_list.InsertItem(listSize, _T(""));
-	
-	LVITEM item1;
-	item1.mask = LVIF_TEXT;
-	item1.iItem = listSize;
-	item1.iSubItem = 1;
-	item1.pszText = (LPSTR)index.GetBuffer();
-	m_list_scenario_list.SetItem(&item1);
-
-	LVITEM item2;
-	item2.mask = LVIF_TEXT;
-	item2.iItem = listSize;
-	item2.iSubItem = 2;
-	item2.pszText = (LPSTR)title.GetBuffer();
-	m_list_scenario_list.SetItem(&item2);
+	m_scenario.Create(ScenarioListCtrl::IDD, this);
+	m_scenario.ShowWindow(SW_SHOW);
+	m_scenario.MoveWindow(50, 50, TABLE_SIZE_WIDTH, TABLE_SIZE_HEIGHT);
 
 }
 
@@ -268,227 +215,20 @@ HCURSOR CBOKOPadDlg::OnQueryDragIcon()
 }
 
 
-
-void CBOKOPadDlg::OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	pNMLV->iItem;
-	pNMLV->iSubItem;
-	*pResult = 0;
-}
-
-
-void CBOKOPadDlg::OnBnClickedButtonInputScenario()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString getText;
-	m_edit_input_scenario.GetWindowTextA(getText);
-
-	if (getText.IsEmpty())
-		return;
-
-	ComplexString inputScenarioTitle = getText.GetBuffer();
-	ComplexString logMsg = inputScenarioTitle + " 시나리오 DB 등록 성공";
-	CURSOR_WAIT;
-	if (Scenario_DB_Manager->InsertScenarioList(inputScenarioTitle))
-	{
-		Log_Manager->OnPutLog(inputScenarioTitle + " 시나리오 DB 등록 성공", LogType::LT_PROCESS);
-		ComplexString index = ComplexConvert::IntToString(m_list_scenario_list.GetItemCount() + 1);
-		InsertScenario(inputScenarioTitle, index);
-		m_edit_input_scenario.SetWindowTextA("");
-		m_edit_input_scenario.SetFocus();
-
-		m_loadScenarioList.clear();
-		if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
-			Log_Manager->OnPutLog("시나리오 정보 갱신", LogType::LT_PROCESS);
-
-		Log_Manager->OnPutLog(inputScenarioTitle + " 시나리오 등록 성공", LogType::LT_EVENT);
-	}
-	CURSOR_ARROW;
-}
-
-
 BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	if (WM_KEYDOWN == pMsg->message)
 	{
-		if (pMsg->wParam == VK_RETURN)
-		{
-			OnBnClickedButtonInputScenario();
-			return TRUE;
-		}
-		else if (pMsg->wParam == VK_ESCAPE)
+		if (pMsg->wParam == VK_ESCAPE)
 			return TRUE;
 	}
 	else if (WM_LBUTTONDOWN == pMsg->message)
 	{
-		if (pMsg->hwnd == m_list_scenario_list) {}
-		else if (pMsg->hwnd == m_btn_scenario_delete) {}
-		else if (pMsg->hwnd == m_btn_scenario_title_modify) {}
-		else
-		{
-			m_list_scenario_list.SetSelectionMark(-1);
-			m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
-			TitleBarActiveMove(pMsg);
-		}
+		TitleBarActiveMove(pMsg);
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
-}
-
-
-void CBOKOPadDlg::OnBnClickedButtonOption()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	//BOKOOptionDlg optionDlg;
-	//optionDlg.DoModal();
-}
-
-
-void CBOKOPadDlg::OnBnClickedButtonScenarioTitleModify()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	if (m_loadScenarioList.empty())
-		return;
-
-	int mark = m_list_scenario_list.GetSelectionMark();
-
-	mark;
-}
-
-
-void CBOKOPadDlg::OnBnClickedButtonScenarioDelete()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	if (m_loadScenarioList.empty())
-		return;
-
-	CURSOR_WAIT;
-	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_SCENARIO_DELETE]);
-
-	int selectedCount = m_list_scenario_list.GetSelectedCount();
-	POSITION selectPos = m_list_scenario_list.GetFirstSelectedItemPosition();
-
-	m_list_scenario_list.SetRedraw(FALSE);
-	ComplexVector<int> selectVector;
-	while (selectPos)
-	{
-		int selectedIndex = m_list_scenario_list.GetNextSelectedItem(selectPos);
-		selectVector.push_back(selectedIndex);
-	}
-
-	ComplexString logMsg;
-	bool bTransaction = false;
-	for (int i = selectVector.size() - 1; i >= 0; i--)
-	{
-		int deleteIndex = selectVector.at(i);
-		ScenarioListVO selectedScenario = m_loadScenarioList.at(deleteIndex);
-		if (Scenario_DB_Manager->DeleteScenarioList(selectedScenario.GetSceSEQ()) == false)
-		{
-			bTransaction = true;
-			break;
-		}
-
-		logMsg.Format("%d", deleteIndex + 1);
-		Log_Manager->OnPutLog(logMsg + "번째 시나리오 DB 삭제 성공", LogType::LT_PROCESS);
-		Log_Manager->OnPutLog(logMsg + "번째 시나리오 삭제 성공", LogType::LT_EVENT);
-		m_list_scenario_list.DeleteItem(deleteIndex);
-		m_loadScenarioList.erase(deleteIndex);
-	}
-
-	m_list_scenario_list.SetRedraw(TRUE);
-	m_list_scenario_list.Invalidate();
-
-	if (!bTransaction)
-	{
-		if (m_loadScenarioList.empty())
-		{
-			Scenario_DB_Manager->UpdateScenarioListAutoIncrementSeq();
-			Log_Manager->OnPutLog("시나리오 미존재로 인한 시퀀스번호 갱신", LogType::LT_PROCESS);
-		}
-		Scenario_DB_Manager->CommitTransaction();
-	}
-	else
-	{
-		Scenario_DB_Manager->RollbackTransaction();
-		m_loadScenarioList.clear();
-		Log_Manager->OnPutLog("삭제 오류로 인한 롤백처리", LogType::LT_PROCESS);
-		if (Scenario_DB_Manager->SelectAllScenarioList(&m_loadScenarioList))
-		{
-			m_list_scenario_list.DeleteAllItems();
-			ComplexVector<ScenarioListVO>::iterator iter = m_loadScenarioList.begin();
-
-			while (iter != m_loadScenarioList.end())
-			{
-				ComplexString index = ComplexConvert::IntToString(iter->value.GetSceSEQ());
-				ComplexString title = iter->value.GetSceTITLE();
-				InsertScenario(title, index);
-				iter++;
-			}
-			Log_Manager->OnPutLog("시나리오 정보 갱신", LogType::LT_PROCESS);
-		}
-	}
-
-	CURSOR_ARROW;
-}
-
-
-void CBOKOPadDlg::OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-	if (m_loadScenarioList.empty())
-		return;
-
-	int mark = m_list_scenario_list.GetSelectionMark();
-	if (mark < 0)
-		return;
-
-	// 시나리오가 이미 존재할 시
-	ScenarioManagerStruct scenarioStruct(m_loadScenarioList.at(mark), mark);
-	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
-
-	if (Scenario_UI_Manager->SendMessages(PM_EXIST) == true)
-		return;
-
-	CURSOR_WAIT;
-	Scenario_DB_Manager->StartTransaction(TransactionNames[TND_SCENARIO_CREATE]);
-
-	Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
-	if (Scenario_UI_Manager->SendMessages(PM_CREATE) == false)
-	{
-		Scenario_DB_Manager->RollbackTransaction();
-		Log_Manager->OnPutLog("타임라인 화면 정보 로드 오류", LogType::LT_PROCESS);
-	}
-	else
-		Scenario_DB_Manager->CommitTransaction();
-
-	ComplexString logMsg;
-	logMsg.Format("%d", mark + 1);
-	Log_Manager->OnPutLog(logMsg + "번째 시나리오 화면 정보 출력 성공", LogType::LT_OPERATE);
-	Log_Manager->OnPutLog(logMsg + "번째 시나리오 더블클릭", LogType::LT_EVENT);
-
-	CURSOR_ARROW;
-	*pResult = 0;
-}
-
-
-void CBOKOPadDlg::OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	if (pNMItemActivate->iItem == -1)
-	{
-		m_list_scenario_list.SetSelectionMark(-1);
-		m_list_scenario_list.SetItemState(-1, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	}
-	*pResult = 0;
 }
 
 

@@ -26,13 +26,15 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 BOKOScenarioDetailDlg::~BOKOScenarioDetailDlg()
 {
 	m_list_notePad.DestroyWindow();
+	m_edit_note_input.DestroyWindow();
+	m_setFont.DeleteObject();
 	Log_Manager->OnPutLog("BOKOScenarioDetailDlg 소멸자 호출", LogType::LT_PROCESS);
 }
 
 void BOKOScenarioDetailDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_EDIT_NOTE_INPUT, m_edit_note_input);
+	//DDX_Control(pDX, IDC_EDIT_NOTE_INPUT, m_edit_note_input);
 	DDX_Control(pDX, IDC_BUTTON_NOTE_INPUT, m_btn_note_input);
 	DDX_Control(pDX, IDC_STATIC_NOTE_LIMIT_SIZE, m_stt_note_limit_size);
 	DDX_Control(pDX, IDC_CHECK_DRAG_MODE, m_btn_drag_mode);
@@ -134,6 +136,7 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 	m_stt_timeline_count.SetWindowTextA("0 / 100");
 	m_progress_timeline_count.SetPos(0);
 
+	m_setFont.CreatePointFont(120, TEXT("굴림"));
 
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -144,11 +147,13 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_strTitleText.Format("%s 타임라인", m_thisDataStruct.scenarioData.GetSceTITLE().GetBuffer());
 	SetWindowTextA(m_strTitleText);
 	m_list_notePad.Create(NoteListCtrl::IDD, this);
+	m_edit_note_input.Create(CustomEditCtrl::IDD, this);
 	Log_Manager->OnPutLog("노트 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.Create(Timeline::IDD, this);
 	Log_Manager->OnPutLog("타임라인 화면 생성 완료", LogType::LT_OPERATE);
 	m_timeline.AttachNoteManager(m_list_notePad.m_noteUIManager, m_list_notePad.m_noteDBManager);
 	Log_Manager->OnPutLog("타임라인 UI 매니저 연결", LogType::LT_PROCESS);
+
 
 	//m_timeline.SetBackgroundColor(DI_SUB_BK_COLOR);
 	//m_list_notePad.SetBackgroundColor(DI_SUB_BK_COLOR);
@@ -164,7 +169,7 @@ void BOKOScenarioDetailDlg::Initialize()
 	m_stt_timeline_count.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 50), CAST_INT(thisRect.Height() * 0.07), 50, 20);
 	m_timeline.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.1), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.13));
 	m_list_notePad.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.28), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.37));
-	m_edit_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.7), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.15));
+	m_edit_note_input.MoveWindows(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.7), CAST_INT(thisRect.Width() * 0.9), CAST_INT(thisRect.Height() * 0.15));
 	m_stt_note_limit_size.MoveWindow(CAST_INT(thisRect.Width() * 0.05), CAST_INT(thisRect.Height() * 0.85), 100, 30);
 	m_btn_note_input.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 80), CAST_INT(thisRect.Height() * 0.85), 80, 25);
 	m_btn_note_delete.MoveWindow(CAST_INT(thisRect.Width() * 0.95 - 80), CAST_INT(thisRect.Height() * 0.9), 80, 25);
@@ -176,12 +181,15 @@ void BOKOScenarioDetailDlg::Initialize()
 	//m_btn_note_delete.EnableWindow(FALSE);
 	Log_Manager->OnPutLog("시나리오 화면 초기화", LogType::LT_PROCESS);
 
+	m_edit_note_input.Initialize();
 	m_list_notePad.Initialize();
 	m_btn_note_input.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_btn_note_delete.Initialize(DI_BUTTON_COLOR, CMFCButton::FlatStyle::BUTTONSTYLE_NOBORDERS, _T("고딕"), 16, FW_BOLD);
 	m_progress_timeline_count.SetBarColor(RGB(72, 205, 22));
 	m_progress_timeline_count.SetBkColor(DI_SUB_BK_COLOR);
+	m_edit_note_input.SetFont(&m_setFont);
 
+	m_edit_note_input.ShowWindow(SW_SHOW);
 	m_stt_timeline_count.ShowWindow(SW_HIDE);
 }
 

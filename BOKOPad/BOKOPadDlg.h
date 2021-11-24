@@ -5,9 +5,11 @@
 #pragma once
 #include "DlgInterface.h"
 #include "CustomMenu.h"
+#include "ScenarioListCtrl.h"
 
 void OnLogViewCallBackFunc();
 void OnExplanationViewCallBackFunc();
+
 
 // CBOKOPadDlg 대화 상자
 class CBOKOPadDlg : public CDialogEx, public DlgInterface
@@ -35,20 +37,12 @@ private:
 	PadOptionVO m_mainOptionData;
 	ComplexVector<ScenarioListVO> m_loadScenarioList;
 
-	CListCtrl m_list_scenario_list;
-	CButton m_btn_option;
-	CEdit m_edit_input_scenario;
-	CButton m_btn_input_scenario;
-	CButton m_btn_scenario_title_modify;
-	CButton m_btn_scenario_delete;
-
 	CustomMenu m_menu;
-
+	ScenarioListCtrl m_scenario;
 // 구현입니다.
 
 private:
 
-	void InsertScenario(ComplexString title, ComplexString index);
 
 protected:
 
@@ -67,14 +61,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnBnClickedButtonOption();
-	afx_msg void OnLvnItemchangedListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBnClickedButtonInputScenario();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg void OnBnClickedButtonScenarioTitleModify();
-	afx_msg void OnBnClickedButtonScenarioDelete();
-	afx_msg void OnNMDblclkListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnNMClickListScenarioList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnScenarioExport();
 	afx_msg void OnScenarioImport();
 	afx_msg void OnProgramClose();
