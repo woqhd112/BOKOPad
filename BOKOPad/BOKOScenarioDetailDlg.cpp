@@ -17,6 +17,7 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 	, DlgInterface(this, true)
 {
 	CreateFrame();
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_thisDataStruct = thisDataStruct;
 	m_bDragModeCheck = true;
 	m_bKeyDownEvent = false;
@@ -125,6 +126,8 @@ BOOL BOKOScenarioDetailDlg::OnInitDialog()
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	//SetBackgroundColor(RGB(68, 68, 68));
+
+	SetIcon(m_hIcon, TRUE);
 	Initialize();
 
 	m_edit_note_input.LimitText(500);
@@ -230,7 +233,7 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 		return;
 
 	CString strInputText;
-	m_edit_note_input.GetWindowTextA(strInputText);
+	m_edit_note_input.GetWindowTexts(strInputText);
 
 	if (strInputText.IsEmpty())
 		return;
@@ -240,7 +243,7 @@ void BOKOScenarioDetailDlg::OnBnClickedButtonNoteInput()
 	
 	if (m_list_notePad.InsertNote(strInputText.GetBuffer(), true))
 	{
-		m_edit_note_input.SetWindowTextA("");
+		m_edit_note_input.SetWindowTexts("");
 		m_stt_note_limit_size.SetWindowTextA("0 / 500");
 		m_edit_note_input.SetFocus();
 		Scenario_DB_Manager->CommitTransaction();

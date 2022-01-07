@@ -17,7 +17,7 @@ CustomEditCtrl::CustomEditCtrl(CWnd* pParent)
 	, DlgInterface(this, false)
 {
 	m_nNotSEQ = 0;
-	CreateFrame();
+	CreateFrame(FDT_ETC_DLG);
 }
 
 CustomEditCtrl::CustomEditCtrl(int notSEQ, CWnd* pParent /*=nullptr*/)
@@ -25,7 +25,7 @@ CustomEditCtrl::CustomEditCtrl(int notSEQ, CWnd* pParent /*=nullptr*/)
 	, DlgInterface(this, false)
 {
 	m_nNotSEQ = notSEQ;
-	CreateFrame();
+	CreateFrame(FDT_ETC_DLG);
 }
 
 CustomEditCtrl::~CustomEditCtrl()
@@ -203,6 +203,27 @@ BOOL CustomEditCtrl::PreTranslateMessage(MSG* pMsg)
 		if (PtInRect(rect, pMsg->pt))
 		{
 			m_scroll.ShowScroll();
+		}
+	}
+	else if (WM_KEYDOWN == pMsg->message)
+	{
+		if (GetKeyState(VK_SHIFT) < 0)
+		{
+			if (pMsg->wParam == VK_RETURN)
+			{
+				CString strText;
+				m_edit_custom.GetWindowTextA(strText);
+				strText.AppendFormat("%s", "\r\n");
+				m_edit_custom.SetWindowTextA(strText);
+				m_edit_custom.SetSel(0, -1);
+				m_edit_custom.SetFocus();
+				m_edit_custom.Clear();
+				m_edit_custom.ReplaceSel(strText);
+			}
+		}
+		else if (pMsg->wParam == VK_RETURN)
+		{
+			GetParent()->PostMessageA(pMsg->message, pMsg->wParam, pMsg->lParam);
 		}
 	}
 

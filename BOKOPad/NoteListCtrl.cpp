@@ -517,20 +517,20 @@ bool NoteListCtrl::DragDown(MSG* pMsg)
 	if (nButtonStyle == BS_OWNERDRAW)
 	{
 		m_downButton = (CustomButton*)FromHandle(pMsg->hwnd);
-		m_defaultDragData.mousePos_X = pMsg->pt.x;
-		m_defaultDragData.mousePos_Y = pMsg->pt.y;
+		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
 		m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
 		m_defaultDragData.pushShiftButton = m_bPushShiftButton;
-		m_defaultDragData.buttonID = ::GetDlgCtrlID(pMsg->hwnd);
+		/*m_defaultDragData.mousePos_X = pMsg->pt.x;
+		m_defaultDragData.mousePos_Y = pMsg->pt.y;
 		m_noteUIManager->InputDragStruct(&m_defaultDragData);
 		if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
 		{
 			Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
-		}
+		}*/
 
 		m_bDragTimer = true;
 		m_cond.Signal();
-
+		this->SetFocus();
 		return true;
 	}
 	return false;
@@ -553,18 +553,34 @@ bool NoteListCtrl::DragUp(MSG* pMsg)
 	m_bDragTimer = false;
 	m_nDragTime = 0;
 
-	if (!m_bDragProcessing)
-	{
-		m_downButton = nullptr;
-		return false;
-	}
-
 	if (m_downButton == nullptr)
 	{
 		m_bDragProcessing = false;
 		return false;
 	}
 
+	/*if (!m_bDragProcessing)
+	{
+		m_downButton = nullptr;
+		return false;
+	}*/
+
+	if (!m_bDragProcessing)
+	{
+		m_defaultDragData.mousePos_X = pMsg->pt.x;
+		m_defaultDragData.mousePos_Y = pMsg->pt.y;
+		m_defaultDragData.pushCtrlButton = m_bPushCtrlButton;
+		m_defaultDragData.pushShiftButton = m_bPushShiftButton;
+		m_defaultDragData.buttonID = m_downButton->GetDlgCtrlID();
+		m_noteUIManager->InputDragStruct(&m_defaultDragData);
+		if (m_noteUIManager->SendMessages(PM_NOTE_CLICK))
+		{
+			Log_Manager->OnPutLog("버튼 클릭 완료", LogType::LT_EVENT);
+		}
+		m_downButton = nullptr;
+		return true;
+	}
+	
 	Log_Manager->OnPutLog("드래그 버튼 업", LogType::LT_EVENT);
 
 	m_defaultDragData.buttonID = m_downButton->GetDlgCtrlID();
@@ -794,7 +810,8 @@ BOOL NoteListCtrl::PreTranslateMessage(MSG* pMsg)
 	}
 	else if (pMsg->message == WM_LBUTTONDOWN)
 	{
-		if (pMsg->hwnd == this->GetSafeHwnd())
+		//this->SetFocus();	// 시나리오 메인에서 에딧 포커싱 시에 노트 버튼 클릭했을 시 문제 해결
+		if (pMsg->hwnd == this->GetSafeHwnd() || (GetWindowLongA(pMsg->hwnd, GWL_STYLE) & 0x0000000F) == BS_OWNERDRAW)
 		{
 			bMainScrollFocus = true;
 			this->SetFocus();

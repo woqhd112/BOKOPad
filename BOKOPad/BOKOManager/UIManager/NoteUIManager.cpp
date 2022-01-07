@@ -83,6 +83,10 @@ bool NoteUIManager::InvokeHelper(PerformanceMessage message)
 	{
 		bHelpSuccess = NoteClick();
 	}
+	else if (message == PM_NOTE_CLICK_RELEASE)
+	{
+		bHelpSuccess = NoteClickRelease();
+	}
 	else if (message == PM_DRAG_MOVE)
 	{
 		bHelpSuccess = DragMove();
@@ -742,6 +746,25 @@ bool NoteUIManager::NoteClick()
 	return true;
 }
 
+bool NoteUIManager::NoteClickRelease()
+{
+	if (m_notePadManager.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+	if (m_noteSeqMap.empty())
+	{
+		ReleaseDragStruct();
+		return false;
+	}
+
+
+
+	return true;
+}
+
 bool NoteUIManager::SeqNoteViewUpdate()
 {
 	NoteManagerStruct* noteDataStruct = BringNoteStruct();
@@ -867,6 +890,17 @@ bool NoteUIManager::DragDown()
 		ReleaseDragStruct();
 		return false;
 	}
+
+	ComplexMap<int, NotePadStruct>::iterator iter3 = m_notePadManager.find(dragDataStruct->noteIndex);
+	if (iter3 != m_notePadManager.end())
+	{
+		if (iter3->value.value.bOpenView && iter3->value.value.noteCheckBox->GetCheck() == FALSE)
+		{
+			iter3->value.value.noteCheckBox->SetCheck(TRUE);
+			iter3->value.value.noteButton->ExecuteClickButtonColor();
+		}
+	}
+
 
 	ComplexMap<int, NotePadStruct>::iterator iter1 = m_notePadManager.begin();
 	int checkCount = 0;

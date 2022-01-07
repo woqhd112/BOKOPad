@@ -480,6 +480,7 @@ BOOL Timeline::PreTranslateMessage(MSG* pMsg)
 	}
 	else if (pMsg->message == WM_LBUTTONDOWN)
 	{
+		this->SetFocus();
 		if (DragDown(pMsg))
 			return TRUE;
 	}

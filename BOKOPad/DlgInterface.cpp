@@ -39,7 +39,7 @@ DlgInterface::~DlgInterface()
 
 }
 
-void DlgInterface::CreateFrame(bool ownDraw)
+void DlgInterface::CreateFrame(FrameDicisionType type)
 {
 #ifdef PATH_RESOURCE
 	/*TCHAR* szTitleFileName1 = "C:\\Users\\user\\Desktop\\워크스페이스\\work_vs2017\\BOKOPad\\BOKOPad\\res\\title.png";
@@ -61,16 +61,21 @@ void DlgInterface::CreateFrame(bool ownDraw)
 	m_pngBackground2.Load(szTitleFileName6);
 
 #else
-	if (ownDraw)
+	if (type == FDT_MAIN_DLG)
 	{
 		LoadPNGResource(m_pngBackground2, IDB_PNG_NOTE_TABLE, "PNG");
 	}
-	else
+	else if (type == FDT_SUB_DLG)
 	{
 		LoadPNGResource(m_pngBackground1, IDB_PNG_BK, "PNG");
 		LoadPNGResource(m_pngBackground2, IDB_PNG_BK_SUB, "PNG");
 	}
+	else if (type == FDT_ETC_DLG)
+	{
+	}
 #endif
+
+	m_eFrameType = type;
 }
 
 bool DlgInterface::LoadPNGResource(CImage& loadObjectIamage, UINT id, LPCTSTR pType, HMODULE hInst)
@@ -216,21 +221,31 @@ HBRUSH DlgInterface::CtlColors(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 void DlgInterface::DrawFrame(CPaintDC* in_pDC)
 {
-	CBitmap bmp;
-	BITMAP bmpInfo;
-	CDC memDC;
+	if ((m_eFrameType == FDT_MAIN_DLG) || (m_eFrameType == FDT_SUB_DLG))
+	{
+		CBitmap bmp;
+		BITMAP bmpInfo;
+		CDC memDC;
 
-	bmp.Attach(m_bMainDlg ? m_pngBackground1 : m_pngBackground2);
-	bmp.GetBitmap(&bmpInfo);
+		bmp.Attach(m_bMainDlg ? m_pngBackground1 : m_pngBackground2);
+		bmp.GetBitmap(&bmpInfo);
 
-	BOOL ret = memDC.CreateCompatibleDC(in_pDC);
-	memDC.SelectObject(bmp);
+		BOOL ret = memDC.CreateCompatibleDC(in_pDC);
+		memDC.SelectObject(bmp);
 
-	in_pDC->BitBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &memDC, 0, 0, SRCCOPY);
+		in_pDC->BitBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &memDC, 0, 0, SRCCOPY);
 
-	memDC.DeleteDC();
-	bmp.Detach();
-	bmp.DeleteObject();
+		memDC.DeleteDC();
+		bmp.Detach();
+		bmp.DeleteObject();
+	}
+	else if (m_eFrameType == FDT_ETC_DLG)
+	{
+		CRect rect;
+		m_wnd->GetClientRect(rect);
+
+		in_pDC->FillSolidRect(rect, DI_EDIT_COLOR);
+	}
 }
 
 //void DlgInterface::DrawFrame()

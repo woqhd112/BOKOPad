@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ScenarioUIManager.h"
 #include "..\..\BOKOScenarioDetailDlg.h"
+#include "..\..\BOKOProgressPopup.h"
 #include "..\..\BOKODragDlg.h"
 
 ScenarioUIManager::ScenarioUIManager()
@@ -104,6 +105,19 @@ bool ScenarioUIManager::Create()
 		ReleaseScenarioStruct();
 		return false;
 	}
+
+	CPoint pt;
+	GetCursorPos(&pt);
+
+	bool bProcessing;
+	BOKOProgressPopup loadingPopup(&bProcessing, 1);
+	loadingPopup.Create(BOKOProgressPopup::IDD);
+	loadingPopup.SetWindowPos(NULL, pt.x - 50, pt.y - 20, 0, 0, SWP_NOSIZE);
+	loadingPopup.ShowWindow(SW_SHOW);
+	CPaintDC dc(&loadingPopup);
+	loadingPopup.DrawFrame(&dc);
+
+	loadingPopup.SetAnalyzeFileName("·Îµù Áß");
 	
 	ScenarioManagerStruct inputScenarioStruct;
 	inputScenarioStruct.scenarioData = scenarioDataStruct->scenarioData;
@@ -128,7 +142,8 @@ bool ScenarioUIManager::Create()
 			return false;
 		}
 
-		scenarioDetail->ShowWindow(SW_SHOW);
+		
+		scenarioDetail->ShowWindow(SW_HIDE);
 		if (scenarioDetail->SignalLoadScenarioList() == false)
 		{
 			m_scenarioDlgManager.erase(inputScenarioStruct.scenarioIndex);
@@ -139,12 +154,15 @@ bool ScenarioUIManager::Create()
 			ReleaseScenarioStruct();
 			return false;
 		}
+
 	}
 	else
 	{
 		delete scenarioDetail;
 		scenarioDetail = nullptr;
 	}
+
+	loadingPopup.SendMessageA(WM_CLOSE);
 
 	ReleaseScenarioStruct();
 

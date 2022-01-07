@@ -38,6 +38,13 @@ init 순서
 8. 다이얼로그 속성에서 Border none 으로 설정 (Sizing 안하면 생략가능)
 */
 
+enum FrameDicisionType
+{
+	FDT_MAIN_DLG = 0,
+	FDT_SUB_DLG,
+	FDT_ETC_DLG,
+};
+
 class DlgInterface
 {
 public:
@@ -46,7 +53,7 @@ public:
 	~DlgInterface();
 
 	void InitFrame(CString strTitleText = "");
-	void CreateFrame(bool ownDraw = false);
+	void CreateFrame(FrameDicisionType type = FDT_SUB_DLG);
 	//void DrawFrame();
 	void DrawFrame(CPaintDC* in_pDC);
 	void Sizing(UINT nType);
@@ -101,6 +108,8 @@ protected:
 	virtual bool DragUp(MSG* pMsg) = 0;
 
 	bool m_bDragProcessing;
+
+	FrameDicisionType m_eFrameType;
 
 private:
 

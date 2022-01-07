@@ -88,7 +88,7 @@ void BOKOProgressPopup::SetAnalyzeFileName(ComplexString strFileName)
 {
 	m_strCurrentFileName = strFileName;
 	CString strText;
-	strText.Format("%s 분석 중...", strFileName.GetBuffer());
+	strText.Format("%s...", strFileName.GetBuffer());
 	m_stt_file_name.SetWindowTextA(strText);
 }
 
@@ -115,6 +115,7 @@ HBRUSH BOKOProgressPopup::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
 		pDC->SetBkColor(DI_BK_COLOR);
+		pDC->SetTextColor(DI_TEXT_COLOR);
 		return m_staticBrush;
 	}
 

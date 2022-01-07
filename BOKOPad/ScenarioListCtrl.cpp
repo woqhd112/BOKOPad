@@ -16,7 +16,7 @@ ScenarioListCtrl::ScenarioListCtrl(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_SCENARIO_LIST_CTRL, pParent)
 	, DlgInterface(this, false)
 {
-	CreateFrame(true);
+	CreateFrame(FDT_MAIN_DLG);
 }
 
 ScenarioListCtrl::~ScenarioListCtrl()
@@ -457,7 +457,11 @@ void ScenarioListCtrl::LoadScenarioTimeline(HWND handle)
 			Log_Manager->OnPutLog("타임라인 화면 정보 로드 오류", LogType::LT_PROCESS);
 		}
 		else
+		{
 			Scenario_DB_Manager->CommitTransaction();
+			Scenario_UI_Manager->InputScenarioStruct(&scenarioStruct);
+			Scenario_UI_Manager->SendMessages(PM_SHOW);
+		}
 
 		ComplexString logMsg;
 		logMsg.Format("%d", scenarioIndex + 1);

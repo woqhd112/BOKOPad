@@ -20,6 +20,7 @@ private:
 	bool Hide();
 	bool Move();
 	bool NoteClick();
+	bool NoteClickRelease();
 	bool NoteCheckDelete();
 	bool DragMove();
 	bool DragDown();
