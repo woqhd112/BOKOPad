@@ -169,6 +169,9 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	if (m_logMap == nullptr)
 		return;
 
+	if (m_logMap->empty())
+		return;
+
 	int selectCombo = m_combo_log_divide.GetCurSel();
 
 	CTime startTime, endTime;
@@ -176,8 +179,8 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	m_date_start_date.GetTime(startTime);
 	m_date_last_date.GetTime(endTime);
 
-	strStartTime = startTime.Format("%Y_%m_%d");
-	strEndTime = endTime.Format("%Y_%m_%d");
+	strStartTime = startTime.Format("%Y_%m_%d_00");
+	strEndTime = endTime.Format("%Y_%m_%d_23");
 
 	if (strStartTime == m_startDate && strEndTime == m_endDate && selectCombo == m_selectComboIndex)
 		return;
@@ -193,18 +196,19 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	timeTable.year = startTime.GetYear();
 	timeTable.month = startTime.GetMonth();
 	timeTable.day = startTime.GetDay();
+	timeTable.hour = startTime.GetHour();
 
 	// start 타임값을 찾는다.
 	// end 까지 날짜를 세고 없으면 리턴한다.
 	do
 	{
-		strStartTime.Format("%04d_%02d_%02d", timeTable.year, timeTable.month, timeTable.day);
+		strStartTime.Format("%04d_%02d_%02d_%02d", timeTable.year, timeTable.month, timeTable.day, timeTable.hour);
 		iter = m_logMap->find(strStartTime.GetBuffer());
 
 		if (strStartTime == strEndTime)
 			break;
 
-		timeTable += 86400;	// 하루 (초)
+		timeTable += 3600;	// 한시간 (초)
 	}
 	while (iter == m_logMap->end());
 

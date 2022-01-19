@@ -53,7 +53,7 @@ void LogProcess::CreateDir()
 	::CreateDirectoryA(folderName, NULL);
 
 	ComplexTimeTable tt = ComplexTime::GetCurrentTimes();
-	m_strWritePath.Format("%s%04d_%02d_%02d.txt", folderName.GetBuffer(), tt.year, tt.month, tt.day);
+	m_strWritePath.Format("%s%04d_%02d_%02d_%02d.txt", folderName.GetBuffer(), tt.year, tt.month, tt.day, tt.hour);
 }
 
 ComplexString LogProcess::GetCurrentTimeText()

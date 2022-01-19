@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- 메모리값을 보고싶지 않으면 char -> ,na 입력 -->
+  
+  <!-- ComplexString -->
+  <Type Name="ComplexLibrary::ComplexString">
+    <DisplayString>{m_buf,na}</DisplayString>
+    <Expand HideRawView="true">
+      <Item Name="size">m_size</Item>
+    </Expand>
+  </Type>
+  
+  <!-- ComplexVector -->
+  <Type Name="ComplexLibrary::ComplexVector&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}, capacity = {m_capacity}}}</DisplayString>
+    <Expand HideRawView="true">
+      <ArrayItems>
+        <Size>m_size</Size>
+        <ValuePointer>m_ptr</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!-- ComplexMap -->
+  <Type Name="ComplexLibrary::ComplexMap&lt;*,*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}, capacity = {m_capacity}}}</DisplayString>
+    <Expand HideRawView="true">
+      <LinkedListItems>
+        <Size>m_pairs.m_size</Size>
+        <HeadPointer>m_pairs.m_head</HeadPointer>
+        <NextPointer>m_next</NextPointer>
+        <ValueNode>value</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
+  <!-- ComplexPair -->
+  <Type Name="ComplexLibrary::ComplexPair&lt;*,*&gt;">
+    <DisplayString>{{key = {key,na}, value = {value,na}}}</DisplayString>
+  </Type>
+
+  <!-- ComplexLinkedList -->
+  <Type Name="ComplexLibrary::ComplexLinkedList&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}}}</DisplayString>
+    <Expand HideRawView="true">
+      <LinkedListItems>
+        <Size>m_size</Size>
+        <HeadPointer>m_head</HeadPointer>
+        <NextPointer>m_next</NextPointer>
+        <ValueNode>value</ValueNode>
+      </LinkedListItems>
+      <Item Name="head">m_head</Item>
+      <Item Name="tail">m_tail</Item>
+    </Expand>
+  </Type>
+  
+  <!-- ComplexStack -->
+  <Type Name="ComplexLibrary::ComplexStack&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}}}</DisplayString>
+    <Expand HideRawView="true">
+      <LinkedListItems>
+        <Size>m_size</Size>
+        <HeadPointer>m_head</HeadPointer>
+        <NextPointer>m_next</NextPointer>
+        <ValueNode>value</ValueNode>
+      </LinkedListItems>
+      <Item Name="back">m_tail-&gt;value</Item>
+    </Expand>
+  </Type>
+
+  <!-- ComplexQueue -->
+  <Type Name="ComplexLibrary::ComplexQueue&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}}}</DisplayString>
+    <Expand HideRawView="true">
+      <LinkedListItems>
+        <Size>m_size</Size>
+        <HeadPointer>m_head</HeadPointer>
+        <NextPointer>m_next</NextPointer>
+        <ValueNode>value</ValueNode>
+      </LinkedListItems>
+      <Item Name="front">m_head-&gt;value</Item>
+    </Expand>
+  </Type>
+
+  <!-- ComplexDeque -->
+  <Type Name="ComplexLibrary::ComplexDeque&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}}}</DisplayString>
+    <Expand HideRawView="true">
+      <ArrayItems>
+        <Size>m_size</Size>
+        <ValuePointer>m_ptr</ValuePointer>
+      </ArrayItems>
+      <Item Name="max size">m_maxSize</Item>
+    </Expand>
+  </Type>
+
+  <!-- ComplexSet -->
+  <Type Name="ComplexLibrary::ComplexSet&lt;*&gt;">
+    <DisplayString Condition="m_size == 0">empty</DisplayString>
+    <DisplayString Condition="m_size != 0">{{size = {m_size}}}</DisplayString>
+    <Expand HideRawView="true">
+      <TreeItems>
+        <Size>m_size</Size>
+        <HeadPointer>m_root</HeadPointer>
+        <LeftPointer>m_little</LeftPointer>
+        <RightPointer>m_too</RightPointer>
+        <ValueNode>value</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+
+  <!-- ComplexIterator -->
+  <Type Name="ComplexLibrary::ComplexIterator&lt;*&gt;">
+    <DisplayString Condition="m_cur == nullptr">nullptr</DisplayString>
+    <DisplayString Condition="m_cur != nullptr">{m_cur,na}</DisplayString>
+    <Expand HideRawView="true">
+      <Item Name="current" Condition="m_cur != nullptr">m_cur,na</Item>
+      <Item Name="current" Condition="m_cur == nullptr">nullptr</Item>
+      <Item Name="next" Condition="m_cur != nullptr &amp;&amp; m_cur-&gt;m_next != nullptr ">m_cur-&gt;m_next,na</Item>
+    </Expand>
+  </Type>
+
+  <!-- ComplexNode -->
+  <Type Name="ComplexLibrary::ComplexNode&lt;*&gt;">
+    <DisplayString>{value,na}</DisplayString>
+    <Expand HideRawView="true">
+      <Item Name="current">this,na</Item>
+      <Item Name="next" Condition="m_next != nullptr">m_next,na</Item>
+      <Item Name="next" Condition="m_next == nullptr">nullptr</Item>
+    </Expand>
+  </Type>
+
+  <!-- ComplexNodeSet -->
+  <Type Name="ComplexLibrary::ComplexNodeSet&lt;*&gt;">
+    <DisplayString>{value,na}</DisplayString>
+    <Expand HideRawView="true">
+      <Item Name="current">this,na</Item>
+      <Item Name="little" Condition="little != nullptr">little,na</Item>
+      <Item Name="little" Condition="little == nullptr">nullptr</Item>
+      <Item Name="too" Condition="too != nullptr">too,na</Item>
+      <Item Name="too" Condition="too == nullptr">nullptr</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

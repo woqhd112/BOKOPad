@@ -34,7 +34,6 @@ private:
 	ComplexVector<ComplexString> m_processLog;
 	ComplexVector<ComplexString> m_operateLog;
 
-
 	void LoadLog();
 	void AnalyzeLogData();
 	void InsertCountList(int index, ComplexString type, ComplexString text);
