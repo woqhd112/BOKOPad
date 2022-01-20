@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ComplexPrint.h"
+#include <iostream>
 
 namespace ComplexLibrary
 {
@@ -16,7 +15,8 @@ namespace ComplexLibrary
 			ET_CAPACITY_OVERFLOW,
 			ET_DUPLICATE,
 			ET_XML_PARSE,
-			ET_NOT_FOUND
+			ET_NOT_FOUND,
+			ET_UNIDENTIFIABLE,
 		};
 
 	protected:
@@ -27,7 +27,6 @@ namespace ComplexLibrary
 		const char* m_exceptionGenerationClaseName;
 		const char* m_exceptionGenerationFuncName;
 		int m_exceptionGenarationLineNo;
-		ComplexPrint m_print;
 
 	public:
 
@@ -58,13 +57,13 @@ namespace ComplexLibrary
 
 		void MessagePrintStackTrace()
 		{
-			m_print.Println("----------------------------------------------------------------------");
-			m_print.Printf("Exception Type : \n%s\n", m_exceptTitle);
-			m_print.Printf("Exception Message : \n%s\n", m_exceptionMessage);
-			m_print.Printf("Exception Generate Class Name : \n%s\n", m_exceptionGenerationClaseName);
-			m_print.Printf("Exception Generate Function Name : \n%s\n", m_exceptionGenerationFuncName);
-			m_print.Printf("Exception Generate Line Number : \n%d\n", m_exceptionGenarationLineNo);
-			m_print.Println("----------------------------------------------------------------------");
+			printf("----------------------------------------------------------------------\n");
+			printf("Exception Type : \n%s\n", m_exceptTitle);
+			printf("Exception Message : \n%s\n", m_exceptionMessage);
+			printf("Exception Generate Class Name : \n%s\n", m_exceptionGenerationClaseName);
+			printf("Exception Generate Function Name : \n%s\n", m_exceptionGenerationFuncName);
+			printf("Exception Generate Line Number : \n%d\n", m_exceptionGenarationLineNo);
+			printf("----------------------------------------------------------------------\n");
 		}
 
 	};
@@ -222,6 +221,29 @@ namespace ComplexLibrary
 		}
 
 		~ComplexNotFoundException()
+		{
+
+		}
+
+	private:
+
+	};
+
+	class ComplexUnIdentifiableException : public ComplexException
+	{
+	public:
+
+		ComplexUnIdentifiableException(const char* explanation, const char* exceptionGenerateClassName, const char* exceptionGenerationFuncName, int exceptionGenerationLineNo = __LINE__)
+			: ComplexException(ET_UNIDENTIFIABLE)
+		{
+			m_exceptTitle = "UnIdentifiable";
+			m_exceptionMessage = explanation;
+			m_exceptionGenerationClaseName = exceptionGenerateClassName;
+			m_exceptionGenerationFuncName = exceptionGenerationFuncName;
+			m_exceptionGenarationLineNo = exceptionGenerationLineNo;
+		}
+
+		~ComplexUnIdentifiableException()
 		{
 
 		}

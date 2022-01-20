@@ -9,6 +9,7 @@
 
 void OnLogViewCallBackFunc();
 void OnExplanationViewCallBackFunc();
+void OnDBConsoleCallBackFunc();
 
 
 // CBOKOPadDlg 대화 상자

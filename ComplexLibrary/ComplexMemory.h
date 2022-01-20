@@ -3,7 +3,7 @@
 namespace ComplexLibrary
 {
 
-	void* MemoryCopy(void* dest, const void* src, size_t size)
+	static void* MemoryCopy(void* dest, const void* src, size_t size)
 	{
 		char* temp = (char*)dest;
 		const char* s = (const char*)src;
@@ -16,7 +16,7 @@ namespace ComplexLibrary
 		return dest;
 	}
 
-	void* MemorySet(void* dest, int value, size_t size)
+	static void* MemorySet(void* dest, int value, size_t size)
 	{
 		char* temp = (char*)dest;
 
@@ -28,7 +28,7 @@ namespace ComplexLibrary
 		return dest;
 	}
 
-	void* MemoryMove(void* dest, const void* src, size_t size)
+	static void* MemoryMove(void* dest, const void* src, size_t size)
 	{
 		char* temp = (char*)dest;
 		const char* s = (const char*)src;
@@ -54,7 +54,7 @@ namespace ComplexLibrary
 		return dest;
 	}
 
-	int MemoryCompare(void* tgt, void* sub, size_t size)
+	static int MemoryCompare(void* tgt, void* sub, size_t size)
 	{
 		size_t i = 0;
 		char* temp1 = (char*)tgt;
@@ -77,7 +77,7 @@ namespace ComplexLibrary
 		return 0;
 	}
 
-	void* MemoryFind(void* tgt, int value, size_t size)
+	static void* MemoryFind(void* tgt, int value, size_t size)
 	{
 		size_t i = 0;
 		char* temp = (char*)tgt;
@@ -94,7 +94,7 @@ namespace ComplexLibrary
 		return ((void*)0);
 	}
 
-	void* MemoryInitialize(void* dest, size_t size)
+	static void* MemoryInitialize(void* dest, size_t size)
 	{
 		return MemorySet(dest, 0, size);
 	}

@@ -9,8 +9,6 @@
 #define DB_MODULE_NANE "BOKOPad.exe"
 #endif
 
-void PrePareStatementInsertPadOption();
-
 class DlgModel
 {
 public:

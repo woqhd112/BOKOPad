@@ -23,12 +23,6 @@ ComplexDatabase* GetDBInstance()
 	return g_dbConnection.get();
 }
 
-void PrePareStatementInsertPadOption()
-{
-	DB_INSTANCE->SetInt(1, 2);
-	DB_INSTANCE->SetInt(2, 3);
-}
-
 DlgModel::DlgModel()
 {
 	//g_dataKernel = ComplexSingleton<DBDataKernel>::GetInstance();
@@ -77,9 +71,7 @@ void DlgModel::LoadDatabase()
 		{
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_SCENARIO_LIST_TABLE], NULL);
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_NOTE_INFORMATION_TABLE], NULL);
-			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_PAD_OPTION_TABLE], NULL);
 			DB_INSTANCE->ExecuteQuery(DefinedDDLQuerys[CREATE_TIME_LINE_TABLE], NULL);
-			DB_INSTANCE->PrepareStatement_Execute(DefinedDMLQuerys[INSERT_PAD_OPTION_TABLE], PrePareStatementInsertPadOption);
 		}
 		// 트랜잭션 처리를 위해 주석
 		//g_dbConnection.SetAutoCommit(false);

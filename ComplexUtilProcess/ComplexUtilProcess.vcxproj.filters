@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="FileProcess">
+    <Filter Include="File">
       <UniqueIdentifier>{c12424c2-1962-48f2-b618-3c7c6893e389}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LogProcess">
+    <Filter Include="Log">
       <UniqueIdentifier>{b4afedf7-bba6-4ce0-be85-406f6b9c95bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{e7c700eb-4de4-4fc8-8468-3d25234a09ad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,10 +34,13 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="File\FileProcess.h">
-      <Filter>FileProcess</Filter>
+      <Filter>File</Filter>
     </ClInclude>
     <ClInclude Include="Log\LogProcess.h">
-      <Filter>LogProcess</Filter>
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\ApplicationProcess.h">
+      <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -45,10 +51,13 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="File\FileProcess.cpp">
-      <Filter>FileProcess</Filter>
+      <Filter>File</Filter>
     </ClCompile>
     <ClCompile Include="Log\LogProcess.cpp">
-      <Filter>LogProcess</Filter>
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\ApplicationProcess.cpp">
+      <Filter>Application</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

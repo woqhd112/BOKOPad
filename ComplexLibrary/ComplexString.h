@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "ComplexFormat.h"
+#include "ComplexException.h"
 
 #define USE_MYFORMAT	1
 
@@ -263,6 +264,10 @@ namespace ComplexLibrary
 				return;
 
 			char check_c = m_buf[index];
+
+			if (check_c < -1 || check_c > 255)
+				throw ComplexUnIdentifiableException("isalpha identify range is unitentifiable.", "ComplexString", "SetLower");
+
 			if (isalpha(check_c) != 0)	// alpha ok
 			{
 				if (isalpha(check_c) == 1)	// upper ok
@@ -279,6 +284,10 @@ namespace ComplexLibrary
 				return;
 
 			char check_c = m_buf[index];
+
+			if (check_c < -1 || check_c > 255)
+				throw ComplexUnIdentifiableException("isalpha identify range is unitentifiable.", "ComplexString", "SetUpper");
+
 			if (isalpha(check_c) != 0)	// alpha ok
 			{
 				if (isalpha(check_c) == 2)	// lower ok
@@ -291,6 +300,9 @@ namespace ComplexLibrary
 
 		void SetAllLower()
 		{
+			if (m_size <= 1)
+				return;
+
 			int last_idx = m_size - 1 - 1;
 			while (last_idx != -1)
 			{
@@ -301,6 +313,9 @@ namespace ComplexLibrary
 
 		void SetAllUpper()
 		{
+			if (m_size <= 1)
+				return;
+
 			int last_idx = m_size - 1 - 1;
 			while (last_idx != -1)
 			{

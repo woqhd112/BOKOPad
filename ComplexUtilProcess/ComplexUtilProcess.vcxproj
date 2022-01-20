@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Application\ApplicationProcess.h" />
     <ClInclude Include="commonInclude.h" />
     <ClInclude Include="File\FileProcess.h" />
     <ClInclude Include="framework.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\ApplicationProcess.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="File\FileProcess.cpp" />
     <ClCompile Include="Log\LogProcess.cpp" />

@@ -140,6 +140,9 @@
     <ClInclude Include="sqlite3ext.h">
       <Filter>ComplexLibrary</Filter>
     </ClInclude>
+    <ClInclude Include="ComplexMemory.h">
+      <Filter>ComplexLibrary</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComplexLibrary.cpp">

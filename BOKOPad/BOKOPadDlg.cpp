@@ -10,6 +10,8 @@
 #include "BOKOOptionScenarioExportDlg.h"
 #include "BOKOLogViewDlg.h"
 #include "afxdialogex.h"
+#include "Application/ApplicationProcess.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -149,8 +151,11 @@ void CBOKOPadDlg::Initialize()
 	InitFrame("BOKOPad");
 	m_menu.Create(CustomMenu::IDD, this);
 	m_menu.ShowWindow(SW_HIDE);
-	m_menu.AddMenu("로그 확인", OnLogViewCallBackFunc);
 	m_menu.AddMenu("설명 확인", OnExplanationViewCallBackFunc);
+#ifdef ADMIN_CONFIRM_VIEW
+	m_menu.AddMenu("로그 확인", OnLogViewCallBackFunc);
+	m_menu.AddMenu("DB 콘솔", OnDBConsoleCallBackFunc);
+#endif
 
 	m_menu.Init(true);
 
@@ -368,6 +373,23 @@ void OnExplanationViewCallBackFunc()
 {
 	CBOKOPadDlg* dlg = (CBOKOPadDlg*)theApp.GetMainWnd();
 	dlg->OnExplanationView();
+}
+
+void OnDBConsoleCallBackFunc()
+{
+	CBOKOPadDlg* dlg = (CBOKOPadDlg*)theApp.GetMainWnd();
+	if (ComplexUtilProcess::FindProcess("BOKODBConsole.exe") == 0 && ComplexUtilProcess::FindProcess("BOKODBConsole_dbg.exe") == 0)
+	{
+#ifdef DEBUG
+		ComplexUtilProcess::ExecuteProcess("BOKODBConsole_dbg.exe");
+#elif NDEBUG
+		ComplexUtilProcess::ExecuteProcess("BOKODBConsole.exe");
+#endif
+	}
+	else
+	{
+		dlg->MessageBox("BOKOConsole이 이미 실행 중 입니다.");
+	}
 }
 
 void CBOKOPadDlg::OnLogView()
