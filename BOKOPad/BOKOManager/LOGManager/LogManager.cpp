@@ -17,6 +17,7 @@ LogManager::~LogManager()
 bool LogManager::OnPutLog(ComplexString logMsg, LogType type)
 {
 	bool bLogSuccess = false; 
+#ifdef ADMIN_CONFIRM_VIEW
 	if (type == LT_EVENT)
 	{
 		bLogSuccess = ComplexUtilProcess::LOG_E(logMsg);
@@ -29,7 +30,7 @@ bool LogManager::OnPutLog(ComplexString logMsg, LogType type)
 	{
 		bLogSuccess = ComplexUtilProcess::LOG_O(logMsg);
 	}
-
+#endif
 	return bLogSuccess;
 }
 
@@ -108,7 +109,6 @@ bool LogManager::OnLoadLogData()
 	}
 
 	m_status = LPS_SUCCESS;
-
 	progress.SendMessageA(WM_CLOSE);
 
 	return true;

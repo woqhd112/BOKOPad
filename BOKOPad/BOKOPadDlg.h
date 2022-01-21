@@ -63,8 +63,10 @@ protected:
 
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+#ifndef NOT_USED
 	afx_msg void OnScenarioExport();
 	afx_msg void OnScenarioImport();
+#endif
 	afx_msg void OnProgramClose();
 	afx_msg void OnLogView();
 	afx_msg void OnExplanationView();

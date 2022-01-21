@@ -16,7 +16,7 @@ BOKOScenarioDetailDlg::BOKOScenarioDetailDlg(ScenarioManagerStruct thisDataStruc
 	: CDialogEx(IDD_DIALOG_SCENARIO_TIMELINE, pParent)
 	, DlgInterface(this, true)
 {
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_thisDataStruct = thisDataStruct;
 	m_bDragModeCheck = true;
@@ -468,8 +468,9 @@ HBRUSH BOKOScenarioDetailDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	{
 		if (pWnd->GetDlgCtrlID() == m_stt_note_limit_size.GetDlgCtrlID())
 		{
-			pDC->SetBkColor(DI_BK_COLOR);
-			return m_staticBrush;
+			pDC->SetBkColor(DI_LIGHT_COLOR);
+			pDC->SetTextColor(DI_TEXT_COLOR);
+			return m_staticLightBrush;
 		}
 		else if (pWnd->GetDlgCtrlID() == m_stt_timeline_count.GetDlgCtrlID())
 		{

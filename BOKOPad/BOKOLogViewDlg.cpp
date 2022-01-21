@@ -6,6 +6,11 @@
 #include "BOKOLogViewDlg.h"
 #include "afxdialogex.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 // BOKOLogViewDlg 대화 상자
 
@@ -18,7 +23,7 @@ BOKOLogViewDlg::BOKOLogViewDlg(CWnd* pParent /*=nullptr*/)
 	, m_selectComboIndex(0)
 {
 	Log_Manager->OnPutLog("BOKOLogViewDlg 생성자 호출", LogType::LT_PROCESS);
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 BOKOLogViewDlg::~BOKOLogViewDlg()
@@ -82,8 +87,9 @@ void BOKOLogViewDlg::Initialize()
 	m_list_log_view.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	m_list_log_view.InsertColumn(0, "", LVCFMT_LEFT, 0);
 	m_list_log_view.InsertColumn(1, "종류", LVCFMT_CENTER, 55);
-	m_list_log_view.InsertColumn(2, "시간", LVCFMT_CENTER, 60);
-	m_list_log_view.InsertColumn(3, "내용", LVCFMT_LEFT, 270);
+	m_list_log_view.InsertColumn(2, "날짜", LVCFMT_CENTER, 80);
+	m_list_log_view.InsertColumn(3, "시간", LVCFMT_CENTER, 60);
+	m_list_log_view.InsertColumn(4, "내용", LVCFMT_LEFT, 210);
 
 	m_combo_log_divide.InsertString(0, "All");
 	m_combo_log_divide.InsertString(1, "Event");
@@ -115,7 +121,7 @@ void BOKOLogViewDlg::InsertCountList(int index, ComplexString type, ComplexStrin
 	m_list_log_count.SetItem(&item2);
 }
 
-void BOKOLogViewDlg::InsertViewList(int index, ComplexString type, ComplexString time, ComplexString content)
+void BOKOLogViewDlg::InsertViewList(int index, ComplexString type, ComplexString date, ComplexString time, ComplexString content)
 {
 	m_list_log_view.InsertItem(index, "");
 
@@ -130,15 +136,22 @@ void BOKOLogViewDlg::InsertViewList(int index, ComplexString type, ComplexString
 	item2.mask = LVIF_TEXT;
 	item2.iItem = index;
 	item2.iSubItem = 2;
-	item2.pszText = (LPSTR)time.GetBuffer();
+	item2.pszText = (LPSTR)date.GetBuffer();
 	m_list_log_view.SetItem(&item2);
 
 	LVITEM item3;
 	item3.mask = LVIF_TEXT;
 	item3.iItem = index;
 	item3.iSubItem = 3;
-	item3.pszText = (LPSTR)content.GetBuffer();
+	item3.pszText = (LPSTR)time.GetBuffer();
 	m_list_log_view.SetItem(&item3);
+
+	LVITEM item4;
+	item4.mask = LVIF_TEXT;
+	item4.iItem = index;
+	item4.iSubItem = 4;
+	item4.pszText = (LPSTR)content.GetBuffer();
+	m_list_log_view.SetItem(&item4);
 }
 
 void BOKOLogViewDlg::OnCbnSelchangeComboLogDivide()
@@ -230,6 +243,8 @@ void BOKOLogViewDlg::AnalyzeLogData()
 	while (iter != m_logMap->end())
 	{
 		ComplexVector<ComplexString>::iterator iter1 = iter->value.value.begin();
+		ComplexString strLogDate = iter->value.key.Left(iter->value.key.GetLength() - 3);
+		strLogDate.ReplaceAll("_", ".");
 		for (int i = 0; i < iter->value.value.size(); i++)
 		{
 			ComplexString logElement = iter->value.value.at(i);
@@ -265,7 +280,7 @@ void BOKOLogViewDlg::AnalyzeLogData()
 			if (selectCombo == 0)	
 			{
 				// All
-				InsertViewList(insertLogViewIndex, type, strTime, strLog);
+				InsertViewList(insertLogViewIndex, type, strLogDate, strTime, strLog);
 				insertLogViewIndex++;
 			}
 			else if (selectCombo == 1)
@@ -273,7 +288,7 @@ void BOKOLogViewDlg::AnalyzeLogData()
 				// Event
 				if (type == "Event")
 				{
-					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					InsertViewList(insertLogViewIndex, type, strLogDate, strTime, strLog);
 					insertLogViewIndex++;
 				}
 			}
@@ -282,7 +297,7 @@ void BOKOLogViewDlg::AnalyzeLogData()
 				// Process
 				if (type == "Process")
 				{
-					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					InsertViewList(insertLogViewIndex, type, strLogDate, strTime, strLog);
 					insertLogViewIndex++;
 				}
 			}
@@ -291,7 +306,7 @@ void BOKOLogViewDlg::AnalyzeLogData()
 				// Operate
 				if (type == "Operate")
 				{
-					InsertViewList(insertLogViewIndex, type, strTime, strLog);
+					InsertViewList(insertLogViewIndex, type, strLogDate, strTime, strLog);
 					insertLogViewIndex++;
 				}
 			}
@@ -376,8 +391,9 @@ HBRUSH BOKOLogViewDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
-		pDC->SetBkColor(DI_BK_COLOR);
-		return m_staticBrush;
+		pDC->SetBkColor(DI_LIGHT_COLOR);
+		pDC->SetTextColor(DI_TEXT_COLOR);
+		return m_staticLightBrush;
 	}
 
 

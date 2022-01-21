@@ -82,8 +82,10 @@ BEGIN_MESSAGE_MAP(CBOKOPadDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+#ifndef NOT_USED
 	ON_COMMAND(ID_SCENARIO_EXPORT, &CBOKOPadDlg::OnScenarioExport)
 	ON_COMMAND(ID_SCENARIO_IMPORT, &CBOKOPadDlg::OnScenarioImport)
+#endif
 	ON_COMMAND(ID_PROGRAM_CLOSE, &CBOKOPadDlg::OnProgramClose)
 	ON_COMMAND(ID_LOG_VIEW, &CBOKOPadDlg::OnLogView)
 	ON_COMMAND(ID_EXPLANATION_VIEW, &CBOKOPadDlg::OnExplanationView)
@@ -236,7 +238,7 @@ BOOL CBOKOPadDlg::PreTranslateMessage(MSG* pMsg)
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
-
+#ifndef NOT_USED
 void CBOKOPadDlg::OnScenarioExport()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -353,7 +355,7 @@ void CBOKOPadDlg::OnScenarioImport()
 	CURSOR_ARROW;
 	MessageBox("파일 불러오기에 성공하였습니다.");
 }
-
+#endif
 
 void CBOKOPadDlg::OnProgramClose()
 {

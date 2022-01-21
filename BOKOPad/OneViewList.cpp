@@ -26,7 +26,7 @@ OneViewList::OneViewList(CWnd* pParent /*=nullptr*/)
 {
 	Log_Manager->OnPutLog("OneViewList 생성자 호출", LogType::LT_PROCESS);
 	this->Start();
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 OneViewList::~OneViewList()

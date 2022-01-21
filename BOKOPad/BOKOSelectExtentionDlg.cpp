@@ -17,7 +17,7 @@ BOKOSelectExtentionDlg::BOKOSelectExtentionDlg(int* selectExtentionType, CWnd* p
 {
 	m_nSelectExtentionType = selectExtentionType;
 	Log_Manager->OnPutLog("BOKOSelectExtentionDlg 생성자 호출", LogType::LT_PROCESS);
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 BOKOSelectExtentionDlg::~BOKOSelectExtentionDlg()
@@ -55,11 +55,12 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 
 	Initialize();
 
-	//SetClassLongA(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
-	//SetClassLongA(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
-	//SetClassLongA(m_btn_notepad.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+#ifndef NOT_USED
+	SetClassLongA(m_btn_excel.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+	SetClassLongA(m_btn_word.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
+	SetClassLongA(m_btn_notepad.GetSafeHwnd(), GCL_HCURSOR, (LONG)AfxGetApp()->LoadStandardCursor(IDC_HAND));
 
-	/*m_btn_notepad.ShowWindow(SW_HIDE);
+	m_btn_notepad.ShowWindow(SW_HIDE);
 	m_btn_excel.ShowWindow(SW_HIDE);
 	m_btn_word.ShowWindow(SW_HIDE);
 
@@ -110,7 +111,7 @@ BOOL BOKOSelectExtentionDlg::OnInitDialog()
 	m_btn_notepad2.SetMouseCursorHand();
 
 	m_btn_excel.SetFocus();
-	*/
+#endif
 
 	return FALSE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -232,4 +233,19 @@ void BOKOSelectExtentionDlg::OnSize(UINT nType, int cx, int cy)
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	Sizing(nType);
+}
+
+bool BOKOSelectExtentionDlg::DragDown(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOSelectExtentionDlg::DragMove(MSG* pMsg)
+{
+	return false;
+}
+
+bool BOKOSelectExtentionDlg::DragUp(MSG* pMsg)
+{
+	return false;
 }

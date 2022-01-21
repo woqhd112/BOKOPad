@@ -9,6 +9,7 @@ DlgInterface::DlgInterface(CWnd* activeDlg, bool bMain)
 	: m_wnd(activeDlg)
 {
 	m_staticBrush.CreateSolidBrush(DI_BK_COLOR);
+	m_staticLightBrush.CreateSolidBrush(DI_LIGHT_COLOR);
 	m_editBrush.CreateSolidBrush(DI_EDIT_COLOR);
 	m_subBKBrush.CreateSolidBrush(DI_SUB_BK_COLOR);
 
@@ -22,6 +23,7 @@ DlgInterface::DlgInterface(CWnd* activeDlg, bool bMain)
 DlgInterface::~DlgInterface()
 {
 	m_staticBrush.DeleteObject();
+	m_staticLightBrush.DeleteObject();
 	m_editBrush.DeleteObject();
 	m_subBKBrush.DeleteObject();
 
@@ -64,6 +66,11 @@ void DlgInterface::CreateFrame(FrameDicisionType type)
 	if (type == FDT_MAIN_DLG)
 	{
 		LoadPNGResource(m_pngBackground2, IDB_PNG_NOTE_TABLE, "PNG");
+	}
+	else if (type == FDT_LIGHT_DLG)
+	{
+		LoadPNGResource(m_pngBackground1, IDB_PNG_BK_LIGHT, "PNG");
+		LoadPNGResource(m_pngBackground2, IDB_PNG_BK_SUB, "PNG");
 	}
 	else if (type == FDT_SUB_DLG)
 	{
@@ -221,7 +228,7 @@ HBRUSH DlgInterface::CtlColors(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 void DlgInterface::DrawFrame(CPaintDC* in_pDC)
 {
-	if ((m_eFrameType == FDT_MAIN_DLG) || (m_eFrameType == FDT_SUB_DLG))
+	if ((m_eFrameType == FDT_MAIN_DLG) || (m_eFrameType == FDT_SUB_DLG) || (m_eFrameType == FDT_LIGHT_DLG))
 	{
 		CBitmap bmp;
 		BITMAP bmpInfo;

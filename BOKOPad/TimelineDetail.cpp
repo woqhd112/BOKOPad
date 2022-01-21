@@ -16,7 +16,7 @@ TimelineDetail::TimelineDetail(CWnd* pParent /*=nullptr*/)
 	, DlgInterface(this, false)
 {
 	Log_Manager->OnPutLog("TimelineDetail 생성자 호출", LogType::LT_PROCESS);
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 TimelineDetail::~TimelineDetail()

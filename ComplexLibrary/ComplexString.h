@@ -452,6 +452,7 @@ namespace ComplexLibrary
 			}
 			at_buf[at_size] = '\0';
 			at_string = at_buf;
+			delete[] at_buf;
 
 			return at_string;
 		}

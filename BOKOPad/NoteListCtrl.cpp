@@ -28,7 +28,7 @@ NoteListCtrl::NoteListCtrl(CWnd* pParent /*=nullptr*/)
 	Log_Manager->OnPutLog("노트 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("NoteListCtrl 생성자 호출", LogType::LT_PROCESS);
 	this->Start();
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 NoteListCtrl::~NoteListCtrl()

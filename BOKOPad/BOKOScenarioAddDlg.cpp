@@ -16,7 +16,7 @@ BOKOScenarioAddDlg::BOKOScenarioAddDlg(ComplexString* inputText, CWnd* pParent /
 	, DlgInterface(this, true)
 {
 	m_strInputText = inputText;
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 BOKOScenarioAddDlg::~BOKOScenarioAddDlg()
@@ -159,6 +159,10 @@ void BOKOScenarioAddDlg::OnBnClickedMfcbuttonScenarioAdd()
 
 	CString getText;
 	m_edit_input.GetWindowTexts(getText);
+
+	if (getText.IsEmpty())
+		return;
+
 	*m_strInputText = getText.GetBuffer();
 
 	SendMessageA(WM_CLOSE);

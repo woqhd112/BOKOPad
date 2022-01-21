@@ -121,9 +121,6 @@
     <ClInclude Include="BOKOLogViewDlg.h">
       <Filter>UI\Log</Filter>
     </ClInclude>
-    <ClInclude Include="BOKOProgressPopup.h">
-      <Filter>UI\Log</Filter>
-    </ClInclude>
     <ClInclude Include="OfficeAutomation\Manager\OfficeAutomationInterface.h">
       <Filter>OfficeAutomation\Manager</Filter>
     </ClInclude>
@@ -334,6 +331,9 @@
     <ClInclude Include="BOKOScenarioAddDlg.h">
       <Filter>UI\Main</Filter>
     </ClInclude>
+    <ClInclude Include="BOKOProgressPopup.h">
+      <Filter>UI\ETC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BOKOOptionDlg.cpp">
@@ -370,9 +370,6 @@
       <Filter>UI\Scenario\OneView</Filter>
     </ClCompile>
     <ClCompile Include="BOKOLogViewDlg.cpp">
-      <Filter>UI\Log</Filter>
-    </ClCompile>
-    <ClCompile Include="BOKOProgressPopup.cpp">
       <Filter>UI\Log</Filter>
     </ClCompile>
     <ClCompile Include="OfficeAutomation\Manager\ExcelAutomationManager.cpp">
@@ -443,6 +440,9 @@
     </ClCompile>
     <ClCompile Include="BOKOScenarioAddDlg.cpp">
       <Filter>UI\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="BOKOProgressPopup.cpp">
+      <Filter>UI\ETC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -529,6 +529,9 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="res\Note\Add.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\test3.png">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

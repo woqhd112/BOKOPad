@@ -132,7 +132,7 @@ protected:
 		}
 		else
 		{
-			AfxMessageBox("엑셀 저장에 실패하였습니다.");
+			AfxMessageBox("저장에 실패하였습니다.");
 		}
 	}
 

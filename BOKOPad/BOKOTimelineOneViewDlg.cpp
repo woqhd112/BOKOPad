@@ -12,6 +12,9 @@
 #include "OfficeAutomation/Manager/ExcelAutomationManager.h"
 #include "OfficeAutomation/Manager/WordAutomationManager.h"
 
+#ifdef ADMIN_CONFIRM_VIEW
+#include "BOKOSelectExtentionDlg.h"
+#endif
 
 // BOKOTimelineOneViewDlg 대화 상자
 
@@ -24,7 +27,7 @@ BOKOTimelineOneViewDlg::BOKOTimelineOneViewDlg(CWnd* pParent /*=nullptr*/)
 	, m_bPreviewProcess(false)
 {
 	Log_Manager->OnPutLog("BOKOTimelineOneViewDlg 생성자 호출", LogType::LT_PROCESS);
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 BOKOTimelineOneViewDlg::~BOKOTimelineOneViewDlg()
@@ -90,7 +93,7 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 	path = dir_;
 	path.Remove(DB_MODULE_NANE);
 
-#ifndef SELECT_EXTENTION
+#ifndef ADMIN_CONFIRM_VIEW
 
 	ComplexString strWriteAnsiContent, strConvertUTF8Content;
 	m_list_one_view.GetFullItemText(&strWriteAnsiContent);
@@ -109,7 +112,7 @@ void BOKOTimelineOneViewDlg::OnBnClickedButtonTimelineExport()
 	int selectExtentionType = -1;
 	// 확장자 선택
 	Log_Manager->OnPutLog("확장자 선택 화면 생성 완료", LogType::LT_OPERATE);
-	BOKOSelectExtentionDlg extentionSelect(&selectExtentionType);
+	BOKOSelectExtentionDlg extentionSelect(&selectExtentionType, this);
 	extentionSelect.DoModal();
 
 	if (selectExtentionType == -1)

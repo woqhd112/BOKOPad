@@ -47,8 +47,9 @@
 #define IDB_PNG_NOTE_RED                206
 #define IDB_PNG_NOTE_SKY                207
 #define IDB_PNG_NOTE_TABLE              208
-#define IDB_PNG11                       209
 #define IDB_PNG_NOTE_YELLOW             209
+#define IDB_PNG1                        210
+#define IDB_PNG_BK_LIGHT                210
 #define IDC_LIST_SCENARIO_LIST          1000
 #define IDC_BUTTON_OPTION               1001
 #define IDC_EDIT_INPUT_SCENARIO         1002
@@ -113,7 +114,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        210
+#define _APS_NEXT_RESOURCE_VALUE        211
 #define _APS_NEXT_COMMAND_VALUE         32783
 #define _APS_NEXT_CONTROL_VALUE         1059
 #define _APS_NEXT_SYMED_VALUE           101

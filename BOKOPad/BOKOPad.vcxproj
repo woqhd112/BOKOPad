@@ -95,7 +95,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ADMIN_CONFIRM_VIEW;WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ADMIN_CONFIRM_VIEW;WIN32;_WINDOWS;_DEBUG;NOT_USED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)ComplexUtilProcess;$(SolutionDir)ComplexMVC2_Model;$(SolutionDir)ComplexLibrary</AdditionalIncludeDirectories>
     </ClCompile>
@@ -354,6 +354,7 @@
     <Image Include="res\right.png" />
     <Image Include="res\test.png" />
     <Image Include="res\test2.png" />
+    <Image Include="res\test3.png" />
     <Image Include="res\title.png" />
     <Image Include="res\Word.png" />
   </ItemGroup>

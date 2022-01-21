@@ -33,7 +33,7 @@ Timeline::Timeline(CWnd* pParent /*=nullptr*/)
 	Log_Manager->OnPutLog("타임라인 UI 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("타임라인 DB 매니저 생성 완료", LogType::LT_PROCESS);
 	Log_Manager->OnPutLog("Timeline 생성자 호출", LogType::LT_PROCESS);
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 Timeline::~Timeline()

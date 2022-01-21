@@ -5,6 +5,7 @@
 
 #define DI_TEXT_COLOR RGB(255, 255, 255)
 #define DI_BK_COLOR RGB(68, 68, 68)
+#define DI_LIGHT_COLOR RGB(90, 90, 90)
 #define DI_BUTTON_COLOR RGB(110, 110, 110)
 #define DI_SUB_BK_COLOR RGB(140, 140, 140)
 #define DI_EDIT_COLOR RGB(160, 160, 160)
@@ -41,6 +42,7 @@ init ¼ø¼­
 enum FrameDicisionType
 {
 	FDT_MAIN_DLG = 0,
+	FDT_LIGHT_DLG,
 	FDT_SUB_DLG,
 	FDT_ETC_DLG,
 };
@@ -87,6 +89,7 @@ protected:
 
 	CFont m_ctlFont;
 	CBrush m_staticBrush;
+	CBrush m_staticLightBrush;
 	CBrush m_subBKBrush;
 	CBrush m_editBrush;
 

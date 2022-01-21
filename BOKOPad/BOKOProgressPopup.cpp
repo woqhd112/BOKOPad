@@ -19,7 +19,7 @@ BOKOProgressPopup::BOKOProgressPopup(bool* processing, int itemCount, CWnd* pPar
 	m_posCount = 0;
 	m_bProcessing = processing;
 	*m_bProcessing = false;
-	CreateFrame();
+	CreateFrame(FDT_LIGHT_DLG);
 }
 
 BOKOProgressPopup::~BOKOProgressPopup()
@@ -114,9 +114,9 @@ HBRUSH BOKOProgressPopup::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
-		pDC->SetBkColor(DI_BK_COLOR);
+		pDC->SetBkColor(DI_LIGHT_COLOR);
 		pDC->SetTextColor(DI_TEXT_COLOR);
-		return m_staticBrush;
+		return m_staticLightBrush;
 	}
 
 	return hbr;
